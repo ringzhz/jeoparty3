@@ -1,14 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import io from 'socket.io-client';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
-import './index.css';
+import Game from './Game';
 
-const socket = io();
-
-// sockets test
-socket.on('hello', ({ message }) => alert(message));
-
-ReactDOM.render(<App />, document.getElementById('root'));
-reportWebVitals();
+ReactDOM.render(<Game />, document.getElementById('root'));
