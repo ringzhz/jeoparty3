@@ -13,7 +13,7 @@ import { GameState } from './constants';
 import {SocketContext, socket} from './context/socket';
 
 const Game = () => {
-    const [gameState, setGameState] = useState(GameState.BOARD);
+    const [gameState, setGameState] = useState(GameState.LOBBY);
 
     let browserView = null;
     let mobileView = null;
