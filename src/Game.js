@@ -1,15 +1,16 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {BrowserView, MobileView} from 'react-device-detect';
 
-import BrowserBoard from "./components/BrowserBoard";
-import BrowserLobby from "./components/BrowserLobby";
+import BrowserBoard from './components/BrowserBoard';
+import BrowserLobby from './components/BrowserLobby';
 
-import MobileBoard from "./components/MobileBoard";
-import MobileLobby from "./components/MobileLobby";
+import MobileWrapper from "./components/MobileWrapper";
+import MobileBoard from './components/MobileBoard';
+import MobileLobby from './components/MobileLobby';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-import { GameState } from './constants';
+import { GameState } from './constants/GameState';
 import {SocketContext, socket} from './context/socket';
 
 const Game = () => {
@@ -40,7 +41,9 @@ const Game = () => {
             </BrowserView>
 
             <MobileView>
-                {mobileView}
+                <MobileWrapper>
+                    {mobileView}
+                </MobileWrapper>
             </MobileView>
         </SocketContext.Provider>
     );

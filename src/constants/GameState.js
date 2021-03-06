@@ -1,3 +1,4 @@
+// functions like an enum
 export const GameState = {
     LOBBY: "lobby",
     BOARD: "board",
