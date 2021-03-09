@@ -4,17 +4,22 @@ const randomWords = require('random-words');
 const app = express();
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
-let cache = require('memory-cache');
-const GameSession = require('../constants/GameSession').GameSession;
 const port = process.env.PORT || 8080;
+
+const GameSession = require('../constants/GameSession').GameSession;
+const getRandomCategories = require('../helpers/jservice').getRandomCategories;
 
 app.use(express.static(path.join(__dirname, '../../build')));
 app.get('/', (req, res, next) => res.sendFile(__dirname + './index.html'));
 
+let cache = require('memory-cache');
+let sessionCache = new cache.Cache();
+let disconnectionCache = new cache.Cache();
+
 io.on('connection', (socket) => {
     socket.emit('connect_device');
     socket.on('connect_device', (isMobile) => {
-        console.log(`A new client with IP ${socket.handshake.address} has connected`);
+        console.log(`A new client (IP: ${socket.handshake.address}, id: ${socket.id}) has connected`);
 
         socket.isMobile = isMobile;
 
@@ -23,29 +28,45 @@ io.on('connection', (socket) => {
             let session = Object.create(GameSession);
 
             socket.sessionName = sessionName;
-            cache.put(sessionName, session);
+            sessionCache.put(sessionName, session);
+            disconnectionCache.put(sessionName, []);
 
-            console.log(`New session (${sessionName}) has been created`);
+            console.log(`A new session (${sessionName}) has been created`);
 
             socket.emit('session_name', sessionName);
+
+            getRandomCategories((categories) => console.log(categories))
         }
     });
 
     socket.on('join_session', (sessionName) => {
-        if (cache.get(sessionName)) {
-            console.log(`${socket.id} has joined session(${sessionName})`)
+        if (sessionCache.get(sessionName)) {
+            socket.sessionName = sessionName;
+
+            console.log(`Client (${socket.id}) has joined session (${sessionName})`);
+
+            socket.emit('join_session_success', sessionName);
+        } else {
+            socket.emit('join_session_failure', sessionName);
         }
     });
 
     socket.on('disconnect', () => {
-        if (socket.isMobile) {
+        if (socket.isMobile && sessionCache.get(socket.sessionName)) {
+            console.log(`Client (IP: ${socket.handshake.address}, id: ${socket.id}) has disconnected`);
 
+            let disconnections = disconnectionCache.get(socket.sessionName);
+            disconnections.push(socket.handshake.address);
+            disconnectionCache.put(socket.sessionName, disconnections);
+
+            console.log(disconnectionCache.get(socket.sessionName));
         }
 
-        if (!socket.isMobile && cache.get(socket.sessionName)) {
-            cache.del(socket.sessionName);
+        if (!socket.isMobile && sessionCache.get(socket.sessionName)) {
+            sessionCache.del(socket.sessionName);
+            disconnectionCache.del(socket.sessionName);
 
-            console.log(`session (${socket.sessionName}) has been deleted`);
+            console.log(`Session (${socket.sessionName}) has been deleted`);
         }
     });
 });

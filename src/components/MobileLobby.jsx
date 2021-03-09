@@ -13,6 +13,18 @@ const MobileLobby = () => {
         socket.emit('join_session', sessionName);
     }, []);
 
+    socket.on('join_session_success', (sessionName) => {
+        alert(`You joined session (${sessionName})`);
+
+        setSessionName('');
+    });
+
+    socket.on('join_session_failure', (sessionName) => {
+        alert(`Couldn't find session (${sessionName})`);
+
+        setSessionName('');
+    });
+
     return (
         <div>
             Welcome to the mobile lobby!
