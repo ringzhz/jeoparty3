@@ -35,7 +35,7 @@ io.on('connection', (socket) => {
 
             socket.emit('session_name', sessionName);
 
-            getRandomCategories((categories) => console.log(categories))
+            // getRandomCategories((categories) => console.log(categories))
         }
     });
 

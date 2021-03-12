@@ -10,6 +10,7 @@
     "express": "^4.17.1",
     "jservice-node": "^0.2.3",
     "memory-cache": "^0.2.0",
+    "number-to-words": "^1.2.4",
     "random-words": "^1.1.1",
     "react": "^17.0.1",
     "react-bootstrap": "^1.5.0",
@@ -19,13 +20,14 @@
     "remove-accents": "^0.4.2",
     "socket.io": "^3.1.1",
     "socket.io-client": "^3.1.1",
-    "web-vitals": "^1.0.1"
+    "web-vitals": "^1.0.1",
+    "words-to-numbers": "^1.5.1"
   },
   "scripts": {
     "start": "react-scripts start",
     "dev": "node ./src/server/index.js",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test": "mocha",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -50,6 +52,7 @@
     "node": "14.16.0"
   },
   "devDependencies": {
-    "husky": "^5.1.1"
+    "husky": "^5.1.1",
+    "mocha": "^8.3.1"
   }
 }

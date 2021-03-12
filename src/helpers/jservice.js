@@ -1,5 +1,7 @@
 const js = require('jservice-node');
+
 const formatRaw = require('./format').formatRaw;
+const formatCategory = require('./format').formatCategory;
 
 const MAX_CATEGORY_ID = 18418;
 const NUM_CATEGORIES = 6;
@@ -15,7 +17,7 @@ const getRandomCategory = (cb) => {
             category['clues'] = category['clues'].slice(startingIndex, startingIndex + 5);
 
             if (approveCategory(category)) {
-                cb(error, category);
+                cb(error, formatCategory(category));
             } else {
                 cb(true, category);
             }
