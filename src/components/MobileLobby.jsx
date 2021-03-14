@@ -1,4 +1,8 @@
-import React, { useContext, useCallback, useState } from "react";
+import React, { useContext, useCallback, useState } from 'react';
+
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Button from 'react-bootstrap/Button';
 import FormControl from 'react-bootstrap/FormControl';
@@ -26,17 +30,20 @@ const MobileLobby = () => {
     });
 
     return (
-        <div>
-            Welcome to the mobile lobby!
+        <Container fluid>
+            <Row className={'text-center'}>
+                <Col lg={'12'}>
+                    Welcome to the mobile lobby!
 
-            <InputGroup className="mb-3">
-                <FormControl value={sessionName} onChange={e => setSessionName(e.target.value)} aria-describedby="basic-addon1" />
-                <InputGroup.Prepend>
-                    <Button onClick={() => handleJoinSession(sessionName)} variant="outline-secondary">Join</Button>
-                </InputGroup.Prepend>
-            </InputGroup>
-
-        </div>
+                    <InputGroup className='mb-3'>
+                        <FormControl value={sessionName} onChange={e => setSessionName(e.target.value)} aria-describedby='basic-addon1' />
+                        <InputGroup.Prepend>
+                            <Button onClick={() => handleJoinSession(sessionName)} variant='outline-secondary'>Join</Button>
+                        </InputGroup.Prepend>
+                    </InputGroup>
+                </Col>
+            </Row>
+        </Container>
     );
 };
 

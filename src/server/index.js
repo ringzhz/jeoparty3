@@ -7,6 +7,7 @@ const io = require('socket.io')(server);
 const port = process.env.PORT || 8080;
 
 const GameSession = require('../constants/GameSession').GameSession;
+const GameState = require('../constants/GameState').GameState;
 const getRandomCategories = require('../helpers/jservice').getRandomCategories;
 
 app.use(express.static(path.join(__dirname, '../../build')));
@@ -15,6 +16,20 @@ app.get('/', (req, res, next) => res.sendFile(__dirname + './index.html'));
 let cache = require('memory-cache');
 let sessionCache = new cache.Cache();
 let disconnectionCache = new cache.Cache();
+
+const updateGameSession = (socket, key, newValue) => {
+    let gameSession = sessionCache.get(socket.sessionName);
+
+    if (Array.isArray(gameSession[key])) {
+        let gameSessionArray = gameSession[key];
+        gameSessionArray.push(newValue);
+        gameSession[key] = gameSessionArray;
+    } else {
+        gameSession[key] = newValue;
+    }
+
+    sessionCache.put(socket.sessionName, gameSession);
+};
 
 io.on('connection', (socket) => {
     socket.emit('connect_device');
@@ -35,13 +50,21 @@ io.on('connection', (socket) => {
 
             socket.emit('session_name', sessionName);
 
-            // getRandomCategories((categories) => console.log(categories))
+            getRandomCategories((categories) => {
+                console.log(categories);
+                updateGameSession(socket, 'categories', categories);
+
+                socket.emit('set_game_state', GameState.BOARD);
+                socket.emit('categories', categories);
+            });
         }
     });
 
     socket.on('join_session', (sessionName) => {
         if (sessionCache.get(sessionName)) {
             socket.sessionName = sessionName;
+
+            updateGameSession(socket, 'players', socket.id);
 
             console.log(`Client (${socket.id}) has joined session (${sessionName})`);
 

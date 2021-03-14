@@ -8,13 +8,18 @@ import MobileWrapper from "./components/MobileWrapper";
 import MobileBoard from './components/MobileBoard';
 import MobileLobby from './components/MobileLobby';
 
-import 'bootstrap/dist/css/bootstrap.min.css';
-
 import { GameState } from './constants/GameState';
 import {SocketContext, socket} from './context/socket';
 
+import 'bootstrap/dist/css/bootstrap.min.css';
+import './stylesheets/Game.css';
+
 const Game = () => {
     const [gameState, setGameState] = useState(GameState.LOBBY);
+
+    socket.on('set_game_state', (newGameState) => {
+        setGameState(newGameState);
+    });
 
     let browserView = null;
     let mobileView = null;

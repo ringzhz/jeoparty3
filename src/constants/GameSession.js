@@ -1,4 +1,5 @@
 exports.GameSession = {
     inProgress: false,
-    players: []
+    players: [],
+    categories: []
 };
