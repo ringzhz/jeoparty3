@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {BrowserView, MobileView} from 'react-device-detect';
 
 import BrowserBoard from './components/BrowserBoard';
@@ -17,9 +17,11 @@ import './stylesheets/Game.css';
 const Game = () => {
     const [gameState, setGameState] = useState(GameState.LOBBY);
 
-    socket.on('set_game_state', (newGameState) => {
-        setGameState(newGameState);
-    });
+    useEffect(() => {
+        socket.on('set_game_state', (newGameState) => {
+            setGameState(newGameState);
+        });
+    }, []);
 
     let browserView = null;
     let mobileView = null;

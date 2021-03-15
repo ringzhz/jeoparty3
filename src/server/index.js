@@ -54,6 +54,7 @@ io.on('connection', (socket) => {
                 console.log(categories);
                 updateGameSession(socket, 'categories', categories);
 
+                // TODO: Game state doesn't change to BOARD in this situation
                 socket.emit('set_game_state', GameState.BOARD);
                 socket.emit('categories', categories);
             });
@@ -69,6 +70,9 @@ io.on('connection', (socket) => {
             console.log(`Client (${socket.id}) has joined session (${sessionName})`);
 
             socket.emit('join_session_success', sessionName);
+
+            // TODO: Game state doesn't change to BOARD in this situation
+            socket.emit('set_game_state', GameState.BOARD);
         } else {
             socket.emit('join_session_failure', sessionName);
         }
@@ -81,6 +85,11 @@ io.on('connection', (socket) => {
             let disconnections = disconnectionCache.get(socket.sessionName);
             disconnections.push(socket.handshake.address);
             disconnectionCache.put(socket.sessionName, disconnections);
+
+            // TODO: Bring this process out into its own helper function above.
+            //  Change the structure so their IP address maps to an object of relevant data
+            //  that will need to be assigned to the rejoined player in gameSession
+            //  Further. A 'reconnect' helper would make the whole process more debug-friendly
 
             console.log(disconnectionCache.get(socket.sessionName));
         }

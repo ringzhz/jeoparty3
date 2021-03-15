@@ -1,4 +1,4 @@
-import React, {useContext, useState } from "react";
+import React, {useContext, useState, useEffect } from "react";
 
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
@@ -13,9 +13,11 @@ const BrowserLobby = () => {
     const [sessionName, setSessionName] = useState('');
     const socket = useContext(SocketContext);
 
-    socket.on('session_name', (sessionName) => {
-        setSessionName(sessionName);
-    });
+    useEffect(() => {
+        socket.on('session_name', (sessionName) => {
+            setSessionName(sessionName);
+        });
+    }, []);
 
     return (
         <Container fluid className={'browser-lobby'}>

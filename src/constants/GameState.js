@@ -1,4 +1,4 @@
-// functions like an enum
+// enum
 exports.GameState = {
     LOBBY: 'lobby',
     BOARD: 'board',
