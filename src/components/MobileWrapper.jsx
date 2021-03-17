@@ -9,7 +9,7 @@ const MobileWrapper = (props) => {
         socket.on('disconnect', () => {
             alert(`You've been disconnected!`);
         });
-    }, []);
+    });
 
     return (
         <div>

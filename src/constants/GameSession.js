@@ -1,5 +1,7 @@
+const GameState = require('../constants/GameState').GameState;
+
 exports.GameSession = {
-    inProgress: false,
-    players: [],
+    currentGameState: GameState.LOBBY,
+    players: {},
     categories: []
 };

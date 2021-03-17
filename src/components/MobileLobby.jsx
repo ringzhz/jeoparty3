@@ -17,11 +17,16 @@ const MobileLobby = () => {
     };
 
     const [sessionName, setSessionName] = useState('');
+    const [playerName, setPlayerName] = useState('');
     const [mobileLobbyState, setMobileLobbyState] = useState(MobileLobbyState.SESSION_NAME);
     const socket = useContext(SocketContext);
 
     const handleJoinSession = useCallback((sessionName) => {
         socket.emit('join_session', sessionName);
+    }, []);
+
+    const handleSubmitSignature = useCallback((playerName) => {
+        socket.emit('submit_signature', playerName);
     }, []);
 
     useEffect(() => {
@@ -36,6 +41,21 @@ const MobileLobby = () => {
             alert(`Couldn't find session (${sessionName})`);
 
             setSessionName('');
+        });
+
+        socket.on('submit_signature_success', () => {
+            setPlayerName('');
+            setMobileLobbyState(MobileLobbyState.WAITING);
+        });
+
+        socket.on('submit_signature_failure', () => {
+            alert(`That signature was illegal, please try again!`);
+
+            setPlayerName('');
+        });
+
+        socket.on('reconnect', () => {
+            setMobileLobbyState(MobileLobbyState.WAITING);
         });
     }, []);
 
@@ -62,6 +82,13 @@ const MobileLobby = () => {
                 <Row className={'text-center'}>
                     <Col lg={'12'}>
                         You're in a session!
+
+                        <InputGroup className='mb-3'>
+                            <FormControl value={playerName} onChange={e => setPlayerName(e.target.value)} aria-describedby='basic-addon1' />
+                            <InputGroup.Prepend>
+                                <Button onClick={() => handleSubmitSignature(playerName)} variant='outline-secondary'>Submit</Button>
+                            </InputGroup.Prepend>
+                        </InputGroup>
                     </Col>
                 </Row>
             }

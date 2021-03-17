@@ -16,10 +16,19 @@ import './stylesheets/Game.css';
 
 const Game = () => {
     const [gameState, setGameState] = useState(GameState.LOBBY);
+    const [categories, setCategories] = useState([]);
 
     useEffect(() => {
+        socket.onAny((event, ...args) => {
+            console.log(`Heard (${event})`);
+        });
+
         socket.on('set_game_state', (newGameState) => {
             setGameState(newGameState);
+        });
+
+        socket.on('categories', (categories) => {
+            setCategories(categories);
         });
     }, []);
 
@@ -32,7 +41,7 @@ const Game = () => {
             mobileView = <MobileLobby />;
             break;
         case GameState.BOARD:
-            browserView = <BrowserBoard />;
+            browserView = <BrowserBoard categories={categories} />;
             mobileView = <MobileBoard />;
             break;
         default:

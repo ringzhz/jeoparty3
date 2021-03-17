@@ -1,27 +1,16 @@
-import React, {useContext, useState, useEffect} from 'react';
+import React from 'react';
 
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 
-import {SocketContext} from '../context/socket';
-
 import '../stylesheets/BrowserBoard.css';
 
-const BrowserBoard = () => {
+const BrowserBoard = (props) => {
     const NUM_CATEGORIES = 6;
     const NUM_CLUES = 5;
 
-    const [categories, setCategories] = useState([]);
-    const socket = useContext(SocketContext);
-
-    useEffect(() => {
-        socket.on('categories', (categories) => {
-            setCategories(categories);
-        });
-    }, []);
-
-    let categoryTitleRow = categories.map((category) => {
+    let categoryTitleRow = props.categories.map((category) => {
         let categoryTitle = category['title'];
 
         return (
