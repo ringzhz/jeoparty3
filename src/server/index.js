@@ -11,6 +11,7 @@ const GameSession = require('../constants/GameSession').GameSession;
 const GameState = require('../constants/GameState').GameState;
 const getRandomCategories = require('../helpers/jservice').getRandomCategories;
 const checkSignature = require('../helpers/checkSignature').checkSignature;
+const checkAnswer = require('../helpers/checkAnswer').checkAnswer;
 
 app.use(express.static(path.join(__dirname, '../../build')));
 app.get('/', (req, res, next) => res.sendFile(__dirname + './index.html'));
@@ -25,16 +26,27 @@ const updateGameSession = (sessionName, key, value) => {
     sessionCache.put(sessionName, gameSession);
 };
 
-const updatePlayers = (sessionName, playerId, key, value) => {
+const updatePlayers = (sessionName, socketId, key, value) => {
     let gameSession = sessionCache.get(sessionName);
     let players = gameSession['players'];
 
-    if (!players[playerId]) {
-        players[playerId] = Object.create(Player);
+    if (!players[socketId]) {
+        players[socketId] = Object.create(Player);
+        players[socketId].socketId = socketId;
     }
 
-    players[playerId][key] = value;
+    players[socketId][key] = value;
     gameSession['players'] = players;
+    sessionCache.put(sessionName, gameSession);
+};
+
+const updatePlayersAnswered = (sessionName, socketId) => {
+    let gameSession = sessionCache.get(sessionName);
+
+    let playersAnswered = gameSession['playersAnswered'];
+    playersAnswered.push(socketId);
+    gameSession['playersAnswered'] = playersAnswered;
+
     sessionCache.put(sessionName, gameSession);
 };
 
@@ -57,10 +69,20 @@ const handlePlayerReconnection = (socket) => {
 
     if (playerObject && sessionCache.get(playerObject.sessionName)) {
         let gameSession = sessionCache.get(playerObject.sessionName);
-        let players = gameSession['players'];
 
+        // If this player has already answered the current clue then they shouldn't be allowed to answer again
+        if (gameSession.playersAnswered.includes(playerObject.socketId)) {
+            let playersAnswered = gameSession.playersAnswered;
+            playersAnswered.push(socket.id);
+            gameSession.playersAnswered = playersAnswered;
+
+            playerObject.socketId = socket.id;
+        }
+
+        let players = gameSession['players'];
         players[socket.id] = playerObject;
         gameSession['players'] = players;
+
         sessionCache.put(playerObject.sessionName, gameSession);
 
         socket.sessionName = playerObject.sessionName;
@@ -95,12 +117,7 @@ io.on('connection', (socket) => {
             socket.emit('session_name', sessionName);
 
             getRandomCategories((categories) => {
-                console.log(categories);
                 updateGameSession(socket.sessionName, 'categories', categories);
-
-                socket.emit('categories', categories);
-                // TODO: Emit this to everybody then have a state context in Game.js and pass
-                //  'general state' like this down to all of the clients
             });
         }
     });
@@ -111,6 +128,10 @@ io.on('connection', (socket) => {
             socket.join(sessionName);
 
             updatePlayers(socket.sessionName, socket.id, 'sessionName', sessionName);
+
+            if (!sessionCache.get(socket.sessionName).boardController) {
+                updateGameSession(socket.sessionName, 'boardController', socket.id);
+            }
 
             console.log(`Client (${socket.id}) has joined session (${sessionName})`);
 
@@ -137,9 +158,48 @@ io.on('connection', (socket) => {
             console.log(`Game session (${socket.sessionName}) is starting`);
 
             io.to(socket.sessionName).emit('set_game_state', GameState.BOARD);
+            io.to(socket.sessionName).emit('categories', sessionCache.get(socket.sessionName).categories);
+            io.to(socket.sessionName).emit('board_controller', sessionCache.get(socket.sessionName).boardController);
+
             updateGameSession(socket.sessionName, 'currentGameState', GameState.BOARD);
         } else {
             socket.emit('start_game_failure');
+        }
+    });
+
+    socket.on('request_clue', (categoryIndex, clueIndex) => {
+        console.log(`Game session (${socket.sessionName}) is requesting categoryIndex ${categoryIndex} and clueIndex ${clueIndex}`);
+
+        updateGameSession(socket.sessionName, 'categoryIndex', categoryIndex);
+        updateGameSession(socket.sessionName, 'clueIndex', clueIndex);
+
+        io.to(socket.sessionName).emit('set_game_state', GameState.CLUE);
+        io.to(socket.sessionName).emit('request_clue', categoryIndex, clueIndex);
+        io.to(socket.sessionName).emit('players_answered', sessionCache.get(socket.sessionName).playersAnswered);
+    });
+
+    socket.on('buzz_in', () => {
+        console.log(`Client (${socket.id}) has buzzed in`);
+
+        io.to(socket.sessionName).emit('set_game_state', GameState.ANSWER);
+    });
+
+    socket.on('submit_answer', (answer) => {
+        updatePlayersAnswered(socket.sessionName, socket.id);
+
+        let categoryIndex = sessionCache.get(socket.sessionName).categoryIndex;
+        let clueIndex = sessionCache.get(socket.sessionName).clueIndex;
+        let correctAnswer = sessionCache.get(socket.sessionName).categories[categoryIndex].clues[clueIndex].answer;
+
+        io.to(socket.sessionName).emit('set_game_state', GameState.DECISION);
+        io.to(socket.sessionName).emit('decision', checkAnswer(correctAnswer, answer));
+
+        // TODO: Add browser and mobile components for DECISION
+
+        if (sessionCache.get(socket.sessionName).playersAnswered.length === sessionCache.get(socket.sessionName).players.length) {
+            // TODO: Send SCOREBOARD after timeout, reset categoryIndex and clueIndex, empty out playersAnswered
+        } else {
+            // TODO: Send CLUE after timeout
         }
     });
 

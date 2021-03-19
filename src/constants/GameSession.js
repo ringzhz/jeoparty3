@@ -2,6 +2,11 @@ const GameState = require('../constants/GameState').GameState;
 
 exports.GameSession = {
     currentGameState: GameState.LOBBY,
+    categories: [],
     players: {},
-    categories: []
+    playersAnswered: [],
+
+    boardController: null,
+    categoryIndex: null,
+    clueIndex: null
 };

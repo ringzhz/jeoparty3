@@ -2,9 +2,8 @@
 exports.GameState = {
     LOBBY: 'lobby',
     BOARD: 'board',
-    CLOSED_CLUE: 'closedClue',
-    OPEN_CLUE: 'openClue',
-    DECISION: 'decision',
+    CLUE: 'clue',
     ANSWER: 'answer',
+    DECISION: 'decision',
     SCOREBOARD: 'scoreboard'
 };

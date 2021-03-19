@@ -9,19 +9,25 @@ import MobileBoard from './components/MobileBoard';
 import MobileLobby from './components/MobileLobby';
 
 import { GameState } from './constants/GameState';
+import { sampleCategories } from './constants/sampleCategories';
 import {SocketContext, socket} from './context/socket';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './stylesheets/Game.css';
+import BrowserClue from "./components/BrowserClue";
+import MobileClue from "./components/MobileClue";
+import BrowserAnswer from "./components/BrowserAnswer";
+import MobileAnswer from "./components/MobileAnswer";
 
 const Game = () => {
+    // TODO: Make sure this is initialized to GameState.LOBBY
     const [gameState, setGameState] = useState(GameState.LOBBY);
-    const [categories, setCategories] = useState([]);
+    const [categories, setCategories] = useState(sampleCategories);
 
     useEffect(() => {
-        socket.onAny((event, ...args) => {
-            console.log(`Heard (${event})`);
-        });
+        // socket.onAny((event, ...args) => {
+        //     console.log(`Heard (${event})`);
+        // });
 
         socket.on('set_game_state', (newGameState) => {
             setGameState(newGameState);
@@ -42,7 +48,15 @@ const Game = () => {
             break;
         case GameState.BOARD:
             browserView = <BrowserBoard categories={categories} />;
-            mobileView = <MobileBoard />;
+            mobileView = <MobileBoard categories={categories} />;
+            break;
+        case GameState.CLUE:
+            browserView = <BrowserClue categories={categories} />;
+            mobileView = <MobileClue />;
+            break;
+        case GameState.ANSWER:
+            browserView = <BrowserAnswer />;
+            mobileView = <MobileAnswer />;
             break;
         default:
             browserView = <BrowserLobby />;

@@ -13,7 +13,7 @@ const MobileLobby = () => {
     const MobileLobbyState = {
         SESSION_NAME: 'sessionName',
         SIGNATURE: 'signature',
-        WAITING: 'waiting'
+        IS_WAITING: 'isWaiting'
     };
 
     const [sessionName, setSessionName] = useState('');
@@ -45,7 +45,7 @@ const MobileLobby = () => {
 
         socket.on('submit_signature_success', () => {
             setPlayerName('');
-            setMobileLobbyState(MobileLobbyState.WAITING);
+            setMobileLobbyState(MobileLobbyState.IS_WAITING);
         });
 
         socket.on('submit_signature_failure', () => {
@@ -54,8 +54,9 @@ const MobileLobby = () => {
             setPlayerName('');
         });
 
+        // TODO: Other components with sub-state need reconnect conditions
         socket.on('reconnect', () => {
-            setMobileLobbyState(MobileLobbyState.WAITING);
+            setMobileLobbyState(MobileLobbyState.IS_WAITING);
         });
     }, []);
 
@@ -94,7 +95,7 @@ const MobileLobby = () => {
             }
 
             {
-                mobileLobbyState === MobileLobbyState.WAITING &&
+                mobileLobbyState === MobileLobbyState.IS_WAITING &&
                 <Row className={'text-center'}>
                     <Col lg={'12'}>
                         You're waiting!
