@@ -7,6 +7,7 @@ exports.GameSession = {
     playersAnswered: [],
 
     boardController: null,
+
     categoryIndex: null,
     clueIndex: null
 };

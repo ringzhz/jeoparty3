@@ -1,34 +1,33 @@
 import React, { useState, useEffect } from 'react';
-import {BrowserView, MobileView} from 'react-device-detect';
+import { BrowserView, MobileView } from 'react-device-detect';
 
-import BrowserBoard from './components/BrowserBoard';
 import BrowserLobby from './components/BrowserLobby';
+import BrowserBoard from './components/BrowserBoard';
+import BrowserClue from './components/BrowserClue';
+import BrowserAnswer from './components/BrowserAnswer';
+import BrowserDecision from './components/BrowserDecision';
+import BrowserScoreboard from './components/BrowserScoreboard';
 
-import MobileWrapper from "./components/MobileWrapper";
-import MobileBoard from './components/MobileBoard';
+import MobileWrapper from './components/MobileWrapper';
 import MobileLobby from './components/MobileLobby';
-
-import { GameState } from './constants/GameState';
-import { sampleCategories } from './constants/sampleCategories';
-import {SocketContext, socket} from './context/socket';
+import MobileBoard from './components/MobileBoard';
+import MobileClue from './components/MobileClue';
+import MobileAnswer from './components/MobileAnswer';
+import MobileDecision from './components/MobileDecision';
+import MobileScoreboard from './components/MobileScoreboard';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './stylesheets/Game.css';
-import BrowserClue from "./components/BrowserClue";
-import MobileClue from "./components/MobileClue";
-import BrowserAnswer from "./components/BrowserAnswer";
-import MobileAnswer from "./components/MobileAnswer";
+
+import { GameState } from './constants/GameState';
+import { sampleCategories } from './constants/sampleCategories';
+import { SocketContext, socket } from './context/socket';
 
 const Game = () => {
-    // TODO: Make sure this is initialized to GameState.LOBBY
     const [gameState, setGameState] = useState(GameState.LOBBY);
     const [categories, setCategories] = useState(sampleCategories);
 
     useEffect(() => {
-        // socket.onAny((event, ...args) => {
-        //     console.log(`Heard (${event})`);
-        // });
-
         socket.on('set_game_state', (newGameState) => {
             setGameState(newGameState);
         });
@@ -57,6 +56,14 @@ const Game = () => {
         case GameState.ANSWER:
             browserView = <BrowserAnswer />;
             mobileView = <MobileAnswer />;
+            break;
+        case GameState.DECISION:
+            browserView = <BrowserDecision />;
+            mobileView = <MobileDecision />;
+            break;
+        case GameState.SCOREBOARD:
+            browserView = <BrowserScoreboard />;
+            mobileView = <MobileScoreboard />;
             break;
         default:
             browserView = <BrowserLobby />;

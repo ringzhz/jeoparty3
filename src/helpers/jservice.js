@@ -12,9 +12,9 @@ const getRandomCategory = (cb) => {
 
     js.category(categoryId, (error, response, category) => {
         if (!error && response.statusCode === 200) {
-            let cluesCount = category['clues_count'];
+            let cluesCount = category.clues_count;
             let startingIndex = Math.round((Math.random() * (cluesCount - 5)) / 5) * 5;
-            category['clues'] = category['clues'].slice(startingIndex, startingIndex + 5);
+            category.clues = category.clues.slice(startingIndex, startingIndex + 5);
 
             if (approveCategory(category)) {
                 cb(error, formatCategory(category));
@@ -29,14 +29,14 @@ const getRandomCategory = (cb) => {
 };
 
 const approveCategory = (category) => {
-    let rawCategoryTitle = formatRaw(category['title']);
+    let rawCategoryTitle = formatRaw(category.title);
     let isMediaCategory = rawCategoryTitle.includes('logo') || rawCategoryTitle.includes('video');
 
     for (let i = 0; i < NUM_CLUES; i++) {
-        let clue = category['clues'][i];
-        let rawQuestion = formatRaw(clue['question']);
+        let clue = category.clues[i];
+        let rawQuestion = formatRaw(clue.question);
 
-        let isValid = rawQuestion.length > 0 && clue['invalid_count'] === null;
+        let isValid = rawQuestion.length > 0 && clue.invalid_count === null;
         let isMediaQuestion =
             rawQuestion.includes('seenhere') ||
             rawQuestion.includes('heardhere') ||
@@ -45,7 +45,12 @@ const approveCategory = (category) => {
         if (!isValid || isMediaQuestion) {
             return false;
         }
+
+        category.clues[i].completed = false;
     }
+
+    category.completed = false;
+    category.numCluesUsed = 0;
 
     return !isMediaCategory;
 };

@@ -10,6 +10,7 @@ const BrowserBoard = (props) => {
     const NUM_CATEGORIES = 6;
     const NUM_CLUES = 5;
 
+    // TODO: Here and MobileBoard: Conditional rendering based on .completed flag of categories and clues
     let categoryTitleRow = props.categories.map((category) => {
         let categoryTitle = category['title'];
 

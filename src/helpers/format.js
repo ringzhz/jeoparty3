@@ -37,7 +37,7 @@ exports.formatCategory = (category) => {
     const NUM_CLUES = 5;
 
     for (let i = 0; i < NUM_CLUES; i++) {
-        let question = category['clues'][i]['question'];
+        let question = category.clues[i].question;
 
         // Backslashes
         question = question.replace(String.fromCharCode(92), "");
@@ -49,7 +49,7 @@ exports.formatCategory = (category) => {
         // Parentheses and the text inside of them
         question = question.replace(/ *\([^)]*\) */g, "");
 
-        category['clues'][i]['question'] = question;
+        category.clues[i].question = question;
     }
 
     return category;
