@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useContext, useEffect} from 'react';
 
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
@@ -6,13 +6,25 @@ import Col from 'react-bootstrap/Col';
 
 import '../stylesheets/BrowserBoard.css';
 
-const BrowserBoard = (props) => {
+import { sampleCategories } from '../constants/sampleCategories';
+import { SocketContext } from '../context/socket';
+
+const BrowserBoard = () => {
     const NUM_CATEGORIES = 6;
     const NUM_CLUES = 5;
 
+    const [categories, setCategories] = useState(sampleCategories);
+    const socket = useContext(SocketContext);
+
+    useEffect(() => {
+        socket.on('categories', (categories) => {
+            setCategories(categories);
+        });
+    }, []);
+
     // TODO: Here and MobileBoard: Conditional rendering based on .completed flag of categories and clues
-    let categoryTitleRow = props.categories.map((category) => {
-        let categoryTitle = category['title'];
+    let categoryTitleRow = categories.map((category) => {
+        let categoryTitle = category.title;
 
         return (
             <Col lg={'2'}>

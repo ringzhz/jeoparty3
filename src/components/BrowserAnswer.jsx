@@ -1,18 +1,27 @@
-import React, {useContext, useEffect, useState} from "react";
-import {SocketContext} from "../context/socket";
-import Container from "react-bootstrap/Container";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
+import React, { useContext, useEffect, useState } from 'react';
 
-const BrowserAnswer = (props) => {
-    const [clue, setClue] = useState('');
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 
+import { sampleCategories } from '../constants/sampleCategories';
+import { SocketContext } from '../context/socket';
+
+const BrowserAnswer = () => {
+    const [categories, setCategories] = useState(sampleCategories);
+    const [categoryIndex, setCategoryIndex] = useState(null);
+    const [clueIndex, setClueIndex] = useState(null);
     const socket = useContext(SocketContext);
 
+    // TODO: Need to add answer livefeed
     useEffect(() => {
+        socket.on('categories', (categories) => {
+            setCategories(categories);
+        });
+
         socket.on('request_clue', (categoryIndex, clueIndex) => {
-            let clue = props.categories[categoryIndex].clues[clueIndex].question;
-            setClue(clue);
+            setCategoryIndex(categoryIndex);
+            setClueIndex(clueIndex);
         });
     });
 
@@ -20,13 +29,11 @@ const BrowserAnswer = (props) => {
         <Container fluid>
             <Row className={'text-center'}>
                 <Col lg={'12'}>
-                    Welcome to the browser answer page!
-                </Col>
-            </Row>
+                    Browser Answer <br />
 
-            <Row className={'text-center'}>
-                <Col lg={'12'}>
-                    {clue}
+                    {(categoryIndex !== null && clueIndex !== null) && (
+                        categories[categoryIndex].clues[clueIndex].question
+                    )}
                 </Col>
             </Row>
         </Container>
@@ -34,3 +41,4 @@ const BrowserAnswer = (props) => {
 };
 
 export default BrowserAnswer;
+

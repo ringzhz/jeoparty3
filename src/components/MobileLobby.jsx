@@ -7,7 +7,7 @@ import InputGroup from 'react-bootstrap/InputGroup';
 import Button from 'react-bootstrap/Button';
 import FormControl from 'react-bootstrap/FormControl';
 
-import {SocketContext} from '../context/socket';
+import { SocketContext } from '../context/socket';
 
 const MobileLobby = () => {
     const MobileLobbyState = {
@@ -20,14 +20,6 @@ const MobileLobby = () => {
     const [playerName, setPlayerName] = useState('');
     const [mobileLobbyState, setMobileLobbyState] = useState(MobileLobbyState.SESSION_NAME);
     const socket = useContext(SocketContext);
-
-    const handleJoinSession = useCallback((sessionName) => {
-        socket.emit('join_session', sessionName);
-    }, []);
-
-    const handleSubmitSignature = useCallback((playerName) => {
-        socket.emit('submit_signature', playerName);
-    }, []);
 
     useEffect(() => {
         socket.on('join_session_success', (sessionName) => {
@@ -58,6 +50,14 @@ const MobileLobby = () => {
         socket.on('reconnect', () => {
             setMobileLobbyState(MobileLobbyState.IS_WAITING);
         });
+    }, []);
+
+    const handleJoinSession = useCallback((sessionName) => {
+        socket.emit('join_session', sessionName);
+    }, []);
+
+    const handleSubmitSignature = useCallback((playerName) => {
+        socket.emit('submit_signature', playerName);
     }, []);
 
     return (

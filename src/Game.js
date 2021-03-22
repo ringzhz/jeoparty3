@@ -20,20 +20,19 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './stylesheets/Game.css';
 
 import { GameState } from './constants/GameState';
-import { sampleCategories } from './constants/sampleCategories';
 import { SocketContext, socket } from './context/socket';
 
 const Game = () => {
     const [gameState, setGameState] = useState(GameState.LOBBY);
-    const [categories, setCategories] = useState(sampleCategories);
 
     useEffect(() => {
-        socket.on('set_game_state', (newGameState) => {
-            setGameState(newGameState);
+        socket.onAny((eventName, ...args) => {
+            console.log(`Heard ${eventName}`);
         });
 
-        socket.on('categories', (categories) => {
-            setCategories(categories);
+        socket.on('set_game_state', (newGameState, ack) => {
+            setGameState(newGameState);
+            ack();
         });
     }, []);
 
@@ -46,11 +45,11 @@ const Game = () => {
             mobileView = <MobileLobby />;
             break;
         case GameState.BOARD:
-            browserView = <BrowserBoard categories={categories} />;
-            mobileView = <MobileBoard categories={categories} />;
+            browserView = <BrowserBoard />;
+            mobileView = <MobileBoard />;
             break;
         case GameState.CLUE:
-            browserView = <BrowserClue categories={categories} />;
+            browserView = <BrowserClue />;
             mobileView = <MobileClue />;
             break;
         case GameState.ANSWER:

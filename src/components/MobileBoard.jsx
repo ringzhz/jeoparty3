@@ -1,30 +1,41 @@
-import React, {useState, useCallback, useContext, useEffect } from 'react';
+import React, { useState, useCallback, useContext, useEffect } from 'react';
 
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import ListGroup from "react-bootstrap/ListGroup";
-import InputGroup from "react-bootstrap/InputGroup";
-import Button from "react-bootstrap/Button";
+import ListGroup from 'react-bootstrap/ListGroup';
+import InputGroup from 'react-bootstrap/InputGroup';
+import Button from 'react-bootstrap/Button';
 
-import {SocketContext} from '../context/socket';
+import { sampleCategories } from '../constants/sampleCategories';
+import { SocketContext } from '../context/socket';
 
-const MobileBoard = (props) => {
+const MobileBoard = () => {
     const NUM_CATEGORIES = 6;
     const NUM_CLUES = 5;
 
+    const [categories, setCategories] = useState(sampleCategories);
     const [isBoardController, setIsBoardController] = useState(false);
     const [categoryIndex, setCategoryIndex] = useState(null);
     const [clueIndex, setClueIndex] = useState(null);
-
     const socket = useContext(SocketContext);
+
+    useEffect(() => {
+        socket.on('categories', (categories) => {
+            setCategories(categories);
+        });
+
+        socket.on('board_controller', (boardController) => {
+            setIsBoardController(boardController === socket.id);
+        });
+    }, []);
 
     const handleRequestClue = useCallback((categoryIndex, clueIndex) => {
         socket.emit('request_clue', categoryIndex, clueIndex);
     }, []);
 
     let categoryListGroupItems = Array.from(Array(NUM_CATEGORIES).keys()).map((i) => {
-        let categoryTitle = props.categories[i]['title'];
+        let categoryTitle = categories[i].title;
 
         return (
             <ListGroup.Item action active={categoryIndex === i} onClick={() => setCategoryIndex(i)}>
@@ -42,13 +53,6 @@ const MobileBoard = (props) => {
             </ListGroup.Item>
         );
     });
-
-    useEffect(() => {
-        socket.on('board_controller', (boardController) => {
-            alert(`The board controller is ${boardController} and your id is ${socket.id}!`);
-            setIsBoardController(boardController === socket.id);
-        });
-    }, []);
 
     return (
         <Container fluid>

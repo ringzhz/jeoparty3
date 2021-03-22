@@ -61,11 +61,11 @@ exports.getRandomCategories = (cb) => {
 
     const recursiveGetRandomCategory = () => {
         getRandomCategory((error, category) => {
-            if (error || usedCategoryIds.includes(category['id'])) {
+            if (error || usedCategoryIds.includes(category.id)) {
                 recursiveGetRandomCategory();
             } else {
                 categories.push(category);
-                usedCategoryIds.push(category['id']);
+                usedCategoryIds.push(category.id);
 
                 if (categories.length === NUM_CATEGORIES) {
                     cb(categories);

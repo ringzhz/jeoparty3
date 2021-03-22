@@ -1,4 +1,4 @@
-import React, {useContext, useState, useEffect, useCallback } from "react";
+import React, { useContext, useState, useEffect, useCallback } from "react";
 
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
@@ -6,7 +6,7 @@ import Col from 'react-bootstrap/Col';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Button from 'react-bootstrap/Button';
 
-import {SocketContext} from '../context/socket';
+import { SocketContext } from '../context/socket';
 
 import '../stylesheets/Game.css';
 import '../stylesheets/BrowserLobby.css';
@@ -14,10 +14,6 @@ import '../stylesheets/BrowserLobby.css';
 const BrowserLobby = () => {
     const [sessionName, setSessionName] = useState('');
     const socket = useContext(SocketContext);
-
-    const handleStartGame = useCallback(() => {
-        socket.emit('start_game');
-    }, []);
 
     useEffect(() => {
         socket.on('session_name', (sessionName) => {
@@ -27,6 +23,10 @@ const BrowserLobby = () => {
         socket.on('start_game_failure', () => {
             alert(`There aren't any players in this session!`);
         });
+    }, []);
+
+    const handleStartGame = useCallback(() => {
+        socket.emit('start_game');
     }, []);
 
     return (

@@ -1,10 +1,10 @@
-import React, {useState, useEffect, useContext} from "react";
+import React, {useState, useEffect, useContext} from 'react';
 
-import Container from "react-bootstrap/Container";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 
-import {SocketContext} from '../context/socket';
+import { SocketContext } from '../context/socket';
 
 const BrowserScoreboard = () => {
     const [players, setPlayers] = useState({});
@@ -15,6 +15,8 @@ const BrowserScoreboard = () => {
             setPlayers(players);
         });
     }, []);
+
+    // TODO: Organize player objects by score and display relevant data
 
     return (
         <Container fluid>

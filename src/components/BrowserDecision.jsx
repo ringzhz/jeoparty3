@@ -1,12 +1,13 @@
-import React, { useState, useContext, useEffect} from "react";
+import React, { useState, useContext, useEffect } from 'react';
 
-import Container from "react-bootstrap/Container";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 
-import {SocketContext} from '../context/socket';
+import { SocketContext } from '../context/socket';
 
 const BrowserDecision = () => {
+    // TODO: Write all of the conditional rendering for this stuff
     const [answer, setAnswer] = useState('');
     const [decision, setDecision] = useState(false);
     const [showDecision, setShowDecision] = useState(false);
@@ -32,7 +33,7 @@ const BrowserDecision = () => {
         <Container fluid>
             <Row className={'text-center'}>
                 <Col lg={'12'}>
-                    Welcome to the browser decision page!
+                    {decision ? 'correct!' : 'incorrect!'}
                 </Col>
             </Row>
         </Container>

@@ -1,20 +1,26 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 
-import Container from "react-bootstrap/Container";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 
-import {SocketContext} from '../context/socket';
+import { sampleCategories } from '../constants/sampleCategories';
+import { SocketContext } from '../context/socket';
 
-const BrowserClue = (props) => {
-    const [clue, setClue] = useState('');
-
+const BrowserClue = () => {
+    const [categories, setCategories] = useState(sampleCategories);
+    const [categoryIndex, setCategoryIndex] = useState(null);
+    const [clueIndex, setClueIndex] = useState(null);
     const socket = useContext(SocketContext);
 
     useEffect(() => {
+        socket.on('categories', (categories) => {
+            setCategories(categories);
+        });
+
         socket.on('request_clue', (categoryIndex, clueIndex) => {
-            let clue = props.categories[categoryIndex].clues[clueIndex].question;
-            setClue(clue);
+            setCategoryIndex(categoryIndex);
+            setClueIndex(clueIndex);
         });
     });
 
@@ -22,13 +28,11 @@ const BrowserClue = (props) => {
         <Container fluid>
             <Row className={'text-center'}>
                 <Col lg={'12'}>
-                    Welcome to the browser clue page!
-                </Col>
-            </Row>
+                    Browser Clue <br />
 
-            <Row className={'text-center'}>
-                <Col lg={'12'}>
-                    {clue}
+                    {(categoryIndex !== null && clueIndex !== null) && (
+                        categories[categoryIndex].clues[clueIndex].question
+                    )}
                 </Col>
             </Row>
         </Container>
