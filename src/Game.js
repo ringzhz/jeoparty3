@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserView, MobileView } from 'react-device-detect';
 
+import BrowserWrapper from './components/BrowserWrapper';
 import BrowserLobby from './components/BrowserLobby';
 import BrowserBoard from './components/BrowserBoard';
 import BrowserClue from './components/BrowserClue';
@@ -73,7 +74,9 @@ const Game = () => {
     return (
         <SocketContext.Provider value={socket}>
             <BrowserView>
-                {browserView}
+                <BrowserWrapper>
+                    {browserView}
+                </BrowserWrapper>
             </BrowserView>
 
             <MobileView>

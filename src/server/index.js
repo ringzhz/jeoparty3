@@ -19,7 +19,6 @@ const checkAnswer = require('../helpers/checkAnswer').checkAnswer;
 
 const NUM_CLUES = 5;
 
-// TODO: Make sure these times are where we want them
 const SHOW_PRE_DECISION_TIME = 1;
 const SHOW_DECISION_TIME = 1;
 const SHOW_ANSWER_TIME = 1;
@@ -95,15 +94,18 @@ const updateCategories = (sessionName, categoryIndex, clueIndex) => {
 const handlePlayerDisconnection = (socket) => {
     // Only 'remember' this player if they've submitted their signature (AKA if there's something worth remembering)
     if (sessionCache.get(socket.sessionName).players[socket.id].name.length > 0) {
-        disconnectionCache.put(socket.handshake.address, sessionCache.get(socket.sessionName).players[socket.id]);
+        const RECONNECT_WINDOW = 15 * 60 * 1000;
+        disconnectionCache.put(socket.handshake.address, sessionCache.get(socket.sessionName).players[socket.id], RECONNECT_WINDOW);
 
         let gameSession = sessionCache.get(socket.sessionName);
         let players = gameSession.players;
 
         delete players[socket.id];
 
-        // TODO: What if there aren't players left? Refresh the browser of course, but also... do we loop through
-        //  all of the disconnections and get rid of the ones from this game? Is it worth it?
+        if (Object.keys(players).length === 0) {
+            io.to(socket.sessionName).disconnect();
+            gameSession.browserClient.disconnect(true);
+        }
 
         gameSession.players = players;
         sessionCache.put(socket.sessionName, gameSession);
@@ -129,6 +131,10 @@ const handlePlayerReconnection = (socket) => {
         players[socket.id] = playerObject;
         gameSession.players = players;
 
+        let clients = gameSession.clients;
+        clients.push(socket);
+        gameSession.clients = clients;
+
         sessionCache.put(playerObject.sessionName, gameSession);
 
         socket.sessionName = playerObject.sessionName;
@@ -144,7 +150,6 @@ const handlePlayerReconnection = (socket) => {
 const showBoard = (socket) => {
     sessionCache.get(socket.sessionName).clients.map((client) => {
         client.emit('set_game_state', GameState.BOARD, () => {
-            // TODO: The client isn't hearing this emission once the acknowledgement comes back!
             io.to(socket.sessionName).emit('categories', sessionCache.get(socket.sessionName).categories);
             io.to(socket.sessionName).emit('board_controller', sessionCache.get(socket.sessionName).boardController);
 
@@ -191,6 +196,7 @@ io.on('connection', (socket) => {
             socket.join(sessionName);
 
             sessionCache.put(sessionName, session);
+            updateGameSession(sessionName, 'browserClient', socket);
             updateClients(sessionName, socket);
 
             socket.emit('session_name', sessionName);
@@ -289,7 +295,6 @@ io.on('connection', (socket) => {
                         showBoard(socket);
                     }, SHOW_SCOREBOARD_TIME * 1000);
                 } else if (sessionCache.get(socket.sessionName).playersAnswered.length === sessionCache.get(socket.sessionName).players.length) {
-                    // TODO: This (and the other io.to broadcast are only going to the browser....
                     io.to(socket.sessionName).emit('show_answer');
 
                     setTimeout(() => {
@@ -317,7 +322,7 @@ io.on('connection', (socket) => {
             if (socket.isMobile) {
                 handlePlayerDisconnection(socket);
             } else {
-                // TODO: Send out a broadcast for all of the players to go back to the lobby?
+                io.to(socket.sessionName).disconnect();
                 sessionCache.del(socket.sessionName);
             }
         }
