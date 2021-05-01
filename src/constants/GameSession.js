@@ -7,6 +7,7 @@ exports.GameSession = {
     currentGameState: GameState.LOBBY,
     categories: [],
     players: {},
+    updatedPlayers: {},
     playersAnswered: [],
 
     boardController: null,

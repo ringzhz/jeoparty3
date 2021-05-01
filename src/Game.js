@@ -25,6 +25,7 @@ import { SocketContext, socket } from './context/socket';
 
 const Game = () => {
     const [gameState, setGameState] = useState(GameState.LOBBY);
+    const [gameStateAck, setGameStateAck] = useState(() => () => {});
 
     useEffect(() => {
         socket.onAny((eventName, ...args) => {
@@ -33,9 +34,14 @@ const Game = () => {
 
         socket.on('set_game_state', (newGameState, ack) => {
             setGameState(newGameState);
-            ack();
+            setGameStateAck(() => ack());
         });
     }, []);
+
+    useEffect(() => {
+        gameStateAck();
+        setGameStateAck(() => () => {});
+    }, [gameState]);
 
     let browserView = null;
     let mobileView = null;

@@ -15,6 +15,8 @@ const MobileAnswer = () => {
     const socket = useContext(SocketContext);
 
     useEffect(() => {
+        // TODO: Move this to MobileClue... whether or not you've answered doesn't affect
+        //  if a player is currently answering, but it does affect if they can buzz in!
         socket.on('players_answered', (playersAnswered) => {
             setHasAnswered(playersAnswered.includes(socket.id));
         });

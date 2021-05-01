@@ -4,7 +4,7 @@
     animation-name: color;
     animation-duration: 20s;
     animation-iteration-count: infinite;
-    background-color: red;
+    background-color: #e6261f;
 }
 
 @keyframes color {

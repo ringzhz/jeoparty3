@@ -8,24 +8,32 @@ import { SocketContext } from '../context/socket';
 
 const BrowserDecision = () => {
     // TODO: Write all of the conditional rendering for this stuff
-    const [answer, setAnswer] = useState('');
-    const [decision, setDecision] = useState(false);
-    const [showDecision, setShowDecision] = useState(false);
     const [showAnswer, setShowAnswer] = useState(false);
+    const [showDecision, setShowDecision] = useState(false);
+    const [showCorrectAnswer, setShowCorrectAnswer] = useState(false);
+
+    const [answer, setAnswer] = useState('');
+    const [isCorrect, setIsCorrect] = useState(false);
+    const [correctAnswer, setCorrectAnswer] = useState('');
+
     const socket = useContext(SocketContext);
 
     useEffect(() => {
-        socket.on('decision', (answer, decision) => {
-            setAnswer(answer);
-            setDecision(decision);
-        });
-
-        socket.on('show_decision', () => {
-            setShowDecision(true);
-        });
-
-        socket.on('show_answer', () => {
+        socket.on('show_answer', (answer) => {
             setShowAnswer(true);
+            setAnswer(answer);
+        });
+
+        socket.on('show_decision', (isCorrect) => {
+            setShowAnswer(false);
+            setShowDecision(true);
+            setIsCorrect(isCorrect);
+        });
+
+        socket.on('show_correct_answer', (correctAnswer) => {
+            setShowDecision(false);
+            setShowCorrectAnswer(true);
+            setCorrectAnswer(correctAnswer);
         });
     }, []);
 
@@ -33,7 +41,9 @@ const BrowserDecision = () => {
         <Container fluid>
             <Row className={'text-center'}>
                 <Col lg={'12'}>
-                    {decision ? 'correct!' : 'incorrect!'}
+                    {showAnswer ? answer : ''}
+                    {showDecision ? (isCorrect ? 'correct!' : 'incorrect!') : ''}
+                    {showCorrectAnswer ? correctAnswer : ''}
                 </Col>
             </Row>
         </Container>

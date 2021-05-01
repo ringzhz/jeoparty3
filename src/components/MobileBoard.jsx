@@ -26,7 +26,7 @@ const MobileBoard = () => {
         });
 
         socket.on('board_controller', (boardController) => {
-            setIsBoardController(boardController === socket.id);
+            setIsBoardController(socket.id === boardController);
         });
     }, []);
 

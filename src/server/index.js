@@ -1,3 +1,4 @@
+const _ = require('lodash');
 const path = require('path');
 const express = require('express');
 const randomWords = require('random-words');
@@ -19,10 +20,12 @@ const checkAnswer = require('../helpers/checkAnswer').checkAnswer;
 
 const NUM_CLUES = 5;
 
-const SHOW_PRE_DECISION_TIME = 1;
-const SHOW_DECISION_TIME = 1;
-const SHOW_ANSWER_TIME = 1;
-const SHOW_SCOREBOARD_TIME = 1;
+// in milliseconds
+const SHOW_PRE_DECISION_TIME = 1000;
+const SHOW_DECISION_TIME = 1000;
+const SHOW_ANSWER_TIME = 1000;
+const SHOW_SCOREBOARD_TIME = 9000;
+const SHOW_SCOREBOARD_UPDATE_TIME = 3000;
 
 app.use(express.static(path.join(__dirname, '../../build')));
 app.get('/', (req, res, next) => res.sendFile(__dirname + './index.html'));
@@ -57,10 +60,33 @@ const updatePlayers = (sessionName, socketId, key, value) => {
     if (!players[socketId]) {
         players[socketId] = Object.create(Player);
         players[socketId].socketId = socketId;
+        players[socketId].score = 0;
     }
 
     players[socketId][key] = value;
     gameSession.players = players;
+    sessionCache.put(sessionName, gameSession);
+};
+
+const setUpdatedPlayers = (sessionName) => {
+    let gameSession = sessionCache.get(sessionName);
+    gameSession.updatedPlayers = _.cloneDeep(gameSession.players);
+    sessionCache.put(sessionName, gameSession);
+};
+
+const updatePlayerScore = (sessionName, socketId, value, isCorrect) => {
+    let gameSession = sessionCache.get(sessionName);
+    let updatedPlayers = gameSession.updatedPlayers;
+
+    updatedPlayers[socketId].score = updatedPlayers[socketId].score + (isCorrect ? value : -value);
+
+    gameSession.updatedPlayers = updatedPlayers;
+    sessionCache.put(sessionName, gameSession);
+};
+
+const setPlayers = (sessionName) => {
+    let gameSession = sessionCache.get(sessionName);
+    gameSession.players = _.cloneDeep(gameSession.updatedPlayers);
     sessionCache.put(sessionName, gameSession);
 };
 
@@ -103,8 +129,13 @@ const handlePlayerDisconnection = (socket) => {
         delete players[socket.id];
 
         if (Object.keys(players).length === 0) {
-            io.to(socket.sessionName).disconnect();
+            gameSession.clients.map((client) => {
+                client.disconnect();
+            });
+
             gameSession.browserClient.disconnect(true);
+
+            // TODO: Bug: server tries to reconnect players after this code fires (check normal DC as well)
         }
 
         gameSession.players = players;
@@ -150,34 +181,40 @@ const handlePlayerReconnection = (socket) => {
 const showBoard = (socket) => {
     sessionCache.get(socket.sessionName).clients.map((client) => {
         client.emit('set_game_state', GameState.BOARD, () => {
-            io.to(socket.sessionName).emit('categories', sessionCache.get(socket.sessionName).categories);
-            io.to(socket.sessionName).emit('board_controller', sessionCache.get(socket.sessionName).boardController);
-
-            updateGameSession(socket.sessionName, 'currentGameState', GameState.BOARD);
+            client.emit('categories', sessionCache.get(socket.sessionName).categories);
+            client.emit('board_controller', sessionCache.get(socket.sessionName).boardController);
         });
     });
+
+    updateGameSession(socket.sessionName, 'currentGameState', GameState.BOARD);
 };
 
 const showClue = (socket, categoryIndex, clueIndex) => {
     sessionCache.get(socket.sessionName).clients.map((client) => {
         client.emit('set_game_state', GameState.CLUE, () => {
-            io.to(socket.sessionName).emit('categories', sessionCache.get(socket.sessionName).categories);
-            io.to(socket.sessionName).emit('request_clue', categoryIndex, clueIndex);
-            io.to(socket.sessionName).emit('players_answered', sessionCache.get(socket.sessionName).playersAnswered);
-
-            updateGameSession(socket.sessionName, 'currentGameState', GameState.CLUE);
+            client.emit('categories', sessionCache.get(socket.sessionName).categories);
+            client.emit('request_clue', categoryIndex, clueIndex);
+            client.emit('players_answered', sessionCache.get(socket.sessionName).playersAnswered);
         });
     });
+
+    updateGameSession(socket.sessionName, 'currentGameState', GameState.CLUE);
 };
 
 const showScoreboard = (socket) => {
     sessionCache.get(socket.sessionName).clients.map((client) => {
         client.emit('set_game_state', GameState.SCOREBOARD, () => {
-            io.to(socket.sessionName).emit('players', sessionCache.get(socket.sessionName).players);
+            client.emit('players', sessionCache.get(socket.sessionName).players);
+            client.emit('updated_players', sessionCache.get(socket.sessionName).updatedPlayers);
 
-            updateGameSession(socket.sessionName, 'currentGameState', GameState.SCOREBOARD);
+            setTimeout(() => {
+                client.emit('show_update');
+                setPlayers(socket.sessionName);
+            }, SHOW_SCOREBOARD_UPDATE_TIME);
         });
     });
+
+    updateGameSession(socket.sessionName, 'currentGameState', GameState.SCOREBOARD);
 };
 
 io.on('connection', (socket) => {
@@ -250,6 +287,8 @@ io.on('connection', (socket) => {
         showClue(socket, categoryIndex, clueIndex);
 
         updateCategories(socket.sessionName, categoryIndex, clueIndex);
+
+        setUpdatedPlayers(socket.sessionName);
     });
 
     socket.on('buzz_in', () => {
@@ -258,12 +297,12 @@ io.on('connection', (socket) => {
 
         sessionCache.get(socket.sessionName).clients.map((client) => {
             client.emit('set_game_state', GameState.ANSWER, () => {
-                io.to(socket.sessionName).emit('categories', sessionCache.get(socket.sessionName).categories);
-                io.to(socket.sessionName).emit('request_clue', categoryIndex, clueIndex);
-
-                updateGameSession(socket.sessionName, 'currentGameState', GameState.ANSWER);
+                client.emit('categories', sessionCache.get(socket.sessionName).categories);
+                client.emit('request_clue', categoryIndex, clueIndex);
             });
         });
+
+        updateGameSession(socket.sessionName, 'currentGameState', GameState.ANSWER);
     });
 
     socket.on('submit_answer', (answer) => {
@@ -272,38 +311,41 @@ io.on('connection', (socket) => {
         let categoryIndex = sessionCache.get(socket.sessionName).categoryIndex;
         let clueIndex = sessionCache.get(socket.sessionName).clueIndex;
         let correctAnswer = sessionCache.get(socket.sessionName).categories[categoryIndex].clues[clueIndex].answer;
-        let decision = checkAnswer(correctAnswer, answer);
+        let value = sessionCache.get(socket.sessionName).categories[categoryIndex].clues[clueIndex].value;
+        let isCorrect = checkAnswer(correctAnswer, answer);
+
+        updatePlayerScore(socket.sessionName, socket.id, value, isCorrect);
 
         sessionCache.get(socket.sessionName).clients.map((client) => {
             client.emit('set_game_state', GameState.DECISION, () => {
-                io.to(socket.sessionName).emit('decision', answer, decision);
-
-                updateGameSession(socket.sessionName, 'currentGameState', GameState.DECISION);
+                client.emit('show_answer', answer);
             });
         });
 
+        updateGameSession(socket.sessionName, 'currentGameState', GameState.DECISION);
+
         setTimeout(() => {
-            io.to(socket.sessionName).emit('show_decision');
+            io.to(socket.sessionName).emit('show_decision', isCorrect);
 
             setTimeout(() => {
-                if (decision) {
+                if (isCorrect) {
                     updateGameSession(socket.sessionName, 'boardController', socket.id);
 
                     showScoreboard(socket);
 
                     setTimeout(() => {
                         showBoard(socket);
-                    }, SHOW_SCOREBOARD_TIME * 1000);
-                } else if (sessionCache.get(socket.sessionName).playersAnswered.length === sessionCache.get(socket.sessionName).players.length) {
-                    io.to(socket.sessionName).emit('show_answer');
+                    }, SHOW_SCOREBOARD_TIME);
+                } else if (sessionCache.get(socket.sessionName).playersAnswered.length === Object.keys(sessionCache.get(socket.sessionName).players).length) {
+                    io.to(socket.sessionName).emit('show_correct_answer', correctAnswer);
 
                     setTimeout(() => {
                         showScoreboard(socket);
 
                         setTimeout(() => {
                             showBoard(socket);
-                        }, SHOW_SCOREBOARD_TIME * 1000);
-                    }, SHOW_ANSWER_TIME * 1000);
+                        }, SHOW_SCOREBOARD_TIME);
+                    }, SHOW_ANSWER_TIME);
                 } else {
                     showClue(socket, categoryIndex, clueIndex);
                 }
@@ -313,16 +355,21 @@ io.on('connection', (socket) => {
                     updateGameSession(socket.sessionName, 'clueIndex', null);
                     updateGameSession(socket.sessionName, 'playersAnswered', []);
                 }
-            }, SHOW_DECISION_TIME * 1000);
-        }, SHOW_PRE_DECISION_TIME * 1000);
+            }, SHOW_DECISION_TIME);
+        }, SHOW_PRE_DECISION_TIME);
     });
 
     socket.on('disconnect', () => {
-        if (sessionCache.get(socket.sessionName)) {
+        let gameSession = sessionCache.get(socket.sessionName);
+
+        if (gameSession) {
             if (socket.isMobile) {
                 handlePlayerDisconnection(socket);
             } else {
-                io.to(socket.sessionName).disconnect();
+                gameSession.clients.map((client) => {
+                    client.disconnect();
+                });
+
                 sessionCache.del(socket.sessionName);
             }
         }

@@ -2,5 +2,6 @@ exports.Player = {
     socketId: '',
     sessionName: '',
     name: '',
-    signature: ''
+    signature: '',
+    score: 0
 };
