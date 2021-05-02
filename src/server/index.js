@@ -17,6 +17,7 @@ const GameState = require('../constants/GameState').GameState;
 const getRandomCategories = require('../helpers/jservice').getRandomCategories;
 const checkSignature = require('../helpers/checkSignature').checkSignature;
 const checkAnswer = require('../helpers/checkAnswer').checkAnswer;
+const formatRaw = require('../helpers/format').formatRaw;
 
 const NUM_CLUES = 5;
 
@@ -74,10 +75,11 @@ const setUpdatedPlayers = (sessionName) => {
     sessionCache.put(sessionName, gameSession);
 };
 
-const updatePlayerScore = (sessionName, socketId, value, isCorrect) => {
+const updatePlayerScore = (sessionName, socketId, clueIndex, isCorrect) => {
     let gameSession = sessionCache.get(sessionName);
     let updatedPlayers = gameSession.updatedPlayers;
 
+    let value = (clueIndex * 200);
     updatedPlayers[socketId].score = updatedPlayers[socketId].score + (isCorrect ? value : -value);
 
     gameSession.updatedPlayers = updatedPlayers;
@@ -117,6 +119,14 @@ const updateCategories = (sessionName, categoryIndex, clueIndex) => {
     sessionCache.put(sessionName, gameSession);
 };
 
+const handleBrowserDisconnection = (socket) => {
+    sessionCache.get(socket.sessionName).clients.map((client) => {
+        client.emit('reload');
+    });
+
+    sessionCache.del(socket.sessionName);
+};
+
 const handlePlayerDisconnection = (socket) => {
     // Only 'remember' this player if they've submitted their signature (AKA if there's something worth remembering)
     if (sessionCache.get(socket.sessionName).players[socket.id].name.length > 0) {
@@ -129,13 +139,8 @@ const handlePlayerDisconnection = (socket) => {
         delete players[socket.id];
 
         if (Object.keys(players).length === 0) {
-            gameSession.clients.map((client) => {
-                client.disconnect();
-            });
-
             gameSession.browserClient.disconnect(true);
-
-            // TODO: Bug: server tries to reconnect players after this code fires (check normal DC as well)
+            return;
         }
 
         gameSession.players = players;
@@ -215,6 +220,10 @@ const showScoreboard = (socket) => {
     });
 
     updateGameSession(socket.sessionName, 'currentGameState', GameState.SCOREBOARD);
+
+    updateGameSession(socket.sessionName, 'categoryIndex', null);
+    updateGameSession(socket.sessionName, 'clueIndex', null);
+    updateGameSession(socket.sessionName, 'playersAnswered', []);
 };
 
 io.on('connection', (socket) => {
@@ -245,6 +254,8 @@ io.on('connection', (socket) => {
     });
 
     socket.on('join_session', (sessionName) => {
+        sessionName = formatRaw(sessionName);
+
         if (sessionCache.get(sessionName)) {
             socket.sessionName = sessionName;
             socket.join(sessionName);
@@ -297,6 +308,7 @@ io.on('connection', (socket) => {
 
         sessionCache.get(socket.sessionName).clients.map((client) => {
             client.emit('set_game_state', GameState.ANSWER, () => {
+                client.emit('is_answering', client.id === socket.id);
                 client.emit('categories', sessionCache.get(socket.sessionName).categories);
                 client.emit('request_clue', categoryIndex, clueIndex);
             });
@@ -305,16 +317,19 @@ io.on('connection', (socket) => {
         updateGameSession(socket.sessionName, 'currentGameState', GameState.ANSWER);
     });
 
+    socket.on('answer_livefeed', (answerLivefeed) => {
+        sessionCache.get(socket.sessionName).browserClient.emit('answer_livefeed', answerLivefeed);
+    });
+
     socket.on('submit_answer', (answer) => {
         updatePlayersAnswered(socket.sessionName, socket.id);
 
         let categoryIndex = sessionCache.get(socket.sessionName).categoryIndex;
         let clueIndex = sessionCache.get(socket.sessionName).clueIndex;
         let correctAnswer = sessionCache.get(socket.sessionName).categories[categoryIndex].clues[clueIndex].answer;
-        let value = sessionCache.get(socket.sessionName).categories[categoryIndex].clues[clueIndex].value;
         let isCorrect = checkAnswer(correctAnswer, answer);
 
-        updatePlayerScore(socket.sessionName, socket.id, value, isCorrect);
+        updatePlayerScore(socket.sessionName, socket.id, clueIndex, isCorrect);
 
         sessionCache.get(socket.sessionName).clients.map((client) => {
             client.emit('set_game_state', GameState.DECISION, () => {
@@ -349,12 +364,6 @@ io.on('connection', (socket) => {
                 } else {
                     showClue(socket, categoryIndex, clueIndex);
                 }
-
-                if (sessionCache.get(socket.sessionName).currentGameState === GameState.SCOREBOARD) {
-                    updateGameSession(socket.sessionName, 'categoryIndex', null);
-                    updateGameSession(socket.sessionName, 'clueIndex', null);
-                    updateGameSession(socket.sessionName, 'playersAnswered', []);
-                }
             }, SHOW_DECISION_TIME);
         }, SHOW_PRE_DECISION_TIME);
     });
@@ -366,11 +375,7 @@ io.on('connection', (socket) => {
             if (socket.isMobile) {
                 handlePlayerDisconnection(socket);
             } else {
-                gameSession.clients.map((client) => {
-                    client.disconnect();
-                });
-
-                sessionCache.del(socket.sessionName);
+                handleBrowserDisconnection(socket);
             }
         }
     });

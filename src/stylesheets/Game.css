@@ -1,3 +1,9 @@
+body {
+    overflow: hidden;
+    background-image: url("../graphics/background.png");
+    color: white;
+}
+
 .container-fluid {
     height: 100vh;
 }

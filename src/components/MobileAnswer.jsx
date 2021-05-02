@@ -11,15 +11,18 @@ import { SocketContext } from '../context/socket';
 
 const MobileAnswer = () => {
     const [answer, setAnswer] = useState('');
-    const [hasAnswered, setHasAnswered] = useState(false);
+    const [isAnswering, setIsAnswering] = useState(false);
     const socket = useContext(SocketContext);
 
     useEffect(() => {
-        // TODO: Move this to MobileClue... whether or not you've answered doesn't affect
-        //  if a player is currently answering, but it does affect if they can buzz in!
-        socket.on('players_answered', (playersAnswered) => {
-            setHasAnswered(playersAnswered.includes(socket.id));
+        socket.on('is_answering', (isAnswering) => {
+            setIsAnswering(isAnswering);
         });
+    }, []);
+
+    const handleAnswerLivefeed = useCallback((e) => {
+        setAnswer(e.target.value);
+        socket.emit('answer_livefeed', e.target.value);
     }, []);
 
     const handleSubmitAnswer = useCallback((answer) => {
@@ -29,25 +32,25 @@ const MobileAnswer = () => {
     return (
         <Container fluid>
             {
-                hasAnswered && (
+                isAnswering && (
                     <Row className={'text-center'}>
                         <Col lg={'12'}>
-                            You already answered... dumbass!
+                            <InputGroup className='mb-3'>
+                                <FormControl value={answer} onChange={e => handleAnswerLivefeed(e)} aria-describedby='basic-addon1' />
+                                <InputGroup.Prepend>
+                                    <Button onClick={() => handleSubmitAnswer(answer)} variant='outline-secondary'>Submit</Button>
+                                </InputGroup.Prepend>
+                            </InputGroup>
                         </Col>
                     </Row>
                 )
             }
 
             {
-                !hasAnswered && (
+                !isAnswering && (
                     <Row className={'text-center'}>
                         <Col lg={'12'}>
-                            <InputGroup className='mb-3'>
-                                <FormControl value={answer} onChange={e => setAnswer(e.target.value)} aria-describedby='basic-addon1' />
-                                <InputGroup.Prepend>
-                                    <Button onClick={() => handleSubmitAnswer(answer)} variant='outline-secondary'>Submit</Button>
-                                </InputGroup.Prepend>
-                            </InputGroup>
+                            You're not answering... dumbass!
                         </Col>
                     </Row>
                 )

@@ -7,7 +7,6 @@ import Col from 'react-bootstrap/Col';
 import { SocketContext } from '../context/socket';
 
 const BrowserDecision = () => {
-    // TODO: Write all of the conditional rendering for this stuff
     const [showAnswer, setShowAnswer] = useState(false);
     const [showDecision, setShowDecision] = useState(false);
     const [showCorrectAnswer, setShowCorrectAnswer] = useState(false);

@@ -11,9 +11,9 @@ const BrowserAnswer = () => {
     const [categories, setCategories] = useState(sampleCategories);
     const [categoryIndex, setCategoryIndex] = useState(null);
     const [clueIndex, setClueIndex] = useState(null);
+    const [answerLivefeed, setAnswerLivefeed] = useState('');
     const socket = useContext(SocketContext);
 
-    // TODO: Need to add answer livefeed
     useEffect(() => {
         socket.on('categories', (categories) => {
             setCategories(categories);
@@ -22,6 +22,10 @@ const BrowserAnswer = () => {
         socket.on('request_clue', (categoryIndex, clueIndex) => {
             setCategoryIndex(categoryIndex);
             setClueIndex(clueIndex);
+        });
+
+        socket.on('answer_livefeed', (answerLivefeed) => {
+            setAnswerLivefeed(answerLivefeed);
         });
     });
 
@@ -34,6 +38,10 @@ const BrowserAnswer = () => {
                     {(categoryIndex !== null && clueIndex !== null) && (
                         categories[categoryIndex].clues[clueIndex].question
                     )}
+
+                    <br />
+
+                    Answer Livefeed: {answerLivefeed}
                 </Col>
             </Row>
         </Container>

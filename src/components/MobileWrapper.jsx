@@ -6,6 +6,10 @@ const MobileWrapper = (props) => {
     const socket = useContext(SocketContext);
 
     useEffect(() => {
+        socket.on('reload', () => {
+            window.location.reload();
+        });
+
         socket.on('disconnect', () => {
             // TODO: Make this a react-bootstrap alert
             console.log(`You've been disconnected!`);

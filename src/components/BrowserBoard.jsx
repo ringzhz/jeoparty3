@@ -22,24 +22,26 @@ const BrowserBoard = () => {
         });
     }, []);
 
-    // TODO: Here and MobileBoard: Conditional rendering based on .completed flag of categories and clues
     let categoryTitleRow = categories.map((category) => {
         let categoryTitle = category.title;
 
         return (
             <Col lg={'2'}>
-                {categoryTitle}
+                {category && category.completed ? '' : categoryTitle}
             </Col>
         );
     });
 
-    let clueRows = Array.from({length: NUM_CLUES}, (_, i) => i + 1).map((value) => {
-        let dollarValue = value * 200;
+    let clueRows = Array.from(Array(NUM_CLUES).keys()).map((j) => {
+        let dollarValue = (j + 1) * 200;
 
-        let clueCols = Array.from(Array(NUM_CATEGORIES).keys()).map(() => {
+        let clueCols = Array.from(Array(NUM_CATEGORIES).keys()).map((i) => {
+            let clue = categories && categories[i].clues[j];
+            console.log(categories);
+
             return (
                 <Col lg={'2'}>
-                    {dollarValue}
+                    {clue && clue.completed ? '' : dollarValue}
                 </Col>
             );
         });

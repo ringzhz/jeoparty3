@@ -46,7 +46,6 @@ const MobileLobby = () => {
             setPlayerName('');
         });
 
-        // TODO: Other components with sub-state need reconnect conditions
         socket.on('reconnect', () => {
             setMobileLobbyState(MobileLobbyState.IS_WAITING);
         });

@@ -35,21 +35,28 @@ const MobileBoard = () => {
     }, []);
 
     let categoryListGroupItems = Array.from(Array(NUM_CATEGORIES).keys()).map((i) => {
-        let categoryTitle = categories[i].title;
+        let category = categories[i];
+        let categoryTitle = category.title;
 
         return (
-            <ListGroup.Item action active={categoryIndex === i} onClick={() => setCategoryIndex(i)}>
-                {categoryTitle}
+            <ListGroup.Item action active={categoryIndex === i} onClick={() => setCategoryIndex(i)} disabled={category && category.completed}>
+                {category && category.completed ? '' : categoryTitle}
             </ListGroup.Item>
         );
     });
 
     let clueListGroupItems = Array.from(Array(NUM_CLUES).keys()).map((i) => {
+        if (categoryIndex === null) {
+            return;
+        }
+
+        let category = categories[categoryIndex];
+        let clue = category && category.clues[i];
         let dollarValue = (i + 1) * 200;
 
         return (
-            <ListGroup.Item action active={clueIndex === i} onClick={() => setClueIndex(i)}>
-                {dollarValue}
+            <ListGroup.Item action active={clueIndex === i} onClick={() => setClueIndex(i)} disabled={clue && clue.completed}>
+                {clue && clue.completed ? '' : dollarValue}
             </ListGroup.Item>
         );
     });

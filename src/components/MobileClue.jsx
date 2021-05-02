@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useContext } from 'react';
+import React, {useState, useCallback, useContext, useEffect} from 'react';
 
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
@@ -8,8 +8,14 @@ import Button from 'react-bootstrap/Button';
 import { SocketContext } from '../context/socket';
 
 const MobileClue = () => {
-    const [isWaiting, setIsWaiting] = useState(true);
+    const [hasAnswered, setHasAnswered] = useState(false);
     const socket = useContext(SocketContext);
+
+    useEffect(() => {
+        socket.on('players_answered', (playersAnswered) => {
+            setHasAnswered(playersAnswered.includes(socket.id));
+        });
+    }, []);
 
     const handleBuzzIn = useCallback(() => {
         socket.emit('buzz_in');
@@ -18,7 +24,7 @@ const MobileClue = () => {
     return (
         <Container fluid>
             {
-                isWaiting && (
+                !hasAnswered && (
                     <Row className={'text-center'}>
                         <Col lg={'12'}>
                             <Button variant='danger' onClick={() => handleBuzzIn()}>Buzz In!</Button>
@@ -28,10 +34,10 @@ const MobileClue = () => {
             }
 
             {
-                !isWaiting && (
+                hasAnswered && (
                     <Row className={'text-center'}>
                         <Col lg={'12'}>
-                            You can't buzz in... dumbass!
+                            You've already buzzed in... dumbass!
                         </Col>
                     </Row>
                 )

@@ -1,10 +1,10 @@
 .browser-lobby {
     color: white;
 
-    animation-name: color;
-    animation-duration: 20s;
-    animation-iteration-count: infinite;
-    background-color: #e6261f;
+    /*animation-name: color;*/
+    /*animation-duration: 20s;*/
+    /*animation-iteration-count: infinite;*/
+    /*background-color: #e6261f;*/
 }
 
 @keyframes color {
