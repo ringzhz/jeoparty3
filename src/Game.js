@@ -29,7 +29,7 @@ const Game = () => {
 
     useEffect(() => {
         socket.onAny((eventName, ...args) => {
-            console.log(`Heard ${eventName}`);
+            console.log(`Heard ${eventName} with args ${args}`);
         });
 
         socket.on('set_game_state', (newGameState, ack) => {
@@ -39,7 +39,7 @@ const Game = () => {
     }, []);
 
     useEffect(() => {
-        gameStateAck();
+        gameStateAck && gameStateAck();
         setGameStateAck(() => () => {});
     }, [gameState]);
 

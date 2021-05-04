@@ -29,12 +29,6 @@ const BrowserScoreboard = () => {
     const socket = useContext(SocketContext);
 
     useEffect(() => {
-        // document.body.onkeyup = (e) => {
-        //     if (e.keyCode === 32) {
-        //         setShowUpdate(!showUpdate);
-        //     }
-        // };
-
         socket.on('players', (players) => {
             setPlayers(sortByScore(players));
         });

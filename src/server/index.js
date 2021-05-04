@@ -21,12 +21,14 @@ const formatRaw = require('../helpers/format').formatRaw;
 
 const NUM_CLUES = 5;
 
-// in milliseconds
 const SHOW_PRE_DECISION_TIME = 1000;
 const SHOW_DECISION_TIME = 1000;
 const SHOW_ANSWER_TIME = 1000;
 const SHOW_SCOREBOARD_TIME = 9000;
 const SHOW_SCOREBOARD_UPDATE_TIME = 3000;
+
+const BUZZ_IN_TIMEOUT = 5000;
+const ANSWER_TIMEOUT = 5000;
 
 app.use(express.static(path.join(__dirname, '../../build')));
 app.get('/', (req, res, next) => res.sendFile(__dirname + './index.html'));
@@ -79,7 +81,7 @@ const updatePlayerScore = (sessionName, socketId, clueIndex, isCorrect) => {
     let gameSession = sessionCache.get(sessionName);
     let updatedPlayers = gameSession.updatedPlayers;
 
-    let value = (clueIndex * 200);
+    let value = (200 * clueIndex);
     updatedPlayers[socketId].score = updatedPlayers[socketId].score + (isCorrect ? value : -value);
 
     gameSession.updatedPlayers = updatedPlayers;
@@ -184,10 +186,12 @@ const handlePlayerReconnection = (socket) => {
 };
 
 const showBoard = (socket) => {
-    sessionCache.get(socket.sessionName).clients.map((client) => {
+    let gameSession = sessionCache.get(socket.sessionName);
+
+    gameSession.clients.map((client) => {
         client.emit('set_game_state', GameState.BOARD, () => {
-            client.emit('categories', sessionCache.get(socket.sessionName).categories);
-            client.emit('board_controller', sessionCache.get(socket.sessionName).boardController);
+            client.emit('categories', gameSession.categories);
+            client.emit('is_board_controller', client.id === gameSession.boardController);
         });
     });
 
@@ -195,22 +199,50 @@ const showBoard = (socket) => {
 };
 
 const showClue = (socket, categoryIndex, clueIndex) => {
-    sessionCache.get(socket.sessionName).clients.map((client) => {
+    let gameSession = sessionCache.get(socket.sessionName);
+
+    gameSession.clients.map((client) => {
         client.emit('set_game_state', GameState.CLUE, () => {
-            client.emit('categories', sessionCache.get(socket.sessionName).categories);
+            client.emit('categories', gameSession.categories);
             client.emit('request_clue', categoryIndex, clueIndex);
-            client.emit('players_answered', sessionCache.get(socket.sessionName).playersAnswered);
+            client.emit('players_answered', gameSession.playersAnswered);
         });
     });
 
     updateGameSession(socket.sessionName, 'currentGameState', GameState.CLUE);
 };
 
+const showCorrectAnswer = (socket, correctAnswer, timeout) => {
+    if (timeout) {
+        if (sessionCache.get(socket.sessionName).buzzInTimeout) {
+            sessionCache.get(socket.sessionName).clients.map((client) => {
+                client.emit('set_game_state', GameState.DECISION, () => {});
+            });
+
+            updateGameSession(socket.sessionName, 'currentGameState', GameState.DECISION);
+        } else {
+            return;
+        }
+    }
+
+    io.to(socket.sessionName).emit('show_correct_answer', correctAnswer);
+
+    setTimeout(() => {
+        showScoreboard(socket);
+
+        setTimeout(() => {
+            showBoard(socket);
+        }, SHOW_SCOREBOARD_TIME);
+    }, SHOW_ANSWER_TIME);
+};
+
 const showScoreboard = (socket) => {
-    sessionCache.get(socket.sessionName).clients.map((client) => {
+    let gameSession = sessionCache.get(socket.sessionName);
+
+    gameSession.clients.map((client) => {
         client.emit('set_game_state', GameState.SCOREBOARD, () => {
-            client.emit('players', sessionCache.get(socket.sessionName).players);
-            client.emit('updated_players', sessionCache.get(socket.sessionName).updatedPlayers);
+            client.emit('players', gameSession.players);
+            client.emit('updated_players', gameSession.updatedPlayers);
 
             setTimeout(() => {
                 client.emit('show_update');
@@ -224,6 +256,7 @@ const showScoreboard = (socket) => {
     updateGameSession(socket.sessionName, 'categoryIndex', null);
     updateGameSession(socket.sessionName, 'clueIndex', null);
     updateGameSession(socket.sessionName, 'playersAnswered', []);
+    updateGameSession(socket.sessionName, 'buzzInTimeout', true);
 };
 
 io.on('connection', (socket) => {
@@ -300,21 +333,33 @@ io.on('connection', (socket) => {
         updateCategories(socket.sessionName, categoryIndex, clueIndex);
 
         setUpdatedPlayers(socket.sessionName);
+
+        setTimeout(() => {
+            let correctAnswer = sessionCache.get(socket.sessionName).categories[categoryIndex].clues[clueIndex].answer;
+            showCorrectAnswer(socket, correctAnswer, timeout=true);
+        }, BUZZ_IN_TIMEOUT);
     });
 
     socket.on('buzz_in', () => {
-        let categoryIndex = sessionCache.get(socket.sessionName).categoryIndex;
-        let clueIndex = sessionCache.get(socket.sessionName).clueIndex;
+        updateGameSession(socket.sessionName, 'buzzInTimeout', false);
 
-        sessionCache.get(socket.sessionName).clients.map((client) => {
+        let gameSession = sessionCache.get(socket.sessionName);
+        let categoryIndex = gameSession.categoryIndex;
+        let clueIndex = gameSession.clueIndex;
+
+        gameSession.clients.map((client) => {
             client.emit('set_game_state', GameState.ANSWER, () => {
                 client.emit('is_answering', client.id === socket.id);
-                client.emit('categories', sessionCache.get(socket.sessionName).categories);
+                client.emit('categories', gameSession.categories);
                 client.emit('request_clue', categoryIndex, clueIndex);
             });
         });
 
         updateGameSession(socket.sessionName, 'currentGameState', GameState.ANSWER);
+
+        setTimeout(() => {
+            socket.emit('answer_timeout');
+        }, ANSWER_TIMEOUT);
     });
 
     socket.on('answer_livefeed', (answerLivefeed) => {
@@ -322,16 +367,22 @@ io.on('connection', (socket) => {
     });
 
     socket.on('submit_answer', (answer) => {
+        console.log(`received answer: ${answer}`);
+        if (sessionCache.get(socket.sessionName).currentGameState === GameState.DECISION) {
+            return;
+        }
+
         updatePlayersAnswered(socket.sessionName, socket.id);
 
-        let categoryIndex = sessionCache.get(socket.sessionName).categoryIndex;
-        let clueIndex = sessionCache.get(socket.sessionName).clueIndex;
-        let correctAnswer = sessionCache.get(socket.sessionName).categories[categoryIndex].clues[clueIndex].answer;
+        let gameSession = sessionCache.get(socket.sessionName);
+        let categoryIndex = gameSession.categoryIndex;
+        let clueIndex = gameSession.clueIndex;
+        let correctAnswer = gameSession.categories[categoryIndex].clues[clueIndex].answer;
         let isCorrect = checkAnswer(correctAnswer, answer);
 
         updatePlayerScore(socket.sessionName, socket.id, clueIndex, isCorrect);
 
-        sessionCache.get(socket.sessionName).clients.map((client) => {
+        gameSession.clients.map((client) => {
             client.emit('set_game_state', GameState.DECISION, () => {
                 client.emit('show_answer', answer);
             });
@@ -351,16 +402,8 @@ io.on('connection', (socket) => {
                     setTimeout(() => {
                         showBoard(socket);
                     }, SHOW_SCOREBOARD_TIME);
-                } else if (sessionCache.get(socket.sessionName).playersAnswered.length === Object.keys(sessionCache.get(socket.sessionName).players).length) {
-                    io.to(socket.sessionName).emit('show_correct_answer', correctAnswer);
-
-                    setTimeout(() => {
-                        showScoreboard(socket);
-
-                        setTimeout(() => {
-                            showBoard(socket);
-                        }, SHOW_SCOREBOARD_TIME);
-                    }, SHOW_ANSWER_TIME);
+                } else if (gameSession.playersAnswered.length === Object.keys(gameSession.players).length) {
+                    showCorrectAnswer(socket, correctAnswer, timeout=false);
                 } else {
                     showClue(socket, categoryIndex, clueIndex);
                 }

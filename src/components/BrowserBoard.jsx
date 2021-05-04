@@ -33,7 +33,7 @@ const BrowserBoard = () => {
     });
 
     let clueRows = Array.from(Array(NUM_CLUES).keys()).map((j) => {
-        let dollarValue = (j + 1) * 200;
+        let dollarValue = 200 * (j + 1);
 
         let clueCols = Array.from(Array(NUM_CATEGORIES).keys()).map((i) => {
             let clue = categories && categories[i].clues[j];

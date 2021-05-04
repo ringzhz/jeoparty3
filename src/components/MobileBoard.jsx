@@ -25,8 +25,8 @@ const MobileBoard = () => {
             setCategories(categories);
         });
 
-        socket.on('board_controller', (boardController) => {
-            setIsBoardController(socket.id === boardController);
+        socket.on('is_board_controller', (isBoardController) => {
+            setIsBoardController(isBoardController);
         });
     }, []);
 
@@ -52,7 +52,7 @@ const MobileBoard = () => {
 
         let category = categories[categoryIndex];
         let clue = category && category.clues[i];
-        let dollarValue = (i + 1) * 200;
+        let dollarValue = 200 * (i + 1);
 
         return (
             <ListGroup.Item action active={clueIndex === i} onClick={() => setClueIndex(i)} disabled={clue && clue.completed}>

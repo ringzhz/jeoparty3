@@ -13,5 +13,7 @@ exports.GameSession = {
     boardController: null,
 
     categoryIndex: null,
-    clueIndex: null
+    clueIndex: null,
+
+    buzzInTimeout: true
 };
