@@ -3,7 +3,7 @@ import React from 'react';
 import '../stylesheets/Timer.css';
 
 const TimerFrame = (props) => {
-    props.style.transform = `translateY(${props.start ? 0 : 'inherit'})`;
+    props.style.transform = `translateY(${props.start ? 0 : '20vh'})`;
 
     return (
         <div style={props.style} className={'timer-container'}>
@@ -22,6 +22,8 @@ const TimerFrame = (props) => {
 };
 
 const Timer = (props) => {
+    console.log(`rendering Timer with start=${props.start}`);
+
     return (
         <TimerFrame style={props.style} start={props.start}>
             <div className={'timer-background'} />

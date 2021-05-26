@@ -1,0 +1,10 @@
+.clue-row {
+    height: 80vh;
+}
+
+.timer-row {
+    height: 20vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

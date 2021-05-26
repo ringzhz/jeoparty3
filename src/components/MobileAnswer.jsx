@@ -12,26 +12,24 @@ import { SocketContext } from '../context/socket';
 const MobileAnswer = () => {
     const [answer, setAnswer] = useState('');
     const [isAnswering, setIsAnswering] = useState(false);
-    const [answerSubmitted, setAnswerSubmitted] = useState(false);
     const socket = useContext(SocketContext);
 
     useEffect(() => {
         socket.on('is_answering', (isAnswering) => {
             setIsAnswering(isAnswering);
+
+            setTimeout(() => {
+                alert(answer);
+            }, 5000);
         });
     }, []);
 
     const handleAnswerLivefeed = useCallback((e) => {
         setAnswer(e.target.value);
         socket.emit('answer_livefeed', e.target.value);
-
-        socket.on('answer_timeout', () => {
-            handleSubmitAnswer(e.target.value);
-        });
     }, []);
 
     const handleSubmitAnswer = useCallback((answer) => {
-        setAnswerSubmitted(true);
         socket.emit('submit_answer', answer);
     }, []);
 

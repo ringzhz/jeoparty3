@@ -15,16 +15,10 @@ const BrowserAnswer = () => {
     const [categoryIndex, setCategoryIndex] = useState(null);
     const [clueIndex, setClueIndex] = useState(null);
     const [answerLivefeed, setAnswerLivefeed] = useState('');
-    const [foo, setFoo] = useState(false);
+    const [startTimer, setStartTimer] = useState(false);
     const socket = useContext(SocketContext);
 
     useEffect(() => {
-        document.body.onkeyup = (e) => {
-            if (e.keyCode === 32) {
-                setFoo(true);
-            }
-        };
-
         socket.on('categories', (categories) => {
             setCategories(categories);
         });
@@ -37,6 +31,10 @@ const BrowserAnswer = () => {
         socket.on('answer_livefeed', (answerLivefeed) => {
             setAnswerLivefeed(answerLivefeed);
         });
+
+        setTimeout(() => {
+            setStartTimer(true);
+        }, 100);
     });
 
     return (
@@ -56,7 +54,7 @@ const BrowserAnswer = () => {
             </Row>
 
             <Row className={'timer-row'}>
-                {/*<Timer style={{ width: '60vw', height: '6vh' }} start={foo} time={10} />*/}
+                <Timer style={{ width: '60vw', height: '6vh' }} start={startTimer} time={5} />
             </Row>
         </Container>
     );

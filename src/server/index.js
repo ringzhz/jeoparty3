@@ -77,20 +77,24 @@ const setUpdatedPlayers = (sessionName) => {
     sessionCache.put(sessionName, gameSession);
 };
 
-const updatePlayerScore = (sessionName, socketId, clueIndex, isCorrect) => {
-    let gameSession = sessionCache.get(sessionName);
+const updatePlayerScore = (socket, clueIndex, isCorrect) => {
+    let gameSession = sessionCache.get(socket.sessionName);
     let updatedPlayers = gameSession.updatedPlayers;
 
-    let value = (200 * clueIndex);
-    updatedPlayers[socketId].score = updatedPlayers[socketId].score + (isCorrect ? value : -value);
+    let value = 200 * (clueIndex + 1);
+    updatedPlayers[socket.id].score = updatedPlayers[socket.id].score + (isCorrect ? value : -value);
 
     gameSession.updatedPlayers = updatedPlayers;
-    sessionCache.put(sessionName, gameSession);
+    sessionCache.put(socket.sessionName, gameSession);
 };
 
 const setPlayers = (sessionName) => {
     let gameSession = sessionCache.get(sessionName);
-    gameSession.players = _.cloneDeep(gameSession.updatedPlayers);
+
+    if (Object.keys(gameSession.updatedPlayers).length > 0) {
+        gameSession.players = _.cloneDeep(gameSession.updatedPlayers);
+    }
+
     sessionCache.put(sessionName, gameSession);
 };
 
@@ -195,6 +199,7 @@ const showBoard = (socket) => {
         });
     });
 
+    setPlayers(socket.sessionName);
     updateGameSession(socket.sessionName, 'currentGameState', GameState.BOARD);
 };
 
@@ -216,16 +221,18 @@ const showCorrectAnswer = (socket, correctAnswer, timeout) => {
     if (timeout) {
         if (sessionCache.get(socket.sessionName).buzzInTimeout) {
             sessionCache.get(socket.sessionName).clients.map((client) => {
-                client.emit('set_game_state', GameState.DECISION, () => {});
+                client.emit('set_game_state', GameState.DECISION, () => {
+                    client.emit('show_correct_answer', correctAnswer);
+                });
             });
 
             updateGameSession(socket.sessionName, 'currentGameState', GameState.DECISION);
         } else {
             return;
         }
+    } else {
+        io.to(socket.sessionName).emit('show_correct_answer', correctAnswer);
     }
-
-    io.to(socket.sessionName).emit('show_correct_answer', correctAnswer);
 
     setTimeout(() => {
         showScoreboard(socket);
@@ -246,7 +253,6 @@ const showScoreboard = (socket) => {
 
             setTimeout(() => {
                 client.emit('show_update');
-                setPlayers(socket.sessionName);
             }, SHOW_SCOREBOARD_UPDATE_TIME);
         });
     });
@@ -367,8 +373,7 @@ io.on('connection', (socket) => {
     });
 
     socket.on('submit_answer', (answer) => {
-        console.log(`received answer: ${answer}`);
-        if (sessionCache.get(socket.sessionName).currentGameState === GameState.DECISION) {
+        if (sessionCache.get(socket.sessionName).currentGameState !== GameState.ANSWER) {
             return;
         }
 
@@ -380,7 +385,7 @@ io.on('connection', (socket) => {
         let correctAnswer = gameSession.categories[categoryIndex].clues[clueIndex].answer;
         let isCorrect = checkAnswer(correctAnswer, answer);
 
-        updatePlayerScore(socket.sessionName, socket.id, clueIndex, isCorrect);
+        updatePlayerScore(socket, clueIndex, isCorrect);
 
         gameSession.clients.map((client) => {
             client.emit('set_game_state', GameState.DECISION, () => {
