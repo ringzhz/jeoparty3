@@ -17,10 +17,10 @@ const MobileAnswer = () => {
     useEffect(() => {
         socket.on('is_answering', (isAnswering) => {
             setIsAnswering(isAnswering);
+        });
 
-            setTimeout(() => {
-                alert(answer);
-            }, 5000);
+        socket.on('answer_timeout', (answer) => {
+            socket.emit('submit_answer', answer);
         });
     }, []);
 

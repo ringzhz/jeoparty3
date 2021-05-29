@@ -3,5 +3,6 @@ exports.Player = {
     sessionName: '',
     name: '',
     signature: '',
-    score: 0
+    score: 0,
+    answer: ''
 };

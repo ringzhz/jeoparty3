@@ -24,8 +24,8 @@ const NUM_CLUES = 5;
 const SHOW_PRE_DECISION_TIME = 1000;
 const SHOW_DECISION_TIME = 1000;
 const SHOW_ANSWER_TIME = 1000;
-const SHOW_SCOREBOARD_TIME = 9000;
-const SHOW_SCOREBOARD_UPDATE_TIME = 3000;
+const SHOW_SCOREBOARD_TIME = 4000;
+const SHOW_SCOREBOARD_UPDATE_TIME = 1000;
 
 const BUZZ_IN_TIMEOUT = 5000;
 const ANSWER_TIMEOUT = 5000;
@@ -251,9 +251,11 @@ const showScoreboard = (socket) => {
             client.emit('players', gameSession.players);
             client.emit('updated_players', gameSession.updatedPlayers);
 
-            setTimeout(() => {
-                client.emit('show_update');
-            }, SHOW_SCOREBOARD_UPDATE_TIME);
+            if (!_.isEqual(gameSession.players, gameSession.updatedPlayers)) {
+                setTimeout(() => {
+                    client.emit('show_update');
+                }, SHOW_SCOREBOARD_UPDATE_TIME);
+            }
         });
     });
 
@@ -313,6 +315,10 @@ io.on('connection', (socket) => {
     });
 
     socket.on('submit_signature', (playerName) => {
+        if (!sessionCache.get(socket.sessionName)) {
+            return;
+        }
+
         if (checkSignature(playerName)) {
             updatePlayers(socket.sessionName, socket.id, 'name', playerName);
 
@@ -323,6 +329,10 @@ io.on('connection', (socket) => {
     });
 
     socket.on('start_game', () => {
+        if (!sessionCache.get(socket.sessionName)) {
+            return;
+        }
+
         if (Object.keys(sessionCache.get(socket.sessionName).players).length > 0) {
             showBoard(socket);
         } else {
@@ -331,6 +341,10 @@ io.on('connection', (socket) => {
     });
 
     socket.on('request_clue', (categoryIndex, clueIndex) => {
+        if (!sessionCache.get(socket.sessionName)) {
+            return;
+        }
+
         updateGameSession(socket.sessionName, 'categoryIndex', categoryIndex);
         updateGameSession(socket.sessionName, 'clueIndex', clueIndex);
 
@@ -347,6 +361,10 @@ io.on('connection', (socket) => {
     });
 
     socket.on('buzz_in', () => {
+        if (!sessionCache.get(socket.sessionName)) {
+            return;
+        }
+
         updateGameSession(socket.sessionName, 'buzzInTimeout', false);
 
         let gameSession = sessionCache.get(socket.sessionName);
@@ -364,20 +382,26 @@ io.on('connection', (socket) => {
         updateGameSession(socket.sessionName, 'currentGameState', GameState.ANSWER);
 
         setTimeout(() => {
-            socket.emit('answer_timeout');
+            socket.emit('answer_timeout', sessionCache.get(socket.sessionName).players[socket.id].answer);
         }, ANSWER_TIMEOUT);
     });
 
     socket.on('answer_livefeed', (answerLivefeed) => {
+        if (!sessionCache.get(socket.sessionName)) {
+            return;
+        }
+
+        updatePlayers(socket.sessionName, socket.id, 'answer', answerLivefeed);
         sessionCache.get(socket.sessionName).browserClient.emit('answer_livefeed', answerLivefeed);
     });
 
     socket.on('submit_answer', (answer) => {
-        if (sessionCache.get(socket.sessionName).currentGameState !== GameState.ANSWER) {
+        if (!sessionCache.get(socket.sessionName) || sessionCache.get(socket.sessionName).currentGameState !== GameState.ANSWER) {
             return;
         }
 
         updatePlayersAnswered(socket.sessionName, socket.id);
+        updatePlayers(socket.sessionName, socket.id, 'answer', '');
 
         let gameSession = sessionCache.get(socket.sessionName);
         let categoryIndex = gameSession.categoryIndex;
@@ -417,14 +441,14 @@ io.on('connection', (socket) => {
     });
 
     socket.on('disconnect', () => {
-        let gameSession = sessionCache.get(socket.sessionName);
+        if (!sessionCache.get(socket.sessionName)) {
+            return;
+        }
 
-        if (gameSession) {
-            if (socket.isMobile) {
-                handlePlayerDisconnection(socket);
-            } else {
-                handleBrowserDisconnection(socket);
-            }
+        if (socket.isMobile) {
+            handlePlayerDisconnection(socket);
+        } else {
+            handleBrowserDisconnection(socket);
         }
     });
 });

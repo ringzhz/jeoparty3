@@ -40,9 +40,9 @@ const BrowserDecision = () => {
         <Container fluid>
             <Row className={'text-center'}>
                 <Col lg={'12'}>
-                    {showAnswer ? answer : ''}
-                    {showDecision ? (isCorrect ? 'correct!' : 'incorrect!') : ''}
-                    {showCorrectAnswer ? correctAnswer : ''}
+                    {showAnswer && answer}
+                    {showDecision && (isCorrect ? 'correct!' : 'incorrect!')}
+                    {showCorrectAnswer && correctAnswer}
                 </Col>
             </Row>
         </Container>
