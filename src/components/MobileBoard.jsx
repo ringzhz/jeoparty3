@@ -10,12 +10,14 @@ import Button from 'react-bootstrap/Button';
 import { sampleCategories } from '../constants/sampleCategories';
 import { SocketContext } from '../context/socket';
 
+import '../stylesheets/MobileBoard.css';
+
 const MobileBoard = () => {
     const NUM_CATEGORIES = 6;
     const NUM_CLUES = 5;
 
     const [categories, setCategories] = useState(sampleCategories);
-    const [isBoardController, setIsBoardController] = useState(false);
+    const [isBoardController, setIsBoardController] = useState(true);
     const [categoryIndex, setCategoryIndex] = useState(null);
     const [clueIndex, setClueIndex] = useState(null);
     const socket = useContext(SocketContext);
@@ -66,7 +68,7 @@ const MobileBoard = () => {
             {
                 isBoardController && (
                     <div>
-                        <Row className={'text-center'}>
+                        <Row className={'category-list-row text-center'}>
                             <Col lg={'12'}>
                                 <ListGroup>
                                     {categoryListGroupItems}
@@ -76,7 +78,7 @@ const MobileBoard = () => {
 
                         <hr />
 
-                        <Row className={'text-center'}>
+                        <Row className={'clue-list-row text-center'}>
                             <Col lg={'12'}>
                                 {
                                     categoryIndex !== null && (
@@ -88,7 +90,7 @@ const MobileBoard = () => {
                             </Col>
                         </Row>
 
-                        <Row className={'text-center'}>
+                        <Row className={'submit-button-row text-center'}>
                             <Col lg={'12'}>
                                 {
                                     (categoryIndex !== null && clueIndex !== null) && (
