@@ -23,8 +23,12 @@ const PlayerCard = (props) => {
 };
 
 const BrowserScoreboard = () => {
-    const [players, setPlayers] = useState(sortByScore(samplePlayers));
-    const [updatedPlayers, setUpdatedPlayers] = useState(sortByScore(sampleUpdatedPlayers));
+    // const [players, setPlayers] = useState(sortByScore(samplePlayers));
+    // const [updatedPlayers, setUpdatedPlayers] = useState(sortByScore(sampleUpdatedPlayers));
+
+    const [players, setPlayers] = useState([]);
+    const [updatedPlayers, setUpdatedPlayers] = useState([]);
+
     const [showUpdate, setShowUpdate] = useState(false);
     const socket = useContext(SocketContext);
 

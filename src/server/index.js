@@ -190,6 +190,10 @@ const handlePlayerReconnection = (socket) => {
 };
 
 const showBoard = (socket) => {
+    if (!sessionCache.get(socket.sessionName)) {
+        return;
+    }
+
     let gameSession = sessionCache.get(socket.sessionName);
 
     gameSession.clients.map((client) => {
@@ -244,6 +248,10 @@ const showCorrectAnswer = (socket, correctAnswer, timeout) => {
 };
 
 const showScoreboard = (socket) => {
+    if (!sessionCache.get(socket.sessionName)) {
+        return;
+    }
+
     let gameSession = sessionCache.get(socket.sessionName);
 
     gameSession.clients.map((client) => {
@@ -355,6 +363,10 @@ io.on('connection', (socket) => {
         setUpdatedPlayers(socket.sessionName);
 
         setTimeout(() => {
+            if (!sessionCache.get(socket.sessionName)) {
+                return;
+            }
+
             let correctAnswer = sessionCache.get(socket.sessionName).categories[categoryIndex].clues[clueIndex].answer;
             showCorrectAnswer(socket, correctAnswer, timeout=true);
         }, BUZZ_IN_TIMEOUT);
@@ -382,6 +394,10 @@ io.on('connection', (socket) => {
         updateGameSession(socket.sessionName, 'currentGameState', GameState.ANSWER);
 
         setTimeout(() => {
+            if (!sessionCache.get(socket.sessionName)) {
+                return;
+            }
+
             socket.emit('answer_timeout', sessionCache.get(socket.sessionName).players[socket.id].answer);
         }, ANSWER_TIMEOUT);
     });
@@ -420,9 +436,17 @@ io.on('connection', (socket) => {
         updateGameSession(socket.sessionName, 'currentGameState', GameState.DECISION);
 
         setTimeout(() => {
+            if (!sessionCache.get(socket.sessionName)) {
+                return;
+            }
+
             io.to(socket.sessionName).emit('show_decision', isCorrect);
 
             setTimeout(() => {
+                if (!sessionCache.get(socket.sessionName)) {
+                    return;
+                }
+
                 if (isCorrect) {
                     updateGameSession(socket.sessionName, 'boardController', socket.id);
 
