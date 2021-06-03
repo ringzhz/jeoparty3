@@ -25,6 +25,27 @@ exports.samplePlayers = {
         sessionName: 'think',
         name: 'Chopper',
         score: 1200
+    },
+
+    zsS3DKSSIUOegOQuAAAE: {
+        socketId: 'zsS3DKSSIUOegOQuAAAE',
+        sessionName: 'think',
+        name: 'Sanji',
+        score: 0
+    },
+
+    zsS3DKSSIUOegOQuAAAF: {
+        socketId: 'zsS3DKSSIUOegOQuAAAE',
+        sessionName: 'think',
+        name: 'Robin',
+        score: 0
+    },
+
+    zsS3DKSSIUOegOQuAAAG: {
+        socketId: 'zsS3DKSSIUOegOQuAAAE',
+        sessionName: 'think',
+        name: 'Frankie',
+        score: 0
     }
 };
 
@@ -55,5 +76,26 @@ exports.sampleUpdatedPlayers = {
         sessionName: 'think',
         name: 'Chopper',
         score: 2200
+    },
+
+    zsS3DKSSIUOegOQuAAAE: {
+        socketId: 'zsS3DKSSIUOegOQuAAAE',
+        sessionName: 'think',
+        name: 'Sanji',
+        score: 5000
+    },
+
+    zsS3DKSSIUOegOQuAAAF: {
+        socketId: 'zsS3DKSSIUOegOQuAAAE',
+        sessionName: 'think',
+        name: 'Robin',
+        score: 4000
+    },
+
+    zsS3DKSSIUOegOQuAAAG: {
+        socketId: 'zsS3DKSSIUOegOQuAAAE',
+        sessionName: 'think',
+        name: 'Frankie',
+        score: 3000
     }
 };

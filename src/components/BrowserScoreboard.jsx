@@ -44,6 +44,12 @@ const BrowserScoreboard = () => {
         socket.on('show_update', () => {
             setShowUpdate(true);
         });
+
+        document.body.onkeyup = (e) => {
+            if (e.keyCode === 32) {
+                setShowUpdate(true);
+            }
+        }
     }, []);
 
     return (
