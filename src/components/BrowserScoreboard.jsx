@@ -45,11 +45,11 @@ const BrowserScoreboard = () => {
             setShowUpdate(true);
         });
 
-        document.body.onkeyup = (e) => {
-            if (e.keyCode === 32) {
-                setShowUpdate(true);
-            }
-        }
+        // document.body.onkeyup = (e) => {
+        //     if (e.keyCode === 32) {
+        //         setShowUpdate(true);
+        //     }
+        // }
     }, []);
 
     return (

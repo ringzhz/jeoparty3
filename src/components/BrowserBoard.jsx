@@ -4,6 +4,8 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 
+import FitText from '@kennethormandy/react-fittext';
+
 import '../stylesheets/BrowserBoard.css';
 
 import { sampleCategories } from '../constants/sampleCategories';
@@ -26,40 +28,52 @@ const BrowserBoard = () => {
         let categoryTitle = category.title;
 
         return (
-            <Col lg={'2'}>
-                {category && category.completed ? '' : categoryTitle}
+            <Col className={'category-col'} lg={'2'}>
+                <div className={'fit-text-wrapper'}>
+                    <FitText compressor={0.5}>
+                        <span className={'category-text'}>{category && category.completed ? '' : categoryTitle.toUpperCase()}</span>
+                    </FitText>
+                </div>
             </Col>
         );
     });
 
-    let clueRows = Array.from(Array(NUM_CLUES).keys()).map((j) => {
+    let priceRows = Array.from(Array(NUM_CLUES).keys()).map((j) => {
         let dollarValue = 200 * (j + 1);
 
-        let clueCols = Array.from(Array(NUM_CATEGORIES).keys()).map((i) => {
+        let priceCols = Array.from(Array(NUM_CATEGORIES).keys()).map((i) => {
             let clue = categories && categories[i].clues[j];
-            console.log(categories);
 
             return (
-                <Col lg={'2'}>
-                    {clue && clue.completed ? '' : dollarValue}
+                <Col className={'price-col'} lg={'2'}>
+                    <div className={'fit-text-wrapper'}>
+                        <FitText compressor={0.3}>
+                            {clue && clue.completed ? '' :
+                                <span className={'price-text'}>
+                                    <span className={'dollar-sign-text'}>$</span>
+                                    {dollarValue}
+                                </span>
+                            }
+                        </FitText>
+                    </div>
                 </Col>
             );
         });
 
         return (
-            <Row className={'board-row'}>
-                {clueCols}
+            <Row className={'price-text board-row'}>
+                {priceCols}
             </Row>
         );
     });
 
     return (
         <Container fluid>
-            <Row className={'board-row'}>
+            <Row className={'category-text board-row'}>
                 {categoryTitleRow}
             </Row>
 
-            {clueRows}
+            {priceRows}
         </Container>
     );
 };

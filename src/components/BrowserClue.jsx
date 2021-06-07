@@ -4,6 +4,8 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 
+import FitText from '@kennethormandy/react-fittext';
+
 import Timer from '../helpers/components/Timer';
 import { sampleCategories } from '../constants/sampleCategories';
 import { SocketContext } from '../context/socket';
@@ -12,8 +14,8 @@ import '../stylesheets/BrowserClue.css';
 
 const BrowserClue = () => {
     const [categories, setCategories] = useState(sampleCategories);
-    const [categoryIndex, setCategoryIndex] = useState(null);
-    const [clueIndex, setClueIndex] = useState(null);
+    const [categoryIndex, setCategoryIndex] = useState(5);
+    const [clueIndex, setClueIndex] = useState(4);
     const [startTimer, setStartTimer] = useState(false);
     const socket = useContext(SocketContext);
 
@@ -35,12 +37,12 @@ const BrowserClue = () => {
     return (
         <Container fluid>
             <Row className={'clue-row text-center'}>
-                <Col lg={'12'}>
-                    Browser Clue <br />
-
-                    {(categoryIndex !== null && clueIndex !== null) && (
-                        categories[categoryIndex].clues[clueIndex].question
-                    )}
+                <Col className={'clue-col'} lg={'12'}>
+                    <FitText compressor={2}>
+                        {(categoryIndex !== null && clueIndex !== null) && (
+                            categories[categoryIndex].clues[clueIndex].question.toUpperCase()
+                        )}
+                    </FitText>
                 </Col>
             </Row>
 

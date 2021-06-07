@@ -331,6 +331,7 @@ io.on('connection', (socket) => {
             updatePlayers(socket.sessionName, socket.id, 'name', playerName);
 
             socket.emit('submit_signature_success');
+            sessionCache.get(socket.sessionName).browserClient.emit('new_player_name', playerName);
         } else {
             socket.emit('submit_signature_failure');
         }

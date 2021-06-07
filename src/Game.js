@@ -24,7 +24,7 @@ import { GameState } from './constants/GameState';
 import { SocketContext, socket } from './context/socket';
 
 const Game = () => {
-    const [gameState, setGameState] = useState(GameState.LOBBY);
+    const [gameState, setGameState] = useState(GameState.ANSWER);
     const [gameStateAck, setGameStateAck] = useState(() => () => {});
 
     useEffect(() => {
