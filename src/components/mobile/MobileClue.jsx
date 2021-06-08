@@ -5,7 +5,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 
-import { SocketContext } from '../context/socket';
+import { SocketContext } from '../../context/socket';
 
 const MobileClue = () => {
     const [hasAnswered, setHasAnswered] = useState(false);
@@ -19,7 +19,7 @@ const MobileClue = () => {
 
     const handleBuzzIn = useCallback(() => {
         socket.emit('buzz_in');
-    }, []);
+    }, [socket]);
 
     return (
         <Container fluid>

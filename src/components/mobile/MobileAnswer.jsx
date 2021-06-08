@@ -7,7 +7,7 @@ import InputGroup from 'react-bootstrap/InputGroup';
 import FormControl from 'react-bootstrap/FormControl';
 import Button from 'react-bootstrap/Button';
 
-import { SocketContext } from '../context/socket';
+import { SocketContext } from '../../context/socket';
 
 const MobileAnswer = () => {
     const [answer, setAnswer] = useState('');
@@ -27,11 +27,11 @@ const MobileAnswer = () => {
     const handleAnswerLivefeed = useCallback((e) => {
         setAnswer(e.target.value);
         socket.emit('answer_livefeed', e.target.value);
-    }, []);
+    }, [socket]);
 
     const handleSubmitAnswer = useCallback((answer) => {
         socket.emit('submit_answer', answer);
-    }, []);
+    }, [socket]);
 
     return (
         <Container fluid>

@@ -1,30 +1,64 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserView, MobileView } from 'react-device-detect';
 
-import BrowserWrapper from './components/BrowserWrapper';
-import BrowserLobby from './components/BrowserLobby';
-import BrowserBoard from './components/BrowserBoard';
-import BrowserClue from './components/BrowserClue';
-import BrowserAnswer from './components/BrowserAnswer';
-import BrowserDecision from './components/BrowserDecision';
-import BrowserScoreboard from './components/BrowserScoreboard';
+import BrowserWrapper from './components/browser/BrowserWrapper';
+import BrowserLobby from './components/browser/BrowserLobby';
+import BrowserBoard from './components/browser/BrowserBoard';
+import BrowserClue from './components/browser/BrowserClue';
+import BrowserAnswer from './components/browser/BrowserAnswer';
+import BrowserDecision from './components/browser/BrowserDecision';
+import BrowserScoreboard from './components/browser/BrowserScoreboard';
 
-import MobileWrapper from './components/MobileWrapper';
-import MobileLobby from './components/MobileLobby';
-import MobileBoard from './components/MobileBoard';
-import MobileClue from './components/MobileClue';
-import MobileAnswer from './components/MobileAnswer';
-import MobileDecision from './components/MobileDecision';
-import MobileScoreboard from './components/MobileScoreboard';
-
-import 'bootstrap/dist/css/bootstrap.min.css';
-import './stylesheets/Game.css';
+import MobileWrapper from './components/mobile/MobileWrapper';
+import MobileLobby from './components/mobile/MobileLobby';
+import MobileBoard from './components/mobile/MobileBoard';
+import MobileClue from './components/mobile/MobileClue';
+import MobileAnswer from './components/mobile/MobileAnswer';
+import MobileDecision from './components/mobile/MobileDecision';
+import MobileScoreboard from './components/mobile/MobileScoreboard';
 
 import { GameState } from './constants/GameState';
 import { SocketContext, socket } from './context/socket';
 
+import 'bootstrap/dist/css/bootstrap.min.css';
+
+import { createGlobalStyle } from 'styled-components';
+import backgroundImage from './assets/images/background.png';
+import logoFont from './assets/fonts/logo.ttf';
+import clueFont from './assets/fonts/clue.otf';
+import boardFont from './assets/fonts/board.otf';
+
+const GlobalStyle = createGlobalStyle`
+    body {
+        overflow: hidden;
+        background-image: url(${backgroundImage});
+        color: white !important;
+        text-align: center;
+    
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+    
+    @font-face {
+        font-family: logo;
+        src: url(${logoFont});
+    }
+    
+    @font-face {
+        font-family: clue;
+        src: url(${clueFont});
+    }
+    
+    @font-face {
+        font-family: board;
+        src: url(${boardFont});
+    }
+`;
+
 const Game = () => {
-    const [gameState, setGameState] = useState(GameState.ANSWER);
+    const [gameState, setGameState] = useState(GameState.LOBBY);
     const [gameStateAck, setGameStateAck] = useState(() => () => {});
 
     useEffect(() => {
@@ -79,6 +113,7 @@ const Game = () => {
 
     return (
         <SocketContext.Provider value={socket}>
+            <GlobalStyle />
             <BrowserView>
                 <BrowserWrapper>
                     {browserView}

@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from "react";
 
-import { SocketContext } from '../context/socket';
+import { SocketContext } from '../../context/socket';
 
 const BrowserWrapper = (props) => {
     const socket = useContext(SocketContext);

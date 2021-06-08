@@ -4,7 +4,7 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 
-import { SocketContext } from '../context/socket';
+import { SocketContext } from '../../context/socket';
 
 const BrowserDecision = () => {
     const [showAnswer, setShowAnswer] = useState(false);

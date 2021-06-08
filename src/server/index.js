@@ -14,21 +14,14 @@ let disconnectionCache = new cache.Cache();
 const Player = require('../constants/Player').Player;
 const GameSession = require('../constants/GameSession').GameSession;
 const GameState = require('../constants/GameState').GameState;
+
+const timers = require('../constants/timers').timers;
 const getRandomCategories = require('../helpers/jservice').getRandomCategories;
 const checkSignature = require('../helpers/checkSignature').checkSignature;
 const checkAnswer = require('../helpers/checkAnswer').checkAnswer;
 const formatRaw = require('../helpers/format').formatRaw;
 
 const NUM_CLUES = 5;
-
-const SHOW_PRE_DECISION_TIME = 1000;
-const SHOW_DECISION_TIME = 1000;
-const SHOW_ANSWER_TIME = 1000;
-const SHOW_SCOREBOARD_TIME = 4000;
-const SHOW_SCOREBOARD_UPDATE_TIME = 1000;
-
-const BUZZ_IN_TIMEOUT = 5000;
-const ANSWER_TIMEOUT = 5000;
 
 app.use(express.static(path.join(__dirname, '../../build')));
 app.get('/', (req, res, next) => res.sendFile(__dirname + './index.html'));
@@ -243,8 +236,8 @@ const showCorrectAnswer = (socket, correctAnswer, timeout) => {
 
         setTimeout(() => {
             showBoard(socket);
-        }, SHOW_SCOREBOARD_TIME);
-    }, SHOW_ANSWER_TIME);
+        }, timers.SHOW_SCOREBOARD_TIME);
+    }, timers.SHOW_ANSWER_TIME);
 };
 
 const showScoreboard = (socket) => {
@@ -262,7 +255,7 @@ const showScoreboard = (socket) => {
             if (!_.isEqual(gameSession.players, gameSession.updatedPlayers)) {
                 setTimeout(() => {
                     client.emit('show_update');
-                }, SHOW_SCOREBOARD_UPDATE_TIME);
+                }, timers.SHOW_SCOREBOARD_UPDATE_TIME);
             }
         });
     });
@@ -370,7 +363,7 @@ io.on('connection', (socket) => {
 
             let correctAnswer = sessionCache.get(socket.sessionName).categories[categoryIndex].clues[clueIndex].answer;
             showCorrectAnswer(socket, correctAnswer, timeout=true);
-        }, BUZZ_IN_TIMEOUT);
+        }, timers.BUZZ_IN_TIMEOUT);
     });
 
     socket.on('buzz_in', () => {
@@ -389,6 +382,7 @@ io.on('connection', (socket) => {
                 client.emit('is_answering', client.id === socket.id);
                 client.emit('categories', gameSession.categories);
                 client.emit('request_clue', categoryIndex, clueIndex);
+                client.emit('player_name', gameSession.players[socket.id].name);
             });
         });
 
@@ -400,7 +394,7 @@ io.on('connection', (socket) => {
             }
 
             socket.emit('answer_timeout', sessionCache.get(socket.sessionName).players[socket.id].answer);
-        }, ANSWER_TIMEOUT);
+        }, timers.ANSWER_TIMEOUT);
     });
 
     socket.on('answer_livefeed', (answerLivefeed) => {
@@ -455,14 +449,14 @@ io.on('connection', (socket) => {
 
                     setTimeout(() => {
                         showBoard(socket);
-                    }, SHOW_SCOREBOARD_TIME);
+                    }, timers.SHOW_SCOREBOARD_TIME);
                 } else if (gameSession.playersAnswered.length === Object.keys(gameSession.players).length) {
                     showCorrectAnswer(socket, correctAnswer, timeout=false);
                 } else {
                     showClue(socket, categoryIndex, clueIndex);
                 }
-            }, SHOW_DECISION_TIME);
-        }, SHOW_PRE_DECISION_TIME);
+            }, timers.SHOW_DECISION_TIME);
+        }, timers.SHOW_PRE_DECISION_TIME);
     });
 
     socket.on('disconnect', () => {

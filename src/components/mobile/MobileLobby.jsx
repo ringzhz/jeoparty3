@@ -7,7 +7,7 @@ import InputGroup from 'react-bootstrap/InputGroup';
 import Button from 'react-bootstrap/Button';
 import FormControl from 'react-bootstrap/FormControl';
 
-import { SocketContext } from '../context/socket';
+import { SocketContext } from '../../context/socket';
 
 const MobileLobby = () => {
     const MobileLobbyState = {
@@ -53,11 +53,11 @@ const MobileLobby = () => {
 
     const handleJoinSession = useCallback((sessionName) => {
         socket.emit('join_session', sessionName);
-    }, []);
+    }, [socket]);
 
     const handleSubmitSignature = useCallback((playerName) => {
         socket.emit('submit_signature', playerName);
-    }, []);
+    }, [socket]);
 
     return (
         <Container fluid>

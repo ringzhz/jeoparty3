@@ -7,10 +7,14 @@ import ListGroup from 'react-bootstrap/ListGroup';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Button from 'react-bootstrap/Button';
 
-import { sampleCategories } from '../constants/sampleCategories';
-import { SocketContext } from '../context/socket';
+import { sampleCategories } from '../../constants/sampleCategories';
+import { SocketContext } from '../../context/socket';
 
-import '../stylesheets/MobileBoard.css';
+import styled from 'styled-components';
+
+const BoardItem = styled(ListGroup.Item)`
+    padding: 0 !important;
+`;
 
 const MobileBoard = () => {
     const NUM_CATEGORIES = 6;
@@ -34,20 +38,20 @@ const MobileBoard = () => {
 
     const handleRequestClue = useCallback((categoryIndex, clueIndex) => {
         socket.emit('request_clue', categoryIndex, clueIndex);
-    }, []);
+    }, [socket]);
 
     let categoryListGroupItems = Array.from(Array(NUM_CATEGORIES).keys()).map((i) => {
         let category = categories[i];
         let categoryTitle = category.title;
 
         return (
-            <ListGroup.Item action active={categoryIndex === i} onClick={() => setCategoryIndex(i)} disabled={category && category.completed}>
+            <BoardItem action active={categoryIndex === i} onClick={() => setCategoryIndex(i)} disabled={category && category.completed}>
                 {category && category.completed ? '' : categoryTitle}
-            </ListGroup.Item>
+            </BoardItem>
         );
     });
 
-    let clueListGroupItems = Array.from(Array(NUM_CLUES).keys()).map((i) => {
+    let clueListGroupItems = Array.from(Array(NUM_CLUES).keys()).forEach((i) => {
         if (categoryIndex === null) {
             return;
         }
@@ -57,9 +61,9 @@ const MobileBoard = () => {
         let dollarValue = 200 * (i + 1);
 
         return (
-            <ListGroup.Item action active={clueIndex === i} onClick={() => setClueIndex(i)} disabled={clue && clue.completed}>
+            <BoardItem action active={clueIndex === i} onClick={() => setClueIndex(i)} disabled={clue && clue.completed}>
                 {clue && clue.completed ? '' : dollarValue}
-            </ListGroup.Item>
+            </BoardItem>
         );
     });
 
