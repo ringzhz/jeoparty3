@@ -1,13 +1,14 @@
 exports.sampleCategories = [
     {
         id: 12619,
-        title: 'classic rock',
+        // title: 'classic rock',
+        title: 'album of the year grammys',
         clues_count: 5,
         clues: [
             {
                 id: 94925,
                 answer: 'Led Zeppelin',
-                question: "This group's fourth album had no title or name on the cover but did sell millions",
+                question: "This group's fourth album had no title or name on the cover but did sell millions but did sell mill",
                 value: 200,
                 airdate: '2010-07-13T12:00:00.000Z',
                 category_id: 12619,
@@ -58,7 +59,8 @@ exports.sampleCategories = [
     },
     {
         id: 7295,
-        title: 'full service',
+        // title: 'full service',
+        title: 'my heavens!',
         clues_count: 5,
         clues: [
             {
@@ -115,7 +117,8 @@ exports.sampleCategories = [
     },
     {
         id: 17611,
-        title: 'carbonation nation',
+        // title: 'carbonation nation',
+        title: 'getting married',
         clues_count: 10,
         clues: [
             {
@@ -172,7 +175,8 @@ exports.sampleCategories = [
     },
     {
         id: 7006,
-        title: 'ole "miss"',
+        // title: 'ole "miss"',
+        title: 'capital city hotels',
         clues_count: 5,
         clues: [
             {
@@ -229,7 +233,8 @@ exports.sampleCategories = [
     },
     {
         id: 11006,
-        title: '____off!',
+        // title: '____off!',
+        title: 'expensive hollywood divorces',
         clues_count: 5,
         clues: [
             {
@@ -286,7 +291,8 @@ exports.sampleCategories = [
     },
     {
         id: 331,
-        title: 'numbers in song',
+        // title: 'numbers in song',
+        title: '16th century science',
         clues_count: 5,
         clues: [
             {

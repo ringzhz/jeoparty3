@@ -5,6 +5,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 
 import FitText from '@kennethormandy/react-fittext';
+import { getCategoryTextLineHeight, getCategoryTextCompressor } from '../../helpers/getCategoryTextFormat';
 
 import { SocketContext } from '../../context/socket';
 
@@ -52,12 +53,14 @@ const FitTextWrapper = styled.div`
 `;
 
 const CategoryCol = styled(Col)`
-    line-height: 3em;
+    line-height: ${props => getCategoryTextLineHeight(props.textLength)};
 
     color: black;
     border-width: 0.2em;
     border-style: solid;
     border-bottom-width: 0.4em;
+    
+    max-height: 100%;
 `;
 
 const PriceCol = styled(Col)`
@@ -65,6 +68,8 @@ const PriceCol = styled(Col)`
     color: black;
     border-width: 0.2em;
     border-style: solid;
+    
+    max-height: 100%;
 `;
 
 const BrowserBoard = () => {
@@ -82,13 +87,16 @@ const BrowserBoard = () => {
     }, []);
 
     let categoryTitleRow = categories && categories.map((category) => {
-        let categoryTitle = category.title;
+        const categoryTitle = category.title;
+        const textLength = categoryTitle.length;
 
         return (
-            <CategoryCol lg={'2'}>
+            <CategoryCol textLength={textLength} lg={'2'}>
                 <FitTextWrapper>
-                    <FitText compressor={0.5}>
-                        <CategoryText>{category && category.completed ? '' : categoryTitle.toUpperCase()}</CategoryText>
+                    <FitText compressor={getCategoryTextCompressor(textLength)}>
+                        <CategoryText>
+                            {category && category.completed ? '' : categoryTitle.toUpperCase()}
+                        </CategoryText>
                     </FitText>
                 </FitTextWrapper>
             </CategoryCol>

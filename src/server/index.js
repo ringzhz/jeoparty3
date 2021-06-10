@@ -236,8 +236,8 @@ const showCorrectAnswer = (socket, correctAnswer, timeout) => {
 
         setTimeout(() => {
             showBoard(socket);
-        }, timers.SHOW_SCOREBOARD_TIME);
-    }, timers.SHOW_ANSWER_TIME);
+        }, timers.SHOW_SCOREBOARD_TIME * 1000);
+    }, timers.SHOW_ANSWER_TIME * 1000);
 };
 
 const showScoreboard = (socket) => {
@@ -255,7 +255,7 @@ const showScoreboard = (socket) => {
             if (!_.isEqual(gameSession.players, gameSession.updatedPlayers)) {
                 setTimeout(() => {
                     client.emit('show_update');
-                }, timers.SHOW_SCOREBOARD_UPDATE_TIME);
+                }, timers.SHOW_SCOREBOARD_UPDATE_TIME * 1000);
             }
         });
     });
@@ -363,7 +363,7 @@ io.on('connection', (socket) => {
 
             let correctAnswer = sessionCache.get(socket.sessionName).categories[categoryIndex].clues[clueIndex].answer;
             showCorrectAnswer(socket, correctAnswer, timeout=true);
-        }, timers.BUZZ_IN_TIMEOUT);
+        }, timers.BUZZ_IN_TIMEOUT * 1000);
     });
 
     socket.on('buzz_in', () => {
@@ -394,7 +394,7 @@ io.on('connection', (socket) => {
             }
 
             socket.emit('answer_timeout', sessionCache.get(socket.sessionName).players[socket.id].answer);
-        }, timers.ANSWER_TIMEOUT);
+        }, timers.ANSWER_TIMEOUT * 1000);
     });
 
     socket.on('answer_livefeed', (answerLivefeed) => {
@@ -449,14 +449,14 @@ io.on('connection', (socket) => {
 
                     setTimeout(() => {
                         showBoard(socket);
-                    }, timers.SHOW_SCOREBOARD_TIME);
+                    }, timers.SHOW_SCOREBOARD_TIME * 1000);
                 } else if (gameSession.playersAnswered.length === Object.keys(gameSession.players).length) {
                     showCorrectAnswer(socket, correctAnswer, timeout=false);
                 } else {
                     showClue(socket, categoryIndex, clueIndex);
                 }
-            }, timers.SHOW_DECISION_TIME);
-        }, timers.SHOW_PRE_DECISION_TIME);
+            }, timers.SHOW_DECISION_TIME * 1000);
+        }, timers.SHOW_PRE_DECISION_TIME * 1000);
     });
 
     socket.on('disconnect', () => {

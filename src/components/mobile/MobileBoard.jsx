@@ -51,7 +51,7 @@ const MobileBoard = () => {
         );
     });
 
-    let clueListGroupItems = Array.from(Array(NUM_CLUES).keys()).forEach((i) => {
+    let clueListGroupItems = Array.from(Array(NUM_CLUES).keys()).map((i) => {
         if (categoryIndex === null) {
             return;
         }

@@ -5,6 +5,8 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 
 import FitText from '@kennethormandy/react-fittext';
+import { getCategoryTextCompressor } from "../../helpers/getCategoryTextFormat";
+import { getClueTextCompressor } from '../../helpers/getClueTextFormat';
 
 import Timer from '../../helpers/components/Timer';
 import { SocketContext } from '../../context/socket';
@@ -33,7 +35,7 @@ const PanelCol = styled(Col)`
 `;
 
 const CluePanel = styled.div`
-    margin-left: calc(20% / 2);
+    margin-left: 10%;
     height: 75%;
     width: 80%;
     border: 0.3em solid black;
@@ -56,7 +58,6 @@ const CategoryPanel = styled(CluePanel)`
 `;
 
 const CategoryText = styled.span`
-    font-size: 10vh;
     font-family: board, serif;
     color: white;
     text-shadow: 0.1em 0.1em #000;
@@ -89,9 +90,9 @@ const PlayerNameText = styled.span`
 `;
 
 const LivefeedPanel = styled.div`
-    margin-left: calc(20% / 2);
+    margin-left: calc(10% / 2);
     height: 25%;
-    width: 80%;
+    width: 90%;
     border: 0.3em solid black;
     box-shadow: 0.5em 0.5em black;
     
@@ -100,6 +101,10 @@ const LivefeedPanel = styled.div`
     font-weight: bold;
     font-family: clue, serif;
     text-shadow: 0.35em 0.35em #000;
+    
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 `;
 
 const BrowserAnswer = () => {
@@ -148,11 +153,13 @@ const BrowserAnswer = () => {
             <ClueRow>
                 <PanelCol lg={'6'}>
                     <CategoryPanel>
-                        <CategoryText>
-                            {(categoryIndex !== null) && (
-                                categories[categoryIndex].title.toUpperCase()
-                            )}
-                        </CategoryText>
+                        <FitText compressor={getCategoryTextCompressor((categoryIndex !== null) ? categories[categoryIndex].title.length : 0, true)}>
+                            <CategoryText textLength={(categoryIndex !== null) ? categories[categoryIndex].title.length : 0}>
+                                {(categoryIndex !== null) && (
+                                    categories[categoryIndex].title.toUpperCase()
+                                )}
+                            </CategoryText>
+                        </FitText>
                         <PriceText>
                             <DollarSignText>$</DollarSignText>
                             {(categoryIndex !== null && clueIndex !== null) && (
@@ -164,14 +171,14 @@ const BrowserAnswer = () => {
 
                 <PanelCol lg={'6'}>
                     <CluePanel>
-                        <FitText compressor={1.25}>
+                        <FitText compressor={getClueTextCompressor((categoryIndex !== null && clueIndex !== null) ? categories[categoryIndex].clues[clueIndex].question.length : 0, true)}>
                             {(categoryIndex !== null && clueIndex !== null) && (
                                 categories[categoryIndex].clues[clueIndex].question.toUpperCase()
                             )}
                         </FitText>
                     </CluePanel>
 
-                    <Timer override={{ position: 'absolute', left: '25%', bottom: '5%' }} height={'5%'} width={'50%'} start={startTimer} time={timers.ANSWER_TIMEOUT} slideUp={false} />
+                    <Timer override={{ position: 'absolute', left: '25%', bottom: '0' }} height={'5%'} width={'50%'} start={startTimer} time={timers.ANSWER_TIMEOUT} slideUp={false} />
                 </PanelCol>
             </ClueRow>
 

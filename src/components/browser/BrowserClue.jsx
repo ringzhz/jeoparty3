@@ -5,6 +5,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 
 import FitText from '@kennethormandy/react-fittext';
+import { getClueTextCompressor } from "../../helpers/getClueTextFormat";
 
 import Timer from '../../helpers/components/Timer';
 import { SocketContext } from '../../context/socket';
@@ -15,7 +16,7 @@ import mixins from '../../helpers/mixins';
 import { timers } from '../../constants/timers';
 
 // DEBUG
-// import { sampleCategories } from '../../constants/sampleCategories';
+import { sampleCategories } from '../../constants/sampleCategories';
 
 const ClueRow = styled(Row)`
     height: 80vh;
@@ -39,15 +40,15 @@ const TimerRow = styled(Row)`
 
 const BrowserClue = () => {
     // DEBUG
-    // const [categories, setCategories] = useState(sampleCategories);
-    // const [categoryIndex, setCategoryIndex] = useState(0);
-    // const [clueIndex, setClueIndex] = useState(0);
-    // const [startTimer, setStartTimer] = useState(false);
-
-    const [categories, setCategories] = useState({});
-    const [categoryIndex, setCategoryIndex] = useState(null);
-    const [clueIndex, setClueIndex] = useState(null);
+    const [categories, setCategories] = useState(sampleCategories);
+    const [categoryIndex, setCategoryIndex] = useState(0);
+    const [clueIndex, setClueIndex] = useState(0);
     const [startTimer, setStartTimer] = useState(false);
+
+    // const [categories, setCategories] = useState({});
+    // const [categoryIndex, setCategoryIndex] = useState(null);
+    // const [clueIndex, setClueIndex] = useState(null);
+    // const [startTimer, setStartTimer] = useState(false);
 
     const socket = useContext(SocketContext);
 
@@ -66,16 +67,15 @@ const BrowserClue = () => {
         }, 100);
     }, []);
 
-    console.log(timers.BUZZ_IN_TIMEOUT);
+    const clueText = (categoryIndex !== null && clueIndex !== null) && categories[categoryIndex].clues[clueIndex].question;
+    const textLength = clueText ? clueText.length : 0;
 
     return (
         <Container fluid>
             <ClueRow>
                 <ClueCol lg={'12'}>
-                    <FitText compressor={2}>
-                        {(categoryIndex !== null && clueIndex !== null) && (
-                            categories[categoryIndex].clues[clueIndex].question.toUpperCase()
-                        )}
+                    <FitText compressor={getClueTextCompressor(textLength)}>
+                        {(clueText) && clueText.toUpperCase()}
                     </FitText>
                 </ClueCol>
             </ClueRow>
