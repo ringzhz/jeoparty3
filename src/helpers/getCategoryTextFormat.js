@@ -6,7 +6,7 @@ const getCategoryTextLineHeight = (textLength) => {
     } else if (textLength > 10) {
         lineHeight = '2em';
     } else {
-        lineHeight = '2.25em';
+        lineHeight = '2.5em';
     }
 
     return lineHeight;
