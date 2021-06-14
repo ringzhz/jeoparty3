@@ -237,7 +237,7 @@ const showCorrectAnswer = (socket, correctAnswer, timeout) => {
         setTimeout(() => {
             showBoard(socket);
         }, timers.SHOW_SCOREBOARD_TIME * 1000);
-    }, timers.SHOW_ANSWER_TIME * 1000);
+    }, timers.SHOW_DECISION_TIME * 1000);
 };
 
 const showScoreboard = (socket) => {
@@ -419,14 +419,9 @@ io.on('connection', (socket) => {
         let clueIndex = gameSession.clueIndex;
         let correctAnswer = gameSession.categories[categoryIndex].clues[clueIndex].answer;
         let isCorrect = checkAnswer(correctAnswer, answer);
+        let price = 200 * (clueIndex + 1);
 
         updatePlayerScore(socket, clueIndex, isCorrect);
-
-        gameSession.clients.map((client) => {
-            client.emit('set_game_state', GameState.DECISION, () => {
-                client.emit('show_answer', answer);
-            });
-        });
 
         updateGameSession(socket.sessionName, 'currentGameState', GameState.DECISION);
 
@@ -435,7 +430,7 @@ io.on('connection', (socket) => {
                 return;
             }
 
-            io.to(socket.sessionName).emit('show_decision', isCorrect);
+            io.to(socket.sessionName).emit('show_decision', correctAnswer, isCorrect, price);
 
             setTimeout(() => {
                 if (!sessionCache.get(socket.sessionName)) {

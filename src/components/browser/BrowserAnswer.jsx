@@ -79,10 +79,6 @@ const PriceText = styled.span`
     text-shadow: 0.08em 0.08em #000;
 `;
 
-const LivefeedCol = styled(Col)`
-    ${mixins.flexAlignCenter}
-`;
-
 const PlayerNameText = styled.span`
     font-size: 5vh;
     font-family: clue, serif;
@@ -183,14 +179,14 @@ const BrowserAnswer = () => {
             </ClueRow>
 
             <LivefeedRow>
-                <LivefeedCol lg={'12'}>
+                <PanelCol lg={'12'}>
                     <PlayerNameText>{playerName.toUpperCase()}</PlayerNameText>
                     <LivefeedPanel>
                         <FitText compressor={1.5}>
                             {answerLivefeed.toUpperCase()}
                         </FitText>
                     </LivefeedPanel>
-                </LivefeedCol>
+                </PanelCol>
             </LivefeedRow>
         </Container>
     );
