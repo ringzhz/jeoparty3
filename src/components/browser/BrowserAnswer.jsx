@@ -1,24 +1,21 @@
 import React, { useContext, useEffect, useState } from 'react';
 
+import styled from 'styled-components';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-
 import FitText from '@kennethormandy/react-fittext';
-import { getCategoryTextCompressor } from "../../helpers/getCategoryTextFormat";
-import { getClueTextCompressor } from '../../helpers/getClueTextFormat';
 
-import Timer from '../../helpers/components/Timer';
 import { SocketContext } from '../../context/socket';
-
-import styled from 'styled-components';
+import { getCategoryTextCompressor } from '../../helpers/getCategoryTextFormat';
+import { getClueTextCompressor } from '../../helpers/getClueTextFormat';
+import { timers } from '../../constants/timers';
 import mixins from '../../helpers/mixins';
 import starryBackgroundImage from '../../assets/images/starryBackground.png';
-
-import { timers } from '../../constants/timers';
+import Timer from '../../helpers/components/Timer';
 
 // DEBUG
-// import { sampleCategories } from '../../constants/sampleCategories';
+import { sampleCategories } from '../../constants/sampleCategories';
 
 const ClueRow = styled(Row)`
     height: 60vh;

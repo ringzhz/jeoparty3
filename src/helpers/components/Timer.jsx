@@ -1,6 +1,7 @@
 import React from 'react';
 
 import styled from 'styled-components';
+
 import timerFrameImage from '../../assets/images/timer-frame.png';
 import timerBackgroundImage from '../../assets/images/timer-background.png';
 import timerImage from '../../assets/images/timer.png';

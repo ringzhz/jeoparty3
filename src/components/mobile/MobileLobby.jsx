@@ -1,13 +1,31 @@
 import React, { useContext, useCallback, useState, useEffect } from 'react';
 
+import styled from 'styled-components';
 import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Button from 'react-bootstrap/Button';
 import FormControl from 'react-bootstrap/FormControl';
 
 import { SocketContext } from '../../context/socket';
+import mixins from '../../helpers/mixins';
+import MobileWait from '../../helpers/components/MobileWait';
+
+const MobileLobbyRow = styled.div`
+    ${mixins.flexAlignCenter}
+    height: 100vh;
+`;
+
+const LogoText = styled.h1`
+    font-family: logo, serif;
+    font-size: 10vh;
+    text-shadow: 0.075em 0.075em #000;
+`;
+
+const JoinText = styled.span`
+    font-weight: bold;
+    font-family: clue, serif;
+`;
 
 const MobileLobby = () => {
     const MobileLobbyState = {
@@ -63,43 +81,39 @@ const MobileLobby = () => {
         <Container fluid>
             {
                 mobileLobbyState === MobileLobbyState.SESSION_NAME &&
-                <Row className={'text-center'}>
+                <MobileLobbyRow>
                     <Col lg={'12'}>
-                        Welcome to the mobile lobby!
+                        <LogoText>JEOPARTY!</LogoText>
 
                         <InputGroup className='mb-3'>
-                            <FormControl value={sessionName} onChange={e => setSessionName(e.target.value)} aria-describedby='basic-addon1' />
+                            <FormControl placeholder={'Enter session name...'} value={sessionName.toUpperCase()} onChange={e => setSessionName(e.target.value)} aria-describedby='basic-addon1' />
                             <InputGroup.Prepend>
-                                <Button onClick={() => handleJoinSession(sessionName)} variant='outline-secondary'>Join</Button>
+                                <Button onClick={() => handleJoinSession(sessionName)} variant='outline-light'><JoinText>JOIN</JoinText></Button>
                             </InputGroup.Prepend>
                         </InputGroup>
                     </Col>
-                </Row>
+                </MobileLobbyRow>
             }
 
             {
                 mobileLobbyState === MobileLobbyState.SIGNATURE &&
-                <Row className={'text-center'}>
+                <MobileLobbyRow>
                     <Col lg={'12'}>
                         You're in a session!
 
                         <InputGroup className='mb-3'>
                             <FormControl value={playerName} onChange={e => setPlayerName(e.target.value)} aria-describedby='basic-addon1' />
                             <InputGroup.Prepend>
-                                <Button onClick={() => handleSubmitSignature(playerName)} variant='outline-secondary'>Submit</Button>
+                                <Button onClick={() => handleSubmitSignature(playerName)} variant='outline-light'>Submit</Button>
                             </InputGroup.Prepend>
                         </InputGroup>
                     </Col>
-                </Row>
+                </MobileLobbyRow>
             }
 
             {
                 mobileLobbyState === MobileLobbyState.IS_WAITING &&
-                <Row className={'text-center'}>
-                    <Col lg={'12'}>
-                        You're waiting!
-                    </Col>
-                </Row>
+                <MobileWait />
             }
         </Container>
     );

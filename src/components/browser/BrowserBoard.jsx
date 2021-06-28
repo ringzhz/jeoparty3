@@ -1,17 +1,18 @@
 import React, { useState, useContext, useEffect} from 'react';
 
+import styled from 'styled-components';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-
 import FitText from '@kennethormandy/react-fittext';
-import { getCategoryTextLineHeight, getCategoryTextCompressor } from '../../helpers/getCategoryTextFormat';
 
 import { SocketContext } from '../../context/socket';
-
-import styled from 'styled-components';
+import { getCategoryTextLineHeight, getCategoryTextCompressor } from '../../helpers/getCategoryTextFormat';
 import mixins from '../../helpers/mixins';
+import backgroundImage from '../../assets/images/background.png'
+import BrowserClue from './BrowserClue';
 
+// DEBUG
 import { sampleCategories } from '../../constants/sampleCategories';
 
 const BoardRow = styled(Row)`
@@ -72,11 +73,40 @@ const PriceCol = styled(Col)`
     max-height: 100%;
 `;
 
+const ClueWrapper = styled.div`
+    background-image: url(${backgroundImage});
+    position: absolute;
+    z-index: 2;
+    
+    transform: scale(0.16);
+    top: ${props => `calc(-125vh/3 + ${(props.clueIndex + 1) * 100}vh/6)`};
+    left: ${props => `calc(-25vw + ${(props.categoryIndex - 1) * 100}vw/6)`};
+    opacity: 0;
+    
+    &.animate {
+        transform: scale(1);
+        top: 0;
+        left: 0;
+        opacity: 1;
+        
+        transition: transform 1s, top 1s, left 1s;
+    }
+`;
+
 const BrowserBoard = () => {
     const NUM_CATEGORIES = 6;
     const NUM_CLUES = 5;
 
-    const [categories, setCategories] = useState(sampleCategories);
+    // DEBUG
+    // const [animateClue, setAnimateClue] = useState(false);
+    // const [categories, setCategories] = useState(sampleCategories);
+    // const [categoryIndex, setCategoryIndex] = useState(0);
+    // const [clueIndex, setClueIndex] = useState(1);
+
+    const [animateClue, setAnimateClue] = useState(false);
+    const [categories, setCategories] = useState([]);
+    const [categoryIndex, setCategoryIndex] = useState(null);
+    const [clueIndex, setClueIndex] = useState(null);
 
     const socket = useContext(SocketContext);
 
@@ -84,7 +114,28 @@ const BrowserBoard = () => {
         socket.on('categories', (categories) => {
             setCategories(categories);
         });
+
+        socket.on('request_clue', (categoryIndex, clueIndex) => {
+            setCategoryIndex(categoryIndex);
+            setClueIndex(clueIndex);
+
+            setTimeout(() => {
+                setAnimateClue(true);
+            }, 100);
+        });
     }, []);
+
+    // DEBUG
+    // document.body.onkeyup = (e) => {
+    //     if (e.keyCode === 32) {
+    //         setCategoryIndex(1);
+    //         setClueIndex(1);
+    //
+    //         setTimeout(() => {
+    //             setAnimateClue(true);
+    //         }, 100);
+    //     }
+    // };
 
     let categoryTitleRow = categories && categories.map((category) => {
         const categoryTitle = category.title;
@@ -103,11 +154,11 @@ const BrowserBoard = () => {
         );
     });
 
-    let priceRows = Array.from(Array(NUM_CLUES).keys()).map((j) => {
+    let priceRows = categories && Array.from(Array(NUM_CLUES).keys()).map((j) => {
         let dollarValue = 200 * (j + 1);
 
         let priceCols = Array.from(Array(NUM_CATEGORIES).keys()).map((i) => {
-            let clue = categories && categories[i].clues[j];
+            let clue = categories && categories[i] && categories[i].clues[j];
 
             return (
                 <PriceCol lg={'2'}>
@@ -136,6 +187,12 @@ const BrowserBoard = () => {
             <CategoryRow>
                 {categoryTitleRow}
             </CategoryRow>
+
+            <ClueWrapper className={animateClue ? 'animate' : ''}
+                         categoryIndex={categoryIndex && categoryIndex}
+                         clueIndex={clueIndex && clueIndex}>
+                <BrowserClue />
+            </ClueWrapper>
 
             {priceRows}
         </Container>

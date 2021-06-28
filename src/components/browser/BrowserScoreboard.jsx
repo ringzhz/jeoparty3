@@ -1,23 +1,23 @@
 import React, {useState, useEffect, useContext} from 'react';
 
+import styled from 'styled-components';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import FitText from '@kennethormandy/react-fittext';
 
 import { SocketContext } from '../../context/socket';
-
-import styled from 'styled-components';
+import mixins from '../../helpers/mixins';
 
 // DEBUG
-// import { samplePlayers, sampleUpdatedPlayers } from '../../constants/samplePlayers';
+import { samplePlayers, sampleUpdatedPlayers } from '../../constants/samplePlayers';
 
 const PlayerCardRow = styled(Row)`
-    height: 25vh;
+    height: calc(100vh / 3);
     padding: 0.5em;
    
     z-index: ${props => props.zIndex};
-
-    transform: ${props => `translate(0, ${25 * props.positionChange}vh)`};
+    transform: ${props => `translate(0, ${(100 / 3) * props.positionChange}vh)`};
     transition-property: transform;
     transition-duration: 3s;
     transition-timing-function: ease-in-out;
@@ -25,7 +25,51 @@ const PlayerCardRow = styled(Row)`
 
 const PlayerCardCol = styled(Col)`
     border: 0.25em solid black;
-    box-shadow: 0.5em 0.5em black;
+    box-shadow: 0.25em 0.25em black;
+`;
+
+const InfoRow = styled(Row)`
+    height: 100%;
+`;
+
+const SignatureCol = styled(Col)`
+    ${mixins.flexAlignCenter}
+`;
+
+const Signature = styled.canvas`
+    display: block;
+    margin: 0 auto;
+    
+    height: calc(75vh / 3);
+    width: calc(75vh / 3);
+    
+    background-color: white;
+    border: 0.25em solid black;
+    box-shadow: 0.25em 0.25em black;
+`;
+
+const PlayerNameCol = styled(Col)`
+    ${mixins.flexAlignCenter}
+`;
+
+const PlayerNameText = styled.span`
+    font-family: board, serif;
+    color: white;
+    text-shadow: 0.1em 0.1em #000;
+`;
+
+const HypeCol = styled(Col)`
+    ${mixins.flexAlignCenter}
+`;
+
+const PlayerScoreCol = styled(Col)`
+    ${mixins.flexAlignCenter}
+`;
+
+const PlayerScoreText = styled.span`
+    font-family: board, serif;
+    color: #d69f4c;
+    text-shadow: 0.1em 0.1em #000;
 `;
 
 const sortByScore = (players) => Object.values(players).sort((a, b) => b.score - a.score);
@@ -35,7 +79,29 @@ const PlayerCard = (props) => {
     return (
         <PlayerCardRow positionChange={props.positionChange}>
             <PlayerCardCol lg={'12'}>
-                {props.player.name}: {props.player.score}
+                <InfoRow>
+                    <SignatureCol lg={'3'}>
+                        <Signature />
+                    </SignatureCol>
+
+                    <PlayerNameCol lg={'3'}>
+                        <FitText compressor={0.5}>
+                            <PlayerNameText>{props.player.name.toUpperCase()}</PlayerNameText>
+                        </FitText>
+                    </PlayerNameCol>
+
+                    <HypeCol lg={'3'}>
+                        <FitText compressor={1}>
+                            {/*<HypeText text={'GENIUS'} rainbow={true} />*/}
+                        </FitText>
+                    </HypeCol>
+
+                    <PlayerScoreCol lg={'3'}>
+                        <FitText compressor={0.5}>
+                            <PlayerScoreText>${props.player.score}</PlayerScoreText>
+                        </FitText>
+                    </PlayerScoreCol>
+                </InfoRow>
             </PlayerCardCol>
         </PlayerCardRow>
     );

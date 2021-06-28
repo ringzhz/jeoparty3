@@ -55,6 +55,42 @@ const GlobalStyle = createGlobalStyle`
         font-family: board;
         src: url(${boardFont});
     }
+    
+    @keyframes rainbow {
+      0% {
+        color: #e6261f;
+      }
+      12.5% {
+        color: #eb7532;
+      }
+      25% {
+        color: #f7d038;
+      }
+      37.5% {
+        color: #a3e048;
+      }
+      50% {
+        color: #49da9a;
+      }
+      62.5% {
+        color: #4355db;
+      }
+      75% {
+        color: #d23be7;
+      }
+      87.5 {
+        color: #ffb6c1;
+      }
+      100% {
+        color: #e6261f;
+      }
+    }
+    
+    @keyframes move-text {
+        0% { bottom: -0.2em; opacity: 1; }
+        50% { bottom: 0.2em; }
+        100% { bottom: 0; opacity: 1; }
+    }
 `;
 
 const Game = () => {

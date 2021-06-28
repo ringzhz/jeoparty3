@@ -1,29 +1,71 @@
 import React, { useState, useCallback, useContext, useEffect } from 'react';
 
+import styled from 'styled-components';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import ListGroup from 'react-bootstrap/ListGroup';
-import InputGroup from 'react-bootstrap/InputGroup';
-import Button from 'react-bootstrap/Button';
+import FitText from '@kennethormandy/react-fittext';
 
-import { sampleCategories } from '../../constants/sampleCategories';
 import { SocketContext } from '../../context/socket';
+import mixins from '../../helpers/mixins';
+import MobileWait from '../../helpers/components/MobileWait';
 
-import styled from 'styled-components';
+// DEBUG
+import { sampleCategories } from '../../constants/sampleCategories';
 
-const BoardItem = styled(ListGroup.Item)`
-    padding: 0 !important;
+const MobileBoardContainer = styled(Container)`
+    padding: 0;
+`;
+
+const CategoryRow = styled(Row)`
+    ${mixins.flexAlignCenter}
+    height: calc(100vh / 6);
+`;
+
+const CategoryCol = styled(Col)`
+    ${mixins.flexAlignCenter}
+    color: black;
+    border-width: 0.2em;
+    border-style: solid;
+`;
+
+const CategoryText = styled.span`
+    font-family: board, serif;
+    color: white;
+    text-shadow: 0.1em 0.1em #000;
+`;
+
+const PriceRow = styled(Row)`
+    ${mixins.flexAlignCenter}
+    height: calc(100vh / 5);
+`;
+
+const PriceCol = styled(Col)`
+    ${mixins.flexAlignCenter}
+    color: black;
+    border-width: 0.2em;
+    border-style: solid;
+`;
+
+const PriceText = styled.span`
+    font-family: board, serif;
+    color: #d69f4c;
+    text-shadow: 0.08em 0.08em #000;
 `;
 
 const MobileBoard = () => {
     const NUM_CATEGORIES = 6;
     const NUM_CLUES = 5;
 
-    const [categories, setCategories] = useState(sampleCategories);
-    const [isBoardController, setIsBoardController] = useState(true);
+    // DEBUG
+    // const [categories, setCategories] = useState(sampleCategories);
+    // const [isBoardController, setIsBoardController] = useState(true);
+    // const [categoryIndex, setCategoryIndex] = useState(0);
+
+    const [categories, setCategories] = useState([]);
+    const [isBoardController, setIsBoardController] = useState(false);
     const [categoryIndex, setCategoryIndex] = useState(null);
-    const [clueIndex, setClueIndex] = useState(null);
+
     const socket = useContext(SocketContext);
 
     useEffect(() => {
@@ -36,89 +78,67 @@ const MobileBoard = () => {
         });
     }, []);
 
+    const handleSelectCategory = useCallback((categoryIndex) => {
+        setCategoryIndex(categoryIndex);
+    }, []);
+
     const handleRequestClue = useCallback((categoryIndex, clueIndex) => {
         socket.emit('request_clue', categoryIndex, clueIndex);
-    }, [socket]);
+    }, []);
 
-    let categoryListGroupItems = Array.from(Array(NUM_CATEGORIES).keys()).map((i) => {
+    let categoryRows = categories && Array.from(Array(NUM_CATEGORIES).keys()).map((i) => {
         let category = categories[i];
-        let categoryTitle = category.title;
+        let categoryTitle = category && category.title;
 
         return (
-            <BoardItem action active={categoryIndex === i} onClick={() => setCategoryIndex(i)} disabled={category && category.completed}>
-                {category && category.completed ? '' : categoryTitle}
-            </BoardItem>
+            <CategoryRow onClick={() => handleSelectCategory(i)}>
+                <CategoryCol>
+                    <FitText compressor={2}>
+                        <CategoryText>{categoryTitle && categoryTitle.toUpperCase()}</CategoryText>
+                    </FitText>
+                </CategoryCol>
+            </CategoryRow>
         );
     });
 
-    let clueListGroupItems = Array.from(Array(NUM_CLUES).keys()).map((i) => {
-        if (categoryIndex === null) {
-            return;
-        }
-
-        let category = categories[categoryIndex];
-        let clue = category && category.clues[i];
+    let priceRows = categories && Array.from(Array(NUM_CLUES).keys()).map((i) => {
         let dollarValue = 200 * (i + 1);
 
         return (
-            <BoardItem action active={clueIndex === i} onClick={() => setClueIndex(i)} disabled={clue && clue.completed}>
-                {clue && clue.completed ? '' : dollarValue}
-            </BoardItem>
+            <PriceRow onClick={() => handleRequestClue(categoryIndex, i)}>
+                <PriceCol>
+                    <FitText compressor={1}>
+                        <PriceText>${dollarValue}</PriceText>
+                    </FitText>
+                </PriceCol>
+            </PriceRow>
         );
     });
 
+    let rows = null;
+
+    if (categoryIndex === null) {
+        rows = categoryRows;
+    } else {
+        rows = priceRows;
+    }
+
     return (
-        <Container fluid>
+        <MobileBoardContainer fluid>
             {
                 isBoardController && (
                     <div>
-                        <Row className={'category-list-row text-center'}>
-                            <Col lg={'12'}>
-                                <ListGroup>
-                                    {categoryListGroupItems}
-                                </ListGroup>
-                            </Col>
-                        </Row>
-
-                        <hr />
-
-                        <Row className={'clue-list-row text-center'}>
-                            <Col lg={'12'}>
-                                {
-                                    categoryIndex !== null && (
-                                        <ListGroup>
-                                            {clueListGroupItems}
-                                        </ListGroup>
-                                    )
-                                }
-                            </Col>
-                        </Row>
-
-                        <Row className={'submit-button-row text-center'}>
-                            <Col lg={'12'}>
-                                {
-                                    (categoryIndex !== null && clueIndex !== null) && (
-                                        <InputGroup className='mb-3 justify-content-center'>
-                                            <Button onClick={() => handleRequestClue(categoryIndex, clueIndex)} variant='dark'>Submit</Button>
-                                        </InputGroup>
-                                    )
-                                }
-                            </Col>
-                        </Row>
+                        {rows}
                     </div>
                 )
             }
 
             {
                 !isBoardController && (
-                    <Row className={'text-center'}>
-                        <Col lg={'12'}>
-                            You can't select a clue... dumbass!
-                        </Col>
-                    </Row>
+                    <MobileWait />
                 )
             }
-        </Container>
+        </MobileBoardContainer>
     );
 };
 

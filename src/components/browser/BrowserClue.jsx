@@ -1,22 +1,24 @@
 import React, { useContext, useEffect, useState } from 'react';
 
+import styled from 'styled-components';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-
 import FitText from '@kennethormandy/react-fittext';
-import { getClueTextCompressor } from "../../helpers/getClueTextFormat";
 
-import Timer from '../../helpers/components/Timer';
 import { SocketContext } from '../../context/socket';
-
-import styled from 'styled-components';
-import mixins from '../../helpers/mixins';
-
 import { timers } from '../../constants/timers';
+import { getClueTextCompressor } from '../../helpers/getClueTextFormat';
+import mixins from '../../helpers/mixins';
+import Timer from '../../helpers/components/Timer';
 
 // DEBUG
 import { sampleCategories } from '../../constants/sampleCategories';
+
+const BrowserClueContainer = styled(Container)`
+    height: 100vh;
+    width: 100vw;
+`;
 
 const ClueRow = styled(Row)`
     height: 80vh;
@@ -40,15 +42,15 @@ const TimerRow = styled(Row)`
 
 const BrowserClue = () => {
     // DEBUG
-    const [categories, setCategories] = useState(sampleCategories);
-    const [categoryIndex, setCategoryIndex] = useState(0);
-    const [clueIndex, setClueIndex] = useState(0);
-    const [startTimer, setStartTimer] = useState(false);
-
-    // const [categories, setCategories] = useState({});
-    // const [categoryIndex, setCategoryIndex] = useState(null);
-    // const [clueIndex, setClueIndex] = useState(null);
+    // const [categories, setCategories] = useState(sampleCategories);
+    // const [categoryIndex, setCategoryIndex] = useState(0);
+    // const [clueIndex, setClueIndex] = useState(0);
     // const [startTimer, setStartTimer] = useState(false);
+
+    const [categories, setCategories] = useState({});
+    const [categoryIndex, setCategoryIndex] = useState(null);
+    const [clueIndex, setClueIndex] = useState(null);
+    const [startTimer, setStartTimer] = useState(false);
 
     const socket = useContext(SocketContext);
 
@@ -60,18 +62,18 @@ const BrowserClue = () => {
         socket.on('request_clue', (categoryIndex, clueIndex) => {
             setCategoryIndex(categoryIndex);
             setClueIndex(clueIndex);
-        });
 
-        setTimeout(() => {
-            setStartTimer(true);
-        }, 100);
+            setTimeout(() => {
+                setStartTimer(true);
+            }, 100);
+        });
     }, []);
 
     const clueText = (categoryIndex !== null && clueIndex !== null) && categories[categoryIndex].clues[clueIndex].question;
     const textLength = clueText ? clueText.length : 0;
 
     return (
-        <Container fluid>
+        <BrowserClueContainer fluid>
             <ClueRow>
                 <ClueCol lg={'12'}>
                     <FitText compressor={getClueTextCompressor(textLength)}>
@@ -81,9 +83,9 @@ const BrowserClue = () => {
             </ClueRow>
 
             <TimerRow>
-                <Timer height={'6vh'} width={'60vw'} start={startTimer} time={timers.BUZZ_IN_TIMEOUT} slideUp={true} />
+                {startTimer ? <Timer height={'6vh'} width={'60vw'} start={startTimer} time={timers.BUZZ_IN_TIMEOUT} slideUp={true} /> : ''}
             </TimerRow>
-        </Container>
+        </BrowserClueContainer>
     );
 };
 

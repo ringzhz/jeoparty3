@@ -1,5 +1,6 @@
 import React, { useContext, useState, useEffect, useCallback } from "react";
 
+import styled from 'styled-components';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -7,8 +8,6 @@ import InputGroup from 'react-bootstrap/InputGroup';
 import Button from 'react-bootstrap/Button';
 
 import { SocketContext } from '../../context/socket';
-
-import styled from 'styled-components';
 import mixins from '../../helpers/mixins';
 
 // DEBUG
@@ -124,7 +123,7 @@ const BrowserLobby = () => {
 
     const handleStartGame = useCallback(() => {
         socket.emit('start_game');
-    }, [socket]);
+    }, []);
 
     return (
         <Container fluid>

@@ -1,14 +1,12 @@
 import React, { useState, useContext, useEffect } from 'react';
 
+import styled from 'styled-components';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-
 import FitText from '@kennethormandy/react-fittext';
 
 import { SocketContext } from '../../context/socket';
-
-import styled from 'styled-components';
 import mixins from '../../helpers/mixins';
 
 const AnswerRow = styled(Row)`

@@ -350,20 +350,25 @@ io.on('connection', (socket) => {
         updateGameSession(socket.sessionName, 'categoryIndex', categoryIndex);
         updateGameSession(socket.sessionName, 'clueIndex', clueIndex);
 
-        showClue(socket, categoryIndex, clueIndex);
+        io.to(socket.sessionName).emit('request_clue', categoryIndex, clueIndex);
 
-        updateCategories(socket.sessionName, categoryIndex, clueIndex);
-
-        setUpdatedPlayers(socket.sessionName);
-
+        // TODO: Add this timeout to timer.js for use in BrowserBoard (this is for clue screen animation)
         setTimeout(() => {
-            if (!sessionCache.get(socket.sessionName)) {
-                return;
-            }
+            showClue(socket, categoryIndex, clueIndex);
 
-            let correctAnswer = sessionCache.get(socket.sessionName).categories[categoryIndex].clues[clueIndex].answer;
-            showCorrectAnswer(socket, correctAnswer, timeout=true);
-        }, timers.BUZZ_IN_TIMEOUT * 1000);
+            updateCategories(socket.sessionName, categoryIndex, clueIndex);
+
+            setUpdatedPlayers(socket.sessionName);
+
+            setTimeout(() => {
+                if (!sessionCache.get(socket.sessionName)) {
+                    return;
+                }
+
+                let correctAnswer = sessionCache.get(socket.sessionName).categories[categoryIndex].clues[clueIndex].answer;
+                showCorrectAnswer(socket, correctAnswer, timeout=true);
+            }, timers.BUZZ_IN_TIMEOUT * 1000);
+        }, 1100);
     });
 
     socket.on('buzz_in', () => {

@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.js": "/static/js/main.77232b0d.chunk.js",
-    "main.js.map": "/static/js/main.77232b0d.chunk.js.map",
+    "main.js": "/static/js/main.407c1dcb.chunk.js",
+    "main.js.map": "/static/js/main.407c1dcb.chunk.js.map",
     "runtime-main.js": "/static/js/runtime-main.b333e1ff.js",
     "runtime-main.js.map": "/static/js/runtime-main.b333e1ff.js.map",
     "static/css/2.150d169a.chunk.css": "/static/css/2.150d169a.chunk.css",
-    "static/js/2.199967c7.chunk.js": "/static/js/2.199967c7.chunk.js",
-    "static/js/2.199967c7.chunk.js.map": "/static/js/2.199967c7.chunk.js.map",
+    "static/js/2.00ded972.chunk.js": "/static/js/2.00ded972.chunk.js",
+    "static/js/2.00ded972.chunk.js.map": "/static/js/2.00ded972.chunk.js.map",
     "index.html": "/index.html",
     "static/css/2.150d169a.chunk.css.map": "/static/css/2.150d169a.chunk.css.map",
-    "static/js/2.199967c7.chunk.js.LICENSE.txt": "/static/js/2.199967c7.chunk.js.LICENSE.txt",
+    "static/js/2.00ded972.chunk.js.LICENSE.txt": "/static/js/2.00ded972.chunk.js.LICENSE.txt",
     "static/media/board.6e41ffde.otf": "/static/media/board.6e41ffde.otf",
     "static/media/clue.9433be45.otf": "/static/media/clue.9433be45.otf",
     "static/media/logo.3792752c.ttf": "/static/media/logo.3792752c.ttf",
@@ -19,7 +19,7 @@
   "entrypoints": [
     "static/js/runtime-main.b333e1ff.js",
     "static/css/2.150d169a.chunk.css",
-    "static/js/2.199967c7.chunk.js",
-    "static/js/main.77232b0d.chunk.js"
+    "static/js/2.00ded972.chunk.js",
+    "static/js/main.407c1dcb.chunk.js"
   ]
 }
