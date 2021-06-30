@@ -7,6 +7,7 @@ import FitText from '@kennethormandy/react-fittext';
 
 import mixins from '../mixins';
 import HypeText from './HypeText';
+import DollarValueText from './DollarValueText';
 
 const PlayerCardRow = styled(Row)`
     height: 15vh;
@@ -66,7 +67,7 @@ const PlayerScoreText = styled.span`
     text-shadow: 0.1em 0.1em #000;
 `;
 
-const MobilePlayerCard = () => {
+const MobilePlayerCard = (props) => {
     return (
         <PlayerCardRow>
             <PlayerCardCol lg={'12'}>
@@ -77,19 +78,21 @@ const MobilePlayerCard = () => {
 
                     <PlayerNameCol lg={'3'}>
                         <FitText compressor={0.4}>
-                            <PlayerNameText>MONKEY D. LUFFY</PlayerNameText>
+                            <PlayerNameText>{props.player.name && props.player.name.toUpperCase()}</PlayerNameText>
                         </FitText>
                     </PlayerNameCol>
 
                     <HypeCol lg={'3'}>
                         <FitText compressor={0.6}>
-                            <HypeText text={'GENIUS'} rainbow={true} />
+                            {/*<HypeText text={'GENIUS'} rainbow={true} />*/}
                         </FitText>
                     </HypeCol>
 
                     <PlayerScoreCol lg={'3'}>
                         <FitText compressor={0.4}>
-                            <PlayerScoreText>$69000</PlayerScoreText>
+                            <PlayerScoreText>
+                                <DollarValueText dollarValue={props.player.score && props.player.score} />
+                            </PlayerScoreText>
                         </FitText>
                     </PlayerScoreCol>
                 </InfoRow>

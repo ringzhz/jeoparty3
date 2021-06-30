@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserView, MobileView } from 'react-device-detect';
 
+import { createGlobalStyle } from 'styled-components';
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 import BrowserWrapper from './components/browser/BrowserWrapper';
 import BrowserLobby from './components/browser/BrowserLobby';
 import BrowserBoard from './components/browser/BrowserBoard';
@@ -20,9 +23,6 @@ import MobileScoreboard from './components/mobile/MobileScoreboard';
 import { GameState } from './constants/GameState';
 import { SocketContext, socket } from './context/socket';
 
-import 'bootstrap/dist/css/bootstrap.min.css';
-
-import { createGlobalStyle } from 'styled-components';
 import backgroundImage from './assets/images/background.png';
 import logoFont from './assets/fonts/logo.ttf';
 import clueFont from './assets/fonts/clue.otf';
@@ -99,7 +99,8 @@ const Game = () => {
 
     useEffect(() => {
         socket.onAny((eventName, ...args) => {
-            console.log(`Heard ${eventName} with args ${args}`);
+            // DEBUG
+            // console.log(`Heard ${eventName} with args ${args}`);
         });
 
         socket.on('set_game_state', (newGameState, ack) => {

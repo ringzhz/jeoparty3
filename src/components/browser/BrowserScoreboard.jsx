@@ -8,6 +8,7 @@ import FitText from '@kennethormandy/react-fittext';
 
 import { SocketContext } from '../../context/socket';
 import mixins from '../../helpers/mixins';
+import DollarValueText from '../../helpers/components/DollarValueText';
 
 // DEBUG
 import { samplePlayers, sampleUpdatedPlayers } from '../../constants/samplePlayers';
@@ -98,7 +99,9 @@ const PlayerCard = (props) => {
 
                     <PlayerScoreCol lg={'3'}>
                         <FitText compressor={0.5}>
-                            <PlayerScoreText>${props.player.score}</PlayerScoreText>
+                            <PlayerScoreText>
+                                <DollarValueText dollarValue={props.player.score} />
+                            </PlayerScoreText>
                         </FitText>
                     </PlayerScoreCol>
                 </InfoRow>

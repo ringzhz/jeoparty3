@@ -54,7 +54,6 @@ const MobileLobby = () => {
         });
 
         socket.on('submit_signature_success', () => {
-            setPlayerName('');
             setMobileLobbyState(MobileLobbyState.IS_WAITING);
         });
 
@@ -71,11 +70,11 @@ const MobileLobby = () => {
 
     const handleJoinSession = useCallback((sessionName) => {
         socket.emit('join_session', sessionName);
-    }, [socket]);
+    }, []);
 
     const handleSubmitSignature = useCallback((playerName) => {
         socket.emit('submit_signature', playerName);
-    }, [socket]);
+    }, []);
 
     return (
         <Container fluid>
@@ -99,12 +98,12 @@ const MobileLobby = () => {
                 mobileLobbyState === MobileLobbyState.SIGNATURE &&
                 <MobileLobbyRow>
                     <Col lg={'12'}>
-                        You're in a session!
+                        <LogoText>JEOPARTY!</LogoText>
 
                         <InputGroup className='mb-3'>
-                            <FormControl value={playerName} onChange={e => setPlayerName(e.target.value)} aria-describedby='basic-addon1' />
+                            <FormControl placeholder={'Enter your name...'} value={playerName.toUpperCase()} onChange={e => setPlayerName(e.target.value)} aria-describedby='basic-addon1' />
                             <InputGroup.Prepend>
-                                <Button onClick={() => handleSubmitSignature(playerName)} variant='outline-light'>Submit</Button>
+                                <Button onClick={() => handleSubmitSignature(playerName)} variant='outline-light'><JoinText>SUBMIT</JoinText></Button>
                             </InputGroup.Prepend>
                         </InputGroup>
                     </Col>
@@ -113,7 +112,7 @@ const MobileLobby = () => {
 
             {
                 mobileLobbyState === MobileLobbyState.IS_WAITING &&
-                <MobileWait />
+                <MobileWait player={{ name: playerName, score: 0 }} />
             }
         </Container>
     );

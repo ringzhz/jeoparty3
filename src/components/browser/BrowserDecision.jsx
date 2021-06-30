@@ -51,18 +51,22 @@ const PriceText = styled.span`
 
 const BrowserDecision = () => {
     // DEBUG
-    // const [showDecision, setShowDecision] = useState(true);
+    // const [showAnswer, setShowAnswer] = useState(false);
+    // const [showDecision, setShowDecision] = useState(false);
     // const [showCorrectAnswer, setShowCorrectAnswer] = useState(false);
     // const [showPrice, setShowPrice] = useState(false);
     //
-    // const [correctAnswer, setCorrectAnswer] = useState('George Washington');
+    // const [answer, setAnswer] = useState('');
+    // const [correctAnswer, setCorrectAnswer] = useState('');
     // const [isCorrect, setIsCorrect] = useState(false);
-    // const [price, setPrice] = useState(1000);
+    // const [price, setPrice] = useState(0);
 
+    const [showAnswer, setShowAnswer] = useState(false);
     const [showDecision, setShowDecision] = useState(false);
     const [showCorrectAnswer, setShowCorrectAnswer] = useState(false);
     const [showPrice, setShowPrice] = useState(false);
 
+    const [answer, setAnswer] = useState('');
     const [correctAnswer, setCorrectAnswer] = useState('');
     const [isCorrect, setIsCorrect] = useState(false);
     const [price, setPrice] = useState(0);
@@ -70,9 +74,14 @@ const BrowserDecision = () => {
     const socket = useContext(SocketContext);
 
     useEffect(() => {
-        socket.on('show_decision', (correctAnswer, isCorrect, price) => {
+        socket.on('show_answer', (answer) => {
+            setShowAnswer(true);
+            setAnswer(answer);
+        });
+
+        socket.on('show_decision', (isCorrect, price) => {
+            setShowAnswer(false);
             setShowDecision(true);
-            setCorrectAnswer(correctAnswer);
             setIsCorrect(isCorrect);
             setPrice(price);
 
@@ -98,20 +107,18 @@ const BrowserDecision = () => {
     return (
         <Container fluid>
             <AnswerRow className={'text-center'}>
-                {(showDecision || showCorrectAnswer) && (
-                    <AnswerCol lg={'12'}>
-                        <AnswerPanel>
-                            <FitText compressor={2}>
-                                {showDecision && (correctAnswer.toUpperCase())}
-                                {showCorrectAnswer && correctAnswer.toUpperCase()}
-                            </FitText>
-                        </AnswerPanel>
+                <AnswerCol lg={'12'}>
+                    <AnswerPanel>
+                        <FitText compressor={2}>
+                            {(showAnswer || showDecision) && (answer.toUpperCase())}
+                            {showCorrectAnswer && correctAnswer.toUpperCase()}
+                        </FitText>
+                    </AnswerPanel>
 
-                        <PriceText isCorrect={isCorrect} showPrice={showPrice}>
-                            {showDecision && `${isCorrect ? '+' : '-'}$${price}`}
-                        </PriceText>
-                    </AnswerCol>
-                )}
+                    <PriceText isCorrect={isCorrect} showPrice={showPrice}>
+                        {!showCorrectAnswer && `${isCorrect ? '+' : '-'}$${price}`}
+                    </PriceText>
+                </AnswerCol>
             </AnswerRow>
         </Container>
     );

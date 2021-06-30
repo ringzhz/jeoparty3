@@ -1,13 +1,24 @@
-import React from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 
 import Container from 'react-bootstrap/Container';
 
+import { SocketContext } from '../../context/socket';
 import MobileWait from '../../helpers/components/MobileWait';
 
 const MobileScoreboard = () => {
+    const [player, setPlayer] = useState({});
+
+    const socket = useContext(SocketContext);
+
+    useEffect(() => {
+        socket.on('player', (player) => {
+            setPlayer(player);
+        });
+    }, []);
+
     return (
         <Container fluid>
-            <MobileWait />
+            <MobileWait player={player} />
         </Container>
     );
 };

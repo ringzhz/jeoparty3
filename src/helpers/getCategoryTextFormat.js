@@ -23,8 +23,6 @@ const getCategoryTextCompressor = (textLength, mini=false) => {
         compressor = 0.5;
     }
 
-    console.log(`textLength (${textLength}) has compressor (${compressor})`);
-
     return compressor;
 };
 

@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
+import _ from 'lodash';
 
 import styled from 'styled-components';
 import Container from 'react-bootstrap/Container';
@@ -45,11 +46,15 @@ const BrowserClue = () => {
     // const [categories, setCategories] = useState(sampleCategories);
     // const [categoryIndex, setCategoryIndex] = useState(0);
     // const [clueIndex, setClueIndex] = useState(0);
+
+    // const [showTimer, setShowTimer] = useState(false);
     // const [startTimer, setStartTimer] = useState(false);
 
-    const [categories, setCategories] = useState({});
+    const [categories, setCategories] = useState([]);
     const [categoryIndex, setCategoryIndex] = useState(null);
     const [clueIndex, setClueIndex] = useState(null);
+
+    const [showTimer, setShowTimer] = useState(false);
     const [startTimer, setStartTimer] = useState(false);
 
     const socket = useContext(SocketContext);
@@ -62,9 +67,15 @@ const BrowserClue = () => {
         socket.on('request_clue', (categoryIndex, clueIndex) => {
             setCategoryIndex(categoryIndex);
             setClueIndex(clueIndex);
+        });
 
+        socket.on('start_timer', () => {
             setTimeout(() => {
-                setStartTimer(true);
+                setShowTimer(true);
+
+                setTimeout(() => {
+                    setStartTimer(true);
+                }, 100);
             }, 100);
         });
     }, []);
@@ -77,13 +88,13 @@ const BrowserClue = () => {
             <ClueRow>
                 <ClueCol lg={'12'}>
                     <FitText compressor={getClueTextCompressor(textLength)}>
-                        {(clueText) && clueText.toUpperCase()}
+                        {clueText && clueText.toUpperCase()}
                     </FitText>
                 </ClueCol>
             </ClueRow>
 
             <TimerRow>
-                {startTimer ? <Timer height={'6vh'} width={'60vw'} start={startTimer} time={timers.BUZZ_IN_TIMEOUT} slideUp={true} /> : ''}
+                {showTimer ? <Timer height={'6vh'} width={'60vw'} start={startTimer} time={timers.BUZZ_IN_TIMEOUT} slideUp={true} /> : ''}
             </TimerRow>
         </BrowserClueContainer>
     );

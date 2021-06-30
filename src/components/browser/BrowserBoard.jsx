@@ -1,4 +1,5 @@
 import React, { useState, useContext, useEffect} from 'react';
+import _ from 'lodash';
 
 import styled from 'styled-components';
 import Container from 'react-bootstrap/Container';
@@ -9,6 +10,7 @@ import FitText from '@kennethormandy/react-fittext';
 import { SocketContext } from '../../context/socket';
 import { getCategoryTextLineHeight, getCategoryTextCompressor } from '../../helpers/getCategoryTextFormat';
 import mixins from '../../helpers/mixins';
+import DollarValueText from '../../helpers/components/DollarValueText';
 import backgroundImage from '../../assets/images/background.png'
 import BrowserClue from './BrowserClue';
 
@@ -23,15 +25,6 @@ const CategoryText = styled.span`
     font-family: board, serif;
     color: white;
     text-shadow: 0.1em 0.1em #000;
-`;
-
-const DollarSignText = styled.span`
-    font-size: 0.8em;
-    display: inline-block;
-    vertical-align: middle;
-
-    padding-bottom: 0.15em;
-    padding-right: 0.05em;
 `;
 
 const PriceText = styled.span`
@@ -146,7 +139,7 @@ const BrowserBoard = () => {
                 <FitTextWrapper>
                     <FitText compressor={getCategoryTextCompressor(textLength)}>
                         <CategoryText>
-                            {category && category.completed ? '' : categoryTitle.toUpperCase()}
+                            {_.get(category, 'completed') ? '' : categoryTitle.toUpperCase()}
                         </CategoryText>
                     </FitText>
                 </FitTextWrapper>
@@ -154,19 +147,19 @@ const BrowserBoard = () => {
         );
     });
 
-    let priceRows = categories && Array.from(Array(NUM_CLUES).keys()).map((j) => {
-        let dollarValue = 200 * (j + 1);
+    const priceRows = categories && Array.from(Array(NUM_CLUES).keys()).map((j) => {
+        const dollarValue = 200 * (j + 1);
 
-        let priceCols = Array.from(Array(NUM_CATEGORIES).keys()).map((i) => {
-            let clue = categories && categories[i] && categories[i].clues[j];
+        const priceCols = Array.from(Array(NUM_CATEGORIES).keys()).map((i) => {
+            const clue = categories && categories[i] && categories[i].clues[j];
 
             return (
                 <PriceCol lg={'2'}>
                     <FitTextWrapper>
                         <FitText compressor={0.3}>
-                            {clue && clue.completed ? '' :
+                            {_.get(clue, 'completed') ? '' :
                                 <PriceText>
-                                    <DollarSignText>$</DollarSignText>{dollarValue}
+                                    <DollarValueText dollarValue={dollarValue} />
                                 </PriceText>
                             }
                         </FitText>

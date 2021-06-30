@@ -8,12 +8,12 @@ const NUM_CATEGORIES = 6;
 const NUM_CLUES = 5;
 
 const getRandomCategory = (cb) => {
-    let categoryId = Math.floor(Math.random() * MAX_CATEGORY_ID) + 1;
+    const categoryId = Math.floor(Math.random() * MAX_CATEGORY_ID) + 1;
 
     js.category(categoryId, (error, response, category) => {
         if (!error && response.statusCode === 200) {
-            let cluesCount = category.clues_count;
-            let startingIndex = Math.round((Math.random() * (cluesCount - 5)) / 5) * 5;
+            const cluesCount = category.clues_count;
+            const startingIndex = Math.round((Math.random() * (cluesCount - 5)) / 5) * 5;
             category.clues = category.clues.slice(startingIndex, startingIndex + 5);
 
             if (approveCategory(category)) {
@@ -29,15 +29,15 @@ const getRandomCategory = (cb) => {
 };
 
 const approveCategory = (category) => {
-    let rawCategoryTitle = formatRaw(category.title);
-    let isMediaCategory = rawCategoryTitle.includes('logo') || rawCategoryTitle.includes('video');
+    const rawCategoryTitle = formatRaw(category.title);
+    const isMediaCategory = rawCategoryTitle.includes('logo') || rawCategoryTitle.includes('video');
 
     for (let i = 0; i < NUM_CLUES; i++) {
-        let clue = category.clues[i];
-        let rawQuestion = formatRaw(clue.question);
+        const clue = category.clues[i];
+        const rawQuestion = formatRaw(clue.question);
 
-        let isValid = rawQuestion.length > 0 && clue.invalid_count === null;
-        let isMediaQuestion =
+        const isValid = rawQuestion.length > 0 && clue.invalid_count === null;
+        const isMediaQuestion =
             rawQuestion.includes('seenhere') ||
             rawQuestion.includes('heardhere') ||
             rawQuestion.includes('video');

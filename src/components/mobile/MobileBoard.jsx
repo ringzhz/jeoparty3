@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useContext, useEffect } from 'react';
+import _ from 'lodash';
 
 import styled from 'styled-components';
 import Container from 'react-bootstrap/Container';
@@ -8,6 +9,7 @@ import FitText from '@kennethormandy/react-fittext';
 
 import { SocketContext } from '../../context/socket';
 import mixins from '../../helpers/mixins';
+import DollarValueText from '../../helpers/components/DollarValueText';
 import MobileWait from '../../helpers/components/MobileWait';
 
 // DEBUG
@@ -60,11 +62,13 @@ const MobileBoard = () => {
     // DEBUG
     // const [categories, setCategories] = useState(sampleCategories);
     // const [isBoardController, setIsBoardController] = useState(true);
-    // const [categoryIndex, setCategoryIndex] = useState(0);
+    // const [categoryIndex, setCategoryIndex] = useState(null);
+    // const [player, setPlayer] = useState({});
 
     const [categories, setCategories] = useState([]);
     const [isBoardController, setIsBoardController] = useState(false);
     const [categoryIndex, setCategoryIndex] = useState(null);
+    const [player, setPlayer] = useState({});
 
     const socket = useContext(SocketContext);
 
@@ -76,6 +80,10 @@ const MobileBoard = () => {
         socket.on('is_board_controller', (isBoardController) => {
             setIsBoardController(isBoardController);
         });
+
+        socket.on('player', (player) => {
+            setPlayer(player);
+        });
     }, []);
 
     const handleSelectCategory = useCallback((categoryIndex) => {
@@ -83,18 +91,22 @@ const MobileBoard = () => {
     }, []);
 
     const handleRequestClue = useCallback((categoryIndex, clueIndex) => {
-        socket.emit('request_clue', categoryIndex, clueIndex);
+        if (categories && !categories[categoryIndex].clues[clueIndex].completed) {
+            socket.emit('request_clue', categoryIndex, clueIndex);
+        }
     }, []);
 
     let categoryRows = categories && Array.from(Array(NUM_CATEGORIES).keys()).map((i) => {
-        let category = categories[i];
-        let categoryTitle = category && category.title;
+        const category = categories[i];
+        const categoryTitle = _.get(category, 'title');
 
         return (
             <CategoryRow onClick={() => handleSelectCategory(i)}>
                 <CategoryCol>
                     <FitText compressor={2}>
-                        <CategoryText>{categoryTitle && categoryTitle.toUpperCase()}</CategoryText>
+                        <CategoryText>
+                            {_.get(category, 'completed') ? '' : categoryTitle && categoryTitle.toUpperCase()}
+                        </CategoryText>
                     </FitText>
                 </CategoryCol>
             </CategoryRow>
@@ -102,13 +114,18 @@ const MobileBoard = () => {
     });
 
     let priceRows = categories && Array.from(Array(NUM_CLUES).keys()).map((i) => {
-        let dollarValue = 200 * (i + 1);
+        const clue = categoryIndex !== null && categories && categories[categoryIndex] && categories[categoryIndex].clues[i];
+        const dollarValue = 200 * (i + 1);
 
         return (
             <PriceRow onClick={() => handleRequestClue(categoryIndex, i)}>
                 <PriceCol>
                     <FitText compressor={1}>
-                        <PriceText>${dollarValue}</PriceText>
+                        {_.get(clue, 'completed') ? '' :
+                            <PriceText>
+                                <DollarValueText dollarValue={dollarValue} />
+                            </PriceText>
+                        }
                     </FitText>
                 </PriceCol>
             </PriceRow>
@@ -135,7 +152,9 @@ const MobileBoard = () => {
 
             {
                 !isBoardController && (
-                    <MobileWait />
+                    <div>
+                        <MobileWait player={player} />
+                    </div>
                 )
             }
         </MobileBoardContainer>

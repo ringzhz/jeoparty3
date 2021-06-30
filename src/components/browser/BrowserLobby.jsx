@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect, useCallback } from "react";
+import React, { useContext, useState, useEffect, useCallback } from 'react';
 
 import styled from 'styled-components';
 import Container from 'react-bootstrap/Container';
@@ -9,6 +9,7 @@ import Button from 'react-bootstrap/Button';
 
 import { SocketContext } from '../../context/socket';
 import mixins from '../../helpers/mixins';
+import DollarValueText from '../../helpers/components/DollarValueText';
 
 // DEBUG
 // import { sampleLeaderboard } from '../../constants/sampleLeaderboard';
@@ -166,7 +167,13 @@ const BrowserLobby = () => {
                         <LeaderboardScores lg={'6'}>
                             <InfoList>
                                 {leaderboard.map((player) => {
-                                    return <li><InfoText>${player.score}</InfoText></li>
+                                    return (
+                                        <li>
+                                            <InfoText>
+                                                <DollarValueText dollarValue={player.score} />
+                                            </InfoText>
+                                        </li>
+                                    );
                                 })}
                             </InfoList>
                         </LeaderboardScores>

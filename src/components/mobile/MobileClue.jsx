@@ -66,17 +66,23 @@ const Buzzer = styled.div`
 
 const MobileClue = () => {
     const [hasAnswered, setHasAnswered] = useState(false);
+    const [player, setPlayer] = useState({});
+
     const socket = useContext(SocketContext);
 
     useEffect(() => {
         socket.on('players_answered', (playersAnswered) => {
             setHasAnswered(playersAnswered.includes(socket.id));
         });
+
+        socket.on('player', (player) => {
+            setPlayer(player);
+        });
     }, []);
 
     const handleBuzzIn = useCallback(() => {
         socket.emit('buzz_in');
-    }, [socket]);
+    }, []);
 
     return (
         <Container fluid>
@@ -90,7 +96,9 @@ const MobileClue = () => {
 
             {
                 hasAnswered && (
-                    <MobileWait />
+                    <div>
+                        <MobileWait player={player} />
+                    </div>
                 )
             }
         </Container>

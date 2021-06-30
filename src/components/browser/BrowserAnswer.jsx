@@ -7,11 +7,12 @@ import Col from 'react-bootstrap/Col';
 import FitText from '@kennethormandy/react-fittext';
 
 import { SocketContext } from '../../context/socket';
-import { getCategoryTextCompressor } from '../../helpers/getCategoryTextFormat';
+import { getCategoryTextCompressor, getCategoryTextLineHeight } from '../../helpers/getCategoryTextFormat';
 import { getClueTextCompressor } from '../../helpers/getClueTextFormat';
 import { timers } from '../../constants/timers';
 import mixins from '../../helpers/mixins';
-import starryBackgroundImage from '../../assets/images/starryBackground.png';
+import DollarValueText from '../../helpers/components/DollarValueText';
+import starBackgroundImage from '../../assets/images/star-background.png';
 import Timer from '../../helpers/components/Timer';
 
 // DEBUG
@@ -45,7 +46,7 @@ const CluePanel = styled.div`
     font-weight: bold;
     font-family: clue, serif;
     text-shadow: 0.25em 0.25em #000;
-    background-image: url(${starryBackgroundImage});
+    background-image: url(${starBackgroundImage});
     background-size: cover;
 `;
 
@@ -58,15 +59,7 @@ const CategoryText = styled.span`
     font-family: board, serif;
     color: white;
     text-shadow: 0.1em 0.1em #000;
-`;
-
-const DollarSignText = styled.span`
-    font-size: 0.8em;
-    display: inline-block;
-    vertical-align: middle;
-
-    padding-bottom: 0.15em;
-    padding-right: 0.05em;
+    line-height: ${props => getCategoryTextLineHeight(props.textLength)};
 `;
 
 const PriceText = styled.span`
@@ -106,10 +99,10 @@ const BrowserAnswer = () => {
     // const [categoryIndex, setCategoryIndex] = useState(0);
     // const [clueIndex, setClueIndex] = useState(0);
     // const [playerName, setPlayerName] = useState('luffy');
-    // const [answerLivefeed, setAnswerLivefeed] = useState('led zeppelin');
+    // const [answerLivefeed, setAnswerLivefeed] = useState('led ze');
     // const [startTimer, setStartTimer] = useState(false);
 
-    const [categories, setCategories] = useState({});
+    const [categories, setCategories] = useState([]);
     const [categoryIndex, setCategoryIndex] = useState(null);
     const [clueIndex, setClueIndex] = useState(null);
     const [playerName, setPlayerName] = useState('');
@@ -154,10 +147,7 @@ const BrowserAnswer = () => {
                             </CategoryText>
                         </FitText>
                         <PriceText>
-                            <DollarSignText>$</DollarSignText>
-                            {(categoryIndex !== null && clueIndex !== null) && (
-                                200 * (clueIndex + 1)
-                            )}
+                            <DollarValueText dollarValue={(categoryIndex !== null && clueIndex !== null) && (200 * (clueIndex + 1))} />
                         </PriceText>
                     </CategoryPanel>
                 </PanelCol>
@@ -180,7 +170,7 @@ const BrowserAnswer = () => {
                     <PlayerNameText>{playerName.toUpperCase()}</PlayerNameText>
                     <LivefeedPanel>
                         <FitText compressor={1.5}>
-                            {answerLivefeed.toUpperCase()}
+                            {answerLivefeed.length > 0 ? answerLivefeed.toUpperCase() : <span>&nbsp;</span>}
                         </FitText>
                     </LivefeedPanel>
                 </PanelCol>

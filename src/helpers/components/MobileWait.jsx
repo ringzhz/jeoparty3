@@ -23,10 +23,10 @@ const BlankRow = styled.div`
     height: 15vh;
 `;
 
-const MobileWait = () => {
+const MobileWait = (props) => {
     return (
         <div>
-            <MobilePlayerCard />
+            <MobilePlayerCard player={props.player} />
 
             <MobileWaitRow>
                 <Col lg={'12'}>

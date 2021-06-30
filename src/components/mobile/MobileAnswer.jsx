@@ -9,8 +9,8 @@ import Button from 'react-bootstrap/Button';
 
 import { SocketContext } from '../../context/socket';
 import mixins from '../../helpers/mixins';
-import MobileWait from '../../helpers/components/MobileWait';
 import MobilePlayerCard from '../../helpers/components/MobilePlayerCard';
+import MobileWait from '../../helpers/components/MobileWait';
 
 const MobileAnswerRow = styled.div`
     ${mixins.flexAlignCenter}
@@ -36,9 +36,11 @@ const MobileAnswer = () => {
     // DEBUG
     // const [answer, setAnswer] = useState('');
     // const [isAnswering, setIsAnswering] = useState(true);
+    // const [player, setPlayer] = useState({});
 
     const [answer, setAnswer] = useState('');
     const [isAnswering, setIsAnswering] = useState(false);
+    const [player, setPlayer] = useState({});
 
     const socket = useContext(SocketContext);
 
@@ -50,23 +52,27 @@ const MobileAnswer = () => {
         socket.on('answer_timeout', (answer) => {
             socket.emit('submit_answer', answer);
         });
+
+        socket.on('player', (player) => {
+            setPlayer(player);
+        });
     }, []);
 
     const handleAnswerLivefeed = useCallback((e) => {
         setAnswer(e.target.value);
         socket.emit('answer_livefeed', e.target.value);
-    }, [socket]);
+    }, []);
 
     const handleSubmitAnswer = useCallback((answer) => {
         socket.emit('submit_answer', answer);
-    }, [socket]);
+    }, []);
 
     return (
         <Container fluid>
             {
                 isAnswering && (
                     <div>
-                        <MobilePlayerCard />
+                        <MobilePlayerCard player={player} />
 
                         <MobileAnswerRow>
                             <Col lg={'12'}>
@@ -88,7 +94,9 @@ const MobileAnswer = () => {
 
             {
                 !isAnswering && (
-                    <MobileWait />
+                    <div>
+                        <MobileWait player={player} />
+                    </div>
                 )
             }
         </Container>
