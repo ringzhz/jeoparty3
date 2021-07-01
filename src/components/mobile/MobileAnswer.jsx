@@ -15,21 +15,19 @@ import MobileWait from '../../helpers/components/MobileWait';
 const MobileAnswerRow = styled.div`
     ${mixins.flexAlignCenter}
     height: 60vh;
+    height: calc(var(--vh, 1vh) * 60);
 `;
 
 const BottomRow = styled.div`
     height: 15vh;
+    height: calc(var(--vh, 1vh) * 15);
 `;
 
 const LogoText = styled.h1`
     font-family: logo, serif;
     font-size: 10vh;
+    font-size: calc(var(--vh, 1vh) * 10);
     text-shadow: 0.075em 0.075em #000;
-`;
-
-const SubmitText = styled.span`
-    font-weight: bold;
-    font-family: clue, serif;
 `;
 
 const MobileAnswer = () => {
@@ -78,10 +76,10 @@ const MobileAnswer = () => {
                             <Col lg={'12'}>
                                 <LogoText>JEOPARTY!</LogoText>
 
-                                <InputGroup className='mb-3'>
-                                    <FormControl value={answer} onChange={e => handleAnswerLivefeed(e)} aria-describedby='basic-addon1' />
+                                <InputGroup className={'mb-3'}>
+                                    <FormControl value={answer} onChange={e => handleAnswerLivefeed(e)} aria-describedby={'basic-addon1'} />
                                     <InputGroup.Prepend>
-                                        <Button onClick={() => handleSubmitAnswer(answer)} variant='outline-light'><SubmitText>SUBMIT</SubmitText></Button>
+                                        <Button onClick={() => handleSubmitAnswer(answer)} variant={'outline-light'}>SUBMIT</Button>
                                     </InputGroup.Prepend>
                                 </InputGroup>
                             </Col>

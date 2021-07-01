@@ -67,7 +67,7 @@ const InfoHeading = styled.h1`
 `;
 
 const SessionNameText = styled.h1`
-    font-family: board, serif;
+    font-family: board, serif; 
     font-size: 15vh;
     color: #d69f4c;
     text-shadow: 0.075em 0.075em #000;

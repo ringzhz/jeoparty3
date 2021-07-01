@@ -8,7 +8,6 @@ import Col from 'react-bootstrap/Col';
 import FitText from '@kennethormandy/react-fittext';
 
 import { SocketContext } from '../../context/socket';
-import { getCategoryTextLineHeight, getCategoryTextCompressor } from '../../helpers/getCategoryTextFormat';
 import mixins from '../../helpers/mixins';
 import DollarValueText from '../../helpers/components/DollarValueText';
 import backgroundImage from '../../assets/images/background.png'
@@ -16,6 +15,34 @@ import BrowserClue from './BrowserClue';
 
 // DEBUG
 import { sampleCategories } from '../../constants/sampleCategories';
+
+const getCategoryTextCompressor = (textLength) => {
+    let compressor = null;
+
+    if (textLength > 20) {
+        compressor = 0.75;
+    } else if (textLength > 10) {
+        compressor = 0.5;
+    } else {
+        compressor = 0.5;
+    }
+
+    return compressor;
+};
+
+const getCategoryTextLineHeight = (textLength) => {
+    let lineHeight = null;
+
+    if (textLength > 20) {
+        lineHeight = '1.5em';
+    } else if (textLength > 10) {
+        lineHeight = '2.1em';
+    } else {
+        lineHeight = '2.5em';
+    }
+
+    return lineHeight;
+};
 
 const BoardRow = styled(Row)`
     height: calc(100vh / 6);

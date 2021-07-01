@@ -9,12 +9,25 @@ import FitText from '@kennethormandy/react-fittext';
 
 import { SocketContext } from '../../context/socket';
 import { timers } from '../../constants/timers';
-import { getClueTextCompressor } from '../../helpers/getClueTextFormat';
 import mixins from '../../helpers/mixins';
 import Timer from '../../helpers/components/Timer';
 
 // DEBUG
 import { sampleCategories } from '../../constants/sampleCategories';
+
+const getClueTextCompressor = (textLength, mini=false) => {
+    let compressor = null;
+
+    if (textLength > 200) {
+        compressor = 2.5;
+    } else if (textLength > 100) {
+        compressor = 2.25;
+    } else {
+        compressor = 2;
+    }
+
+    return compressor;
+};
 
 const BrowserClueContainer = styled(Container)`
     height: 100vh;

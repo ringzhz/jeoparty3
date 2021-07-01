@@ -9,8 +9,37 @@ import mixins from '../mixins';
 import HypeText from './HypeText';
 import DollarValueText from './DollarValueText';
 
+const getNameCompressor = (textLength) => {
+    let compressor = null;
+
+    if (textLength > 15) {
+        compressor = 0.75;
+    } else if (textLength > 10) {
+        compressor = 0.5;
+    } else {
+        compressor = 0.25;
+    }
+
+    return compressor;
+};
+
+const getScoreCompressor = (score) => {
+    let compressor = null;
+
+    if (score >= 10000) {
+        compressor = 0.3;
+    } else if (score >= 1000) {
+        compressor = 0.25;
+    } else {
+        compressor = 0.2;
+    }
+
+    return compressor;
+};
+
 const PlayerCardRow = styled(Row)`
     height: 15vh;
+    height: calc(var(--vh, 1vh) * 15);
     flex-direction: row;
 `;
 
@@ -36,7 +65,10 @@ const Signature = styled.canvas`
     margin: 0 auto;
     
     height: 10vh;
+    height: calc(var(--vh, 1vh) * 10);
+    
     width: 10vh;
+    width: calc(var(--vh, 1vh) * 10);
     
     background-color: white;
     border: 0.2em solid black;
@@ -77,7 +109,7 @@ const MobilePlayerCard = (props) => {
                     </SignatureCol>
 
                     <PlayerNameCol lg={'3'}>
-                        <FitText compressor={0.4}>
+                        <FitText compressor={props.player.name && getNameCompressor(props.player.name.length)}>
                             <PlayerNameText>{props.player.name && props.player.name.toUpperCase()}</PlayerNameText>
                         </FitText>
                     </PlayerNameCol>
@@ -89,7 +121,7 @@ const MobilePlayerCard = (props) => {
                     </HypeCol>
 
                     <PlayerScoreCol lg={'3'}>
-                        <FitText compressor={0.4}>
+                        <FitText compressor={props.player.score && getScoreCompressor(Math.abs(props.player.score))}>
                             <PlayerScoreText>
                                 <DollarValueText dollarValue={props.player.score && props.player.score} />
                             </PlayerScoreText>

@@ -41,8 +41,8 @@ const Signature = styled.canvas`
     display: block;
     margin: 0 auto;
     
-    height: calc(75vh / 3);
-    width: calc(75vh / 3);
+    height: 25vh;
+    width: 25vh;
     
     background-color: white;
     border: 0.25em solid black;

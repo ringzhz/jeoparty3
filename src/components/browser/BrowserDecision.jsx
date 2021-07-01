@@ -20,7 +20,7 @@ const AnswerCol = styled(Col)`
 `;
 
 const AnswerPanel = styled.div`
-    margin-left: calc(10% / 2);
+    margin-left: 5%;
     height: 25%;
     width: 90%;
     border: 0.3em solid black;
@@ -110,7 +110,7 @@ const BrowserDecision = () => {
                 <AnswerCol lg={'12'}>
                     <AnswerPanel>
                         <FitText compressor={2}>
-                            {(showAnswer || showDecision) && (answer.toUpperCase())}
+                            {(showAnswer || showDecision) && (answer.length > 0 ? answer.toUpperCase() : <span>&nbsp;</span>)}
                             {showCorrectAnswer && correctAnswer.toUpperCase()}
                         </FitText>
                     </AnswerPanel>

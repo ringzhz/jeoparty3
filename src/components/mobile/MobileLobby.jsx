@@ -14,17 +14,14 @@ import MobileWait from '../../helpers/components/MobileWait';
 const MobileLobbyRow = styled.div`
     ${mixins.flexAlignCenter}
     height: 100vh;
+    height: calc(var(--vh, 1vh) * 100);
 `;
 
 const LogoText = styled.h1`
     font-family: logo, serif;
     font-size: 10vh;
+    font-size: calc(var(--vh, 1vh) * 10);
     text-shadow: 0.075em 0.075em #000;
-`;
-
-const JoinText = styled.span`
-    font-weight: bold;
-    font-family: clue, serif;
 `;
 
 const MobileLobby = () => {
@@ -84,10 +81,10 @@ const MobileLobby = () => {
                     <Col lg={'12'}>
                         <LogoText>JEOPARTY!</LogoText>
 
-                        <InputGroup className='mb-3'>
-                            <FormControl placeholder={'Enter session name...'} value={sessionName.toUpperCase()} onChange={e => setSessionName(e.target.value)} aria-describedby='basic-addon1' />
+                        <InputGroup className={'mb-3'}>
+                            <FormControl placeholder={'Enter session name...'} value={sessionName.toUpperCase()} onChange={e => setSessionName(e.target.value)} aria-describedby={'basic-addon1'} />
                             <InputGroup.Prepend>
-                                <Button onClick={() => handleJoinSession(sessionName)} variant='outline-light'><JoinText>JOIN</JoinText></Button>
+                                <Button onClick={() => handleJoinSession(sessionName)} variant={'outline-light'}>JOIN</Button>
                             </InputGroup.Prepend>
                         </InputGroup>
                     </Col>
@@ -100,10 +97,10 @@ const MobileLobby = () => {
                     <Col lg={'12'}>
                         <LogoText>JEOPARTY!</LogoText>
 
-                        <InputGroup className='mb-3'>
-                            <FormControl placeholder={'Enter your name...'} value={playerName.toUpperCase()} onChange={e => setPlayerName(e.target.value)} aria-describedby='basic-addon1' />
+                        <InputGroup className={'mb-3'}>
+                            <FormControl placeholder={'Enter your name...'} value={playerName.toUpperCase()} onChange={e => setPlayerName(e.target.value)} aria-describedby={'basic-addon1'} />
                             <InputGroup.Prepend>
-                                <Button onClick={() => handleSubmitSignature(playerName)} variant='outline-light'><JoinText>SUBMIT</JoinText></Button>
+                                <Button onClick={() => handleSubmitSignature(playerName)} variant={'outline-light'}>SUBMIT</Button>
                             </InputGroup.Prepend>
                         </InputGroup>
                     </Col>

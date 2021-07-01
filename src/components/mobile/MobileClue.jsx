@@ -9,12 +9,14 @@ import mixins from '../../helpers/mixins';
 import MobileWait from '../../helpers/components/MobileWait';
 
 const BuzzerRow = styled(Row)`
-    height: 100vh;
     ${mixins.flexAlignCenter}
+    height: 100vh;
+    height: calc(var(--vh, 1vh) * 100);
 `;
 
 const buzzerWidth = '75vw';
 const buzzerHeight = '10vh';
+const calcBuzzerHeight = 'calc(var(--vh, 1vh) * 10)';
 const clickTime = '.1s';
 
 const Buzzer = styled.div`
@@ -27,6 +29,7 @@ const Buzzer = styled.div`
     left: 50%;
     width: ${buzzerWidth};
     height: ${buzzerHeight};
+    height: ${calcBuzzerHeight};
     transform: translateX(-50%);
 
     &:before {

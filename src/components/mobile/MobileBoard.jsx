@@ -15,6 +15,20 @@ import MobileWait from '../../helpers/components/MobileWait';
 // DEBUG
 import { sampleCategories } from '../../constants/sampleCategories';
 
+const getCategoryTextCompressor = (textLength) => {
+    let compressor = null;
+
+    if (textLength > 20) {
+        compressor = 1.5;
+    } else if (textLength > 10) {
+        compressor = 1.25;
+    } else {
+        compressor = 1;
+    }
+
+    return compressor;
+};
+
 const MobileBoardContainer = styled(Container)`
     padding: 0;
 `;
@@ -22,6 +36,7 @@ const MobileBoardContainer = styled(Container)`
 const CategoryRow = styled(Row)`
     ${mixins.flexAlignCenter}
     height: calc(100vh / 6);
+    height: calc(var(--vh, 1vh) * ${100 / 6});
 `;
 
 const CategoryCol = styled(Col)`
@@ -39,7 +54,8 @@ const CategoryText = styled.span`
 
 const PriceRow = styled(Row)`
     ${mixins.flexAlignCenter}
-    height: calc(100vh / 5);
+    height: 20vh;
+    height: calc(var(--vh, 1vh) * 20);
 `;
 
 const PriceCol = styled(Col)`
@@ -61,9 +77,9 @@ const MobileBoard = () => {
 
     // DEBUG
     // const [categories, setCategories] = useState(sampleCategories);
-    // const [isBoardController, setIsBoardController] = useState(true);
+    // const [isBoardController, setIsBoardController] = useState(false);
     // const [categoryIndex, setCategoryIndex] = useState(null);
-    // const [player, setPlayer] = useState({});
+    // const [player, setPlayer] = useState({name: 'Isaac', score: 10000});
 
     const [categories, setCategories] = useState([]);
     const [isBoardController, setIsBoardController] = useState(false);
@@ -91,9 +107,7 @@ const MobileBoard = () => {
     }, []);
 
     const handleRequestClue = useCallback((categoryIndex, clueIndex) => {
-        if (categories && !categories[categoryIndex].clues[clueIndex].completed) {
-            socket.emit('request_clue', categoryIndex, clueIndex);
-        }
+        socket.emit('request_clue', categoryIndex, clueIndex);
     }, []);
 
     let categoryRows = categories && Array.from(Array(NUM_CATEGORIES).keys()).map((i) => {
@@ -103,7 +117,7 @@ const MobileBoard = () => {
         return (
             <CategoryRow onClick={() => handleSelectCategory(i)}>
                 <CategoryCol>
-                    <FitText compressor={2}>
+                    <FitText compressor={categoryTitle ? getCategoryTextCompressor(categoryTitle.length) : 0}>
                         <CategoryText>
                             {_.get(category, 'completed') ? '' : categoryTitle && categoryTitle.toUpperCase()}
                         </CategoryText>
@@ -118,9 +132,13 @@ const MobileBoard = () => {
         const dollarValue = 200 * (i + 1);
 
         return (
-            <PriceRow onClick={() => handleRequestClue(categoryIndex, i)}>
+            <PriceRow onClick={() => {
+                if (categories && !categories[categoryIndex].clues[i].completed) {
+                    handleRequestClue(categoryIndex, i);
+                }
+            }}>
                 <PriceCol>
-                    <FitText compressor={1}>
+                    <FitText compressor={0.5}>
                         {_.get(clue, 'completed') ? '' :
                             <PriceText>
                                 <DollarValueText dollarValue={dollarValue} />

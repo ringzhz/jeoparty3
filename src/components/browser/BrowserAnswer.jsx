@@ -7,8 +7,6 @@ import Col from 'react-bootstrap/Col';
 import FitText from '@kennethormandy/react-fittext';
 
 import { SocketContext } from '../../context/socket';
-import { getCategoryTextCompressor, getCategoryTextLineHeight } from '../../helpers/getCategoryTextFormat';
-import { getClueTextCompressor } from '../../helpers/getClueTextFormat';
 import { timers } from '../../constants/timers';
 import mixins from '../../helpers/mixins';
 import DollarValueText from '../../helpers/components/DollarValueText';
@@ -17,6 +15,48 @@ import Timer from '../../helpers/components/Timer';
 
 // DEBUG
 import { sampleCategories } from '../../constants/sampleCategories';
+
+const getCategoryTextCompressor = (textLength) => {
+    let compressor = null;
+
+    if (textLength > 20) {
+        compressor = 1;
+    } else if (textLength > 10) {
+        compressor = 0.75;
+    } else {
+        compressor = 0.5;
+    }
+
+    return compressor;
+};
+
+const getCategoryTextLineHeight = (textLength) => {
+    let lineHeight = null;
+
+    if (textLength > 20) {
+        lineHeight = '1.5em';
+    } else if (textLength > 10) {
+        lineHeight = '2em';
+    } else {
+        lineHeight = '2.5em';
+    }
+
+    return lineHeight;
+};
+
+const getClueTextCompressor = (textLength, mini=false) => {
+    let compressor = null;
+
+    if (textLength > 200) {
+        compressor = 2;
+    } else if (textLength > 100) {
+        compressor = 1.75;
+    } else {
+        compressor = 1.5;
+    }
+
+    return compressor;
+};
 
 const ClueRow = styled(Row)`
     height: 60vh;
@@ -76,7 +116,7 @@ const PlayerNameText = styled.span`
 `;
 
 const LivefeedPanel = styled.div`
-    margin-left: calc(10% / 2);
+    margin-left: 5%;
     height: 25%;
     width: 90%;
     border: 0.3em solid black;
@@ -139,7 +179,7 @@ const BrowserAnswer = () => {
             <ClueRow>
                 <PanelCol lg={'6'}>
                     <CategoryPanel>
-                        <FitText compressor={getCategoryTextCompressor((categoryIndex !== null) ? categories[categoryIndex].title.length : 0, true)}>
+                        <FitText compressor={getCategoryTextCompressor((categoryIndex !== null) ? categories[categoryIndex].title.length : 0)}>
                             <CategoryText textLength={(categoryIndex !== null) ? categories[categoryIndex].title.length : 0}>
                                 {(categoryIndex !== null) && (
                                     categories[categoryIndex].title.toUpperCase()
@@ -154,7 +194,7 @@ const BrowserAnswer = () => {
 
                 <PanelCol lg={'6'}>
                     <CluePanel>
-                        <FitText compressor={getClueTextCompressor((categoryIndex !== null && clueIndex !== null) ? categories[categoryIndex].clues[clueIndex].question.length : 0, true)}>
+                        <FitText compressor={getClueTextCompressor((categoryIndex !== null && clueIndex !== null) ? categories[categoryIndex].clues[clueIndex].question.length : 0)}>
                             {(categoryIndex !== null && clueIndex !== null) && (
                                 categories[categoryIndex].clues[clueIndex].question.toUpperCase()
                             )}
