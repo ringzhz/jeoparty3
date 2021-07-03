@@ -64,7 +64,7 @@ const SignatureCol = styled(Col)`
     ${mixins.flexAlignCenter}
 `;
 
-const Signature = styled.canvas`
+const Signature = styled.img`
     display: block;
     margin: 0 auto;
     
@@ -109,7 +109,7 @@ const MobilePlayerCard = (props) => {
             <PlayerCardCol lg={'12'}>
                 <InfoRow>
                     <SignatureCol lg={'2'}>
-                        <Signature />
+                        <Signature src={props.player.signature && props.player.signature} />
                     </SignatureCol>
 
                     <PlayerNameCol lg={'5'}>

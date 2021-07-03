@@ -1,6 +1,15 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect } from 'react';
+
+import { createGlobalStyle } from 'styled-components';
 
 import { SocketContext } from '../../context/socket';
+
+const GlobalStyle = createGlobalStyle`
+    .btn:hover {
+        background-color: transparent;
+        color: white;
+    }
+`;
 
 const MobileWrapper = (props) => {
     const socket = useContext(SocketContext);
@@ -18,6 +27,7 @@ const MobileWrapper = (props) => {
 
     return (
         <div>
+            <GlobalStyle />
             {props.children}
         </div>
     );

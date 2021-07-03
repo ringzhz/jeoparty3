@@ -330,8 +330,6 @@ io.on('connection', (socket) => {
             updatePlayers(socket.sessionName, socket.id, 'name', playerName);
             updatePlayers(socket.sessionName, socket.id, 'signature', signature);
 
-            console.log(signature);
-
             socket.emit('submit_signature_success');
             sessionCache.get(socket.sessionName).browserClient.emit('new_player_name', playerName);
         } else {

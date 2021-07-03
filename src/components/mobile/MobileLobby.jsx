@@ -34,7 +34,7 @@ const MobileLobby = () => {
 
     const [sessionName, setSessionName] = useState('');
     const [playerName, setPlayerName] = useState('');
-    const [mobileLobbyState, setMobileLobbyState] = useState(MobileLobbyState.SIGNATURE);
+    const [mobileLobbyState, setMobileLobbyState] = useState(MobileLobbyState.SESSION_NAME);
     const socket = useContext(SocketContext);
 
     useEffect(() => {
@@ -71,7 +71,6 @@ const MobileLobby = () => {
     }, []);
 
     const handleSubmitSignature = useCallback((playerName) => {
-        alert(`submitting playerName: ${playerName}`);
         socket.emit('submit_signature', playerName, document.getElementById('signature-canvas').toDataURL());
     }, []);
 

@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 
 import styled from 'styled-components';
-import Container from "react-bootstrap/Container";
+import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import Button from "react-bootstrap/Button";
-import ButtonGroup from "react-bootstrap/ButtonGroup";
+import Button from 'react-bootstrap/Button';
+import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import { HuePicker } from 'react-color';
 
 import mixins from '../../helpers/mixins';
@@ -23,16 +23,22 @@ const SketchpadRow = styled(Row)`
 `;
 
 const ColorPickerWrapper = styled.div`
-    margin-left: 50%;
-    -webkit-transform: translateX(-50%);
-    transform: translateX(-50%);
-    
     margin-top: 0.5em;
     margin-bottom: 1em;
+    
+    .hue-horizontal {
+        div {
+            // targets the slider button
+            div {
+                height: 22px !important;
+                width: 22px !important;
+            }
+        }
+    }
 `;
 
 const Sketchpad = (props) => {
-    const [color, setColor] = useState('#000000');
+    const [color, setColor] = useState('#ff0000');
     const [points, setPoints] = useState([]);
 
     const handleChange = (color) => {
@@ -40,19 +46,21 @@ const Sketchpad = (props) => {
     };
 
     const undo = () => {
-        console.log(points);
-
         const canvas = document.getElementById('signature-canvas');
         const context = canvas.getContext('2d');
 
         context.clearRect(0,0, canvas.width, canvas.height);
+
+        if (points.length < 3) {
+            return;
+        }
 
         let lastPointIndex = 0;
 
         for (let i = points.length - 2; i >= 0; i--) {
             const pt = points[i];
 
-            if (pt.mode === 'draw' && points[i+1].mode === 'end') {
+            if (pt.mode === 'draw' && points[i + 1].mode === 'end') {
                 lastPointIndex = i;
                 break;
             }
@@ -85,7 +93,9 @@ const Sketchpad = (props) => {
         const canvas = document.getElementById('signature-canvas');
         const context = canvas.getContext('2d');
 
-        context.clearRect(0, 0, 250, 250);
+        context.clearRect(0, 0, canvas.width, canvas.height);
+
+        setPoints([]);
     };
 
     useEffect(() => {
@@ -93,7 +103,7 @@ const Sketchpad = (props) => {
         const context = canvas.getContext('2d');
 
         context.strokeStyle = color;
-        context.lineWidth = 6;
+        context.lineWidth = 5;
         context.lineCap = 'round';
 
         let lastEvent;
@@ -150,7 +160,7 @@ const Sketchpad = (props) => {
             let touchX = 0;
             let touchY = 0;
 
-            if (e.touches) {
+            if (e && e.touches) {
                 if (e.touches.length === 1) {
                     const touch = e.touches[0];
                     const rect = canvas.getBoundingClientRect();
@@ -160,28 +170,31 @@ const Sketchpad = (props) => {
                 }
             }
 
-            return [touchX, touchY];
+            return {x: touchX, y: touchY};
         };
 
         const touchStartEvent = e => {
             lastEvent = e;
             drawing = true;
 
+            const touchPos = getTouchPos(e);
+
             newPoints.push({
-                x: getTouchPos(e)[0],
-                y: getTouchPos(e)[1],
+                x: touchPos.x,
+                y: touchPos.y,
                 color: color,
                 mode: 'begin'
             });
-
-            setPoints(newPoints);
         };
 
         const touchMoveEvent = e => {
             context.beginPath();
 
-            context.moveTo(getTouchPos(lastEvent)[0], getTouchPos(lastEvent)[1]);
-            context.lineTo(getTouchPos(e)[0], getTouchPos(e)[1]);
+            const lastTouchPos = getTouchPos(lastEvent);
+            const touchPos = getTouchPos(e);
+
+            context.moveTo(lastTouchPos.x, lastTouchPos.y);
+            context.lineTo(touchPos.x, touchPos.y);
 
             context.stroke();
             context.closePath();
@@ -189,13 +202,11 @@ const Sketchpad = (props) => {
             lastEvent = e;
 
             newPoints.push({
-                x: getTouchPos(e)[0],
-                y: getTouchPos(e)[1],
+                x: touchPos.x,
+                y: touchPos.y,
                 color: color,
                 mode: 'draw'
             });
-
-            setPoints(newPoints);
         };
 
         const touchEndEvent = () => {
@@ -230,13 +241,18 @@ const Sketchpad = (props) => {
 
             <SketchpadRow>
                 <Col lg={'12'}>
-                    <ColorPickerWrapper>
-                        <HuePicker
-                            width={250}
-                            color={color}
-                            onChange={handleChange}
-                        />
-                    </ColorPickerWrapper>
+                    <ButtonGroup>
+                        <ColorPickerWrapper>
+                            <HuePicker
+                                width={250}
+                                height={20}
+                                color={color}
+                                onChange={handleChange}
+                            />
+                        </ColorPickerWrapper>
+                    </ButtonGroup>
+
+                    <br />
 
                     <ButtonGroup>
                         <Button variant={'outline-light'} onClick={() => undo()}>UNDO</Button>
