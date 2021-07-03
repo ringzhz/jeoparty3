@@ -77,7 +77,7 @@ const MobileAnswer = () => {
                                 <LogoText>JEOPARTY!</LogoText>
 
                                 <InputGroup className={'mb-3'}>
-                                    <FormControl value={answer} onChange={e => handleAnswerLivefeed(e)} aria-describedby={'basic-addon1'} />
+                                    <FormControl placeholder={'Enter your answer...'} value={answer.toUpperCase()} onChange={e => handleAnswerLivefeed(e)} aria-describedby={'basic-addon1'} />
                                     <InputGroup.Prepend>
                                         <Button onClick={() => handleSubmitAnswer(answer)} variant={'outline-light'}>SUBMIT</Button>
                                     </InputGroup.Prepend>

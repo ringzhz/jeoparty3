@@ -10,6 +10,7 @@ import FormControl from 'react-bootstrap/FormControl';
 import { SocketContext } from '../../context/socket';
 import mixins from '../../helpers/mixins';
 import MobileWait from '../../helpers/components/MobileWait';
+import Sketchpad from '../../helpers/components/Sketchpad';
 
 const MobileLobbyRow = styled.div`
     ${mixins.flexAlignCenter}
@@ -33,7 +34,7 @@ const MobileLobby = () => {
 
     const [sessionName, setSessionName] = useState('');
     const [playerName, setPlayerName] = useState('');
-    const [mobileLobbyState, setMobileLobbyState] = useState(MobileLobbyState.SESSION_NAME);
+    const [mobileLobbyState, setMobileLobbyState] = useState(MobileLobbyState.SIGNATURE);
     const socket = useContext(SocketContext);
 
     useEffect(() => {
@@ -70,7 +71,8 @@ const MobileLobby = () => {
     }, []);
 
     const handleSubmitSignature = useCallback((playerName) => {
-        socket.emit('submit_signature', playerName);
+        alert(`submitting playerName: ${playerName}`);
+        socket.emit('submit_signature', playerName, document.getElementById('signature-canvas').toDataURL());
     }, []);
 
     return (
@@ -99,10 +101,9 @@ const MobileLobby = () => {
 
                         <InputGroup className={'mb-3'}>
                             <FormControl placeholder={'Enter your name...'} value={playerName.toUpperCase()} onChange={e => setPlayerName(e.target.value)} aria-describedby={'basic-addon1'} />
-                            <InputGroup.Prepend>
-                                <Button onClick={() => handleSubmitSignature(playerName)} variant={'outline-light'}>SUBMIT</Button>
-                            </InputGroup.Prepend>
                         </InputGroup>
+
+                        <Sketchpad onSubmit={() => handleSubmitSignature(playerName)} />
                     </Col>
                 </MobileLobbyRow>
             }

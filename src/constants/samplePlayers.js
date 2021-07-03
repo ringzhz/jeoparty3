@@ -18,6 +18,13 @@ exports.samplePlayers = {
         sessionName: 'think',
         name: 'Nami',
         score: 2000
+    },
+
+    zsS3DKSSIUOegOQuAAAD: {
+        socketId: 'zsS3DKSSIUOegOQuAAAD',
+        sessionName: 'think',
+        name: 'Usopp',
+        score: 300
     }
 };
 
@@ -41,5 +48,12 @@ exports.sampleUpdatedPlayers = {
         sessionName: 'think',
         name: 'Nami',
         score: 1000
+    },
+
+    zsS3DKSSIUOegOQuAAAD: {
+        socketId: 'zsS3DKSSIUOegOQuAAAD',
+        sessionName: 'think',
+        name: 'Usopp',
+        score: 300
     }
 };

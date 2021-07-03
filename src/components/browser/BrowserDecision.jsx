@@ -38,20 +38,25 @@ const AnswerPanel = styled.div`
 `;
 
 const PriceText = styled.span`
+    position: absolute;
+    left: 50%;
+    -webkit-transform: translateX(-50%);
+    transform: translateX(-50%);
+    
     font-family: board, serif;
     color: ${props => props.isCorrect ? '#009966' : '#CC3333'};
     text-shadow: 0.08em 0.08em #000;
     font-size: 10vh;
     
-    transform: ${props => props.showPrice ?'translateY(0)' : 'translateY(50vh)'};
-    transition-property: transform;
+    top: ${props => props.showPrice ? '15vh' : '60vh'};
+    transition-property: top;
     transition-duration: 1s;
     transition-timing-function: ease-out;
 `;
 
 const BrowserDecision = () => {
     // DEBUG
-    // const [showAnswer, setShowAnswer] = useState(false);
+    // const [showAnswer, setShowAnswer] = useState(true);
     // const [showDecision, setShowDecision] = useState(false);
     // const [showCorrectAnswer, setShowCorrectAnswer] = useState(false);
     // const [showPrice, setShowPrice] = useState(false);
@@ -59,7 +64,7 @@ const BrowserDecision = () => {
     // const [answer, setAnswer] = useState('');
     // const [correctAnswer, setCorrectAnswer] = useState('');
     // const [isCorrect, setIsCorrect] = useState(false);
-    // const [price, setPrice] = useState(0);
+    // const [price, setPrice] = useState(200);
 
     const [showAnswer, setShowAnswer] = useState(false);
     const [showDecision, setShowDecision] = useState(false);
@@ -106,10 +111,11 @@ const BrowserDecision = () => {
 
     return (
         <Container fluid>
-            <AnswerRow className={'text-center'}>
+            <AnswerRow>
                 <AnswerCol lg={'12'}>
                     <AnswerPanel>
                         <FitText compressor={2}>
+                            {(!showAnswer && !showDecision && !showCorrectAnswer && !showPrice) && <span>&nbsp;</span>}
                             {(showAnswer || showDecision) && (answer.length > 0 ? answer.toUpperCase() : <span>&nbsp;</span>)}
                             {showCorrectAnswer && correctAnswer.toUpperCase()}
                         </FitText>

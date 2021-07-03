@@ -14,13 +14,13 @@ import DollarValueText from '../../helpers/components/DollarValueText';
 import { samplePlayers, sampleUpdatedPlayers } from '../../constants/samplePlayers';
 
 const PlayerCardRow = styled(Row)`
-    height: calc(100vh / 3);
+    height: ${props => `calc(100vh / ${props.numPlayers})`};
     padding: 0.5em;
    
     z-index: ${props => props.zIndex};
-    transform: ${props => `translate(0, ${(100 / 3) * props.positionChange}vh)`};
+    transform: ${props => `translate(0, ${(100 / props.numPlayers) * props.positionChange}vh)`};
     transition-property: transform;
-    transition-duration: 3s;
+    transition-duration: 2s;
     transition-timing-function: ease-in-out;
 `;
 
@@ -41,8 +41,10 @@ const Signature = styled.canvas`
     display: block;
     margin: 0 auto;
     
-    height: 25vh;
-    width: 25vh;
+    height: ${props => `${70 / props.numPlayers}vh`};
+    height: ${props => `calc(var(--vh, 1vh) * ${70 / props.numPlayers})`};
+    width: ${props => `${70 / props.numPlayers}vh`};
+    width: ${props => `calc(var(--vh, 1vh) * ${70 / props.numPlayers})`};
     
     background-color: white;
     border: 0.25em solid black;
@@ -78,11 +80,11 @@ const hasPlayerName = (player, playerName) => player.name === playerName;
 
 const PlayerCard = (props) => {
     return (
-        <PlayerCardRow positionChange={props.positionChange}>
+        <PlayerCardRow numPlayers={props.numPlayers} positionChange={props.positionChange}>
             <PlayerCardCol lg={'12'}>
                 <InfoRow>
                     <SignatureCol lg={'3'}>
-                        <Signature />
+                        <Signature numPlayers={props.numPlayers} />
                     </SignatureCol>
 
                     <PlayerNameCol lg={'3'}>
@@ -135,24 +137,26 @@ const BrowserScoreboard = () => {
         });
 
         // DEBUG
-        // document.body.onkeyup = (e) => {
-        //     if (e.keyCode === 32) {
-        //         setShowUpdate(true);
-        //     }
-        // }
+        document.body.onkeyup = (e) => {
+            if (e.keyCode === 32) {
+                setShowUpdate(true);
+            }
+        }
     }, []);
 
     return (
         <Container fluid>
             {players.map((player) => {
-                let position = players.findIndex((el) => hasPlayerName(el, player.name));
-                let updatedPosition = updatedPlayers.findIndex((el) => hasPlayerName(el, player.name));
-                let positionChange = showUpdate ? (updatedPosition - position) : 0;
+                const numPlayers = Object.keys(players).length > 5 ? 5 : Object.keys(players).length;
 
-                let zIndex = Object.keys(players).length - (showUpdate ? updatedPosition : position);
-                let playerObject = showUpdate ? updatedPlayers[updatedPosition] : player;
+                const position = players.findIndex((el) => hasPlayerName(el, player.name));
+                const updatedPosition = updatedPlayers.findIndex((el) => hasPlayerName(el, player.name));
+                const positionChange = showUpdate ? (updatedPosition - position) : 0;
 
-                return <PlayerCard zIndex={zIndex} player={playerObject} positionChange={positionChange} />;
+                const zIndex = numPlayers - (showUpdate ? updatedPosition : position);
+                const playerObject = showUpdate ? updatedPlayers[updatedPosition] : player;
+
+                return <PlayerCard numPlayers={numPlayers} zIndex={zIndex} player={playerObject} positionChange={positionChange} />;
             })}
         </Container>
     );

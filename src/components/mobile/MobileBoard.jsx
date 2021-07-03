@@ -79,7 +79,7 @@ const MobileBoard = () => {
     // const [categories, setCategories] = useState(sampleCategories);
     // const [isBoardController, setIsBoardController] = useState(false);
     // const [categoryIndex, setCategoryIndex] = useState(null);
-    // const [player, setPlayer] = useState({name: 'Isaac', score: 10000});
+    // const [player, setPlayer] = useState({name: 'Isaac', score: -69000});
 
     const [categories, setCategories] = useState([]);
     const [isBoardController, setIsBoardController] = useState(false);

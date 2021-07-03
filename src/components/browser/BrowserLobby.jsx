@@ -9,10 +9,11 @@ import Button from 'react-bootstrap/Button';
 
 import { SocketContext } from '../../context/socket';
 import mixins from '../../helpers/mixins';
+import HypeText from '../../helpers/components/HypeText';
 import DollarValueText from '../../helpers/components/DollarValueText';
 
 // DEBUG
-// import { sampleLeaderboard } from '../../constants/sampleLeaderboard';
+import { sampleLeaderboard } from '../../constants/sampleLeaderboard';
 
 const LogoRow = styled(Row)`
     ${mixins.flexAlignCenter}
@@ -71,6 +72,14 @@ const SessionNameText = styled.h1`
     font-size: 15vh;
     color: #d69f4c;
     text-shadow: 0.075em 0.075em #000;
+`;
+
+const StartGameInputGroup = styled(InputGroup)`
+    position: absolute;
+    bottom: 4%;
+    left: 50%;
+    -webkit-transform: translateX(-50%);
+    transform: translateX(-50%);
 `;
 
 const StartGameButton = styled(Button)`
@@ -140,7 +149,7 @@ const BrowserLobby = () => {
                     <InfoHeading>PLAYERS</InfoHeading>
                     <InfoList>
                         {playerNames.map((name) => {
-                            return <li><InfoText>{name.toUpperCase()}</InfoText></li>
+                            return <li><InfoText><HypeText text={name.toUpperCase()} /></InfoText></li>
                         })}
                     </InfoList>
                 </Col>
@@ -148,9 +157,6 @@ const BrowserLobby = () => {
                 <Col lg={'4'}>
                     <InfoHeading>SESSION NAME</InfoHeading>
                     <SessionNameText>{sessionName.toUpperCase()}</SessionNameText>
-                    <InputGroup className={'mb-3 justify-content-center'}>
-                        <StartGameButton onClick={() => handleStartGame()} variant={'outline-light'}>START GAME</StartGameButton>
-                    </InputGroup>
                 </Col>
 
                 <Col lg={'4'}>
@@ -180,6 +186,10 @@ const BrowserLobby = () => {
                     </Row>
                 </Col>
             </InfoRow>
+
+            <StartGameInputGroup className={'mb-3 justify-content-center'}>
+                <StartGameButton onClick={() => handleStartGame()} variant={'outline-light'}>START GAME</StartGameButton>
+            </StartGameInputGroup>
         </Container>
     );
 };

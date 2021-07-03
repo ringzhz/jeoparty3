@@ -13,9 +13,11 @@ const getNameCompressor = (textLength) => {
     let compressor = null;
 
     if (textLength > 15) {
-        compressor = 0.75;
+        compressor = 0.7;
     } else if (textLength > 10) {
         compressor = 0.5;
+    } else if (textLength > 5) {
+        compressor = 0.35;
     } else {
         compressor = 0.25;
     }
@@ -31,7 +33,7 @@ const getScoreCompressor = (score) => {
     } else if (score >= 1000) {
         compressor = 0.25;
     } else {
-        compressor = 0.2;
+        compressor = 0.25;
     }
 
     return compressor;
@@ -53,6 +55,8 @@ const PlayerCardCol = styled(Col)`
 
 const InfoRow = styled(Row)`
     height: 100%;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
     flex-wrap: nowrap;
 `;
 
@@ -104,23 +108,17 @@ const MobilePlayerCard = (props) => {
         <PlayerCardRow>
             <PlayerCardCol lg={'12'}>
                 <InfoRow>
-                    <SignatureCol lg={'3'}>
+                    <SignatureCol lg={'2'}>
                         <Signature />
                     </SignatureCol>
 
-                    <PlayerNameCol lg={'3'}>
+                    <PlayerNameCol lg={'5'}>
                         <FitText compressor={props.player.name && getNameCompressor(props.player.name.length)}>
                             <PlayerNameText>{props.player.name && props.player.name.toUpperCase()}</PlayerNameText>
                         </FitText>
                     </PlayerNameCol>
 
-                    <HypeCol lg={'3'}>
-                        <FitText compressor={0.6}>
-                            {/*<HypeText text={'GENIUS'} rainbow={true} />*/}
-                        </FitText>
-                    </HypeCol>
-
-                    <PlayerScoreCol lg={'3'}>
+                    <PlayerScoreCol lg={'5'}>
                         <FitText compressor={props.player.score && getScoreCompressor(Math.abs(props.player.score))}>
                             <PlayerScoreText>
                                 <DollarValueText dollarValue={props.player.score && props.player.score} />

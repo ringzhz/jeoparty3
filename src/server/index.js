@@ -242,7 +242,7 @@ const showCorrectAnswer = (socket, correctAnswer, timeout) => {
         setTimeout(() => {
             showBoard(socket);
         }, timers.SHOW_SCOREBOARD_TIME * 1000);
-    }, timers.SHOW_DECISION_TIME * 1000);
+    }, timers.SHOW_CORRECT_ANSWER_TIME * 1000);
 };
 
 const showScoreboard = (socket) => {
@@ -261,7 +261,7 @@ const showScoreboard = (socket) => {
             if (!_.isEqual(gameSession.players, gameSession.updatedPlayers)) {
                 setTimeout(() => {
                     client.emit('show_update');
-                }, timers.SHOW_SCOREBOARD_UPDATE_TIME * 1000);
+                }, timers.SHOW_SCOREBOARD_PRE_UPDATE_TIME * 1000);
             }
         });
     });
@@ -321,13 +321,16 @@ io.on('connection', (socket) => {
         }
     });
 
-    socket.on('submit_signature', (playerName) => {
+    socket.on('submit_signature', (playerName, signature) => {
         if (!sessionCache.get(socket.sessionName)) {
             return;
         }
 
         if (checkSignature(playerName)) {
             updatePlayers(socket.sessionName, socket.id, 'name', playerName);
+            updatePlayers(socket.sessionName, socket.id, 'signature', signature);
+
+            console.log(signature);
 
             socket.emit('submit_signature_success');
             sessionCache.get(socket.sessionName).browserClient.emit('new_player_name', playerName);
@@ -460,12 +463,7 @@ io.on('connection', (socket) => {
 
                 if (isCorrect) {
                     updateGameSession(socket.sessionName, 'boardController', socket.id);
-
-                    showScoreboard(socket);
-
-                    setTimeout(() => {
-                        showBoard(socket);
-                    }, timers.SHOW_SCOREBOARD_TIME * 1000);
+                    showCorrectAnswer(socket, correctAnswer, timeout=false);
                 } else if (gameSession.playersAnswered.length === Object.keys(gameSession.players).length) {
                     showCorrectAnswer(socket, correctAnswer, timeout=false);
                 } else {
