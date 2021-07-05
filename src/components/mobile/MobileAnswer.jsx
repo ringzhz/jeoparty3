@@ -12,6 +12,9 @@ import mixins from '../../helpers/mixins';
 import MobilePlayerCard from '../../helpers/components/MobilePlayerCard';
 import MobileWait from '../../helpers/components/MobileWait';
 
+// DEBUG
+import {samplePlayers} from '../../constants/samplePlayers';
+
 const MobileAnswerRow = styled.div`
     ${mixins.flexAlignCenter}
     height: 60vh;
@@ -34,7 +37,7 @@ const MobileAnswer = () => {
     // DEBUG
     // const [answer, setAnswer] = useState('');
     // const [isAnswering, setIsAnswering] = useState(true);
-    // const [player, setPlayer] = useState({});
+    // const [player, setPlayer] = useState(samplePlayers['zsS3DKSSIUOegOQuAAAA']);
 
     const [answer, setAnswer] = useState('');
     const [isAnswering, setIsAnswering] = useState(false);

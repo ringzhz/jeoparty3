@@ -44,7 +44,7 @@ const getCategoryTextLineHeight = (textLength) => {
     return lineHeight;
 };
 
-const getClueTextCompressor = (textLength, mini=false) => {
+const getClueTextCompressor = (textLength) => {
     let compressor = null;
 
     if (textLength > 200) {
@@ -135,19 +135,19 @@ const LivefeedPanel = styled.div`
 
 const BrowserAnswer = () => {
     // DEBUG
-    const [categories, setCategories] = useState(sampleCategories);
-    const [categoryIndex, setCategoryIndex] = useState(0);
-    const [clueIndex, setClueIndex] = useState(0);
-    const [playerName, setPlayerName] = useState('luffy');
-    const [answerLivefeed, setAnswerLivefeed] = useState('led ze');
-    const [startTimer, setStartTimer] = useState(false);
-
-    // const [categories, setCategories] = useState([]);
-    // const [categoryIndex, setCategoryIndex] = useState(null);
-    // const [clueIndex, setClueIndex] = useState(null);
-    // const [playerName, setPlayerName] = useState('');
-    // const [answerLivefeed, setAnswerLivefeed] = useState('');
+    // const [categories, setCategories] = useState(sampleCategories);
+    // const [categoryIndex, setCategoryIndex] = useState(0);
+    // const [clueIndex, setClueIndex] = useState(0);
+    // const [playerName, setPlayerName] = useState('luffy');
+    // const [answerLivefeed, setAnswerLivefeed] = useState('led ze');
     // const [startTimer, setStartTimer] = useState(false);
+
+    const [categories, setCategories] = useState([]);
+    const [categoryIndex, setCategoryIndex] = useState(null);
+    const [clueIndex, setClueIndex] = useState(null);
+    const [playerName, setPlayerName] = useState('');
+    const [answerLivefeed, setAnswerLivefeed] = useState('');
+    const [startTimer, setStartTimer] = useState(false);
 
     const socket = useContext(SocketContext);
 

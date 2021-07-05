@@ -8,6 +8,7 @@ import InputGroup from 'react-bootstrap/InputGroup';
 import Button from 'react-bootstrap/Button';
 
 import { SocketContext } from '../../context/socket';
+import say from '../../helpers/say';
 import mixins from '../../helpers/mixins';
 import HypeText from '../../helpers/components/HypeText';
 import DollarValueText from '../../helpers/components/DollarValueText';
@@ -121,14 +122,20 @@ const BrowserLobby = () => {
             alert(`There aren't any players in this session!`);
         });
 
-        socket.on('new_player_name', (player_name) => {
-            setPlayerNames(playerNames.concat([player_name]));
+        socket.on('new_player_name', (playerName) => {
+            setPlayerNames(playerNames.concat([playerName]));
         });
 
         // TODO: Add leaderboard
         socket.on('leaderboard', (leaderboard) => {
             setLeaderboard(leaderboard);
         });
+
+        // DEBUG
+        // document.body.onkeyup = (e) => {
+        //     if (e.keyCode === 32) {
+        //     }
+        // }
     }, []);
 
     const handleStartGame = useCallback(() => {

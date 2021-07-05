@@ -201,13 +201,13 @@ const showBoard = (socket) => {
     updateGameSession(socket.sessionName, 'currentGameState', GameState.BOARD);
 };
 
-const showClue = (socket, categoryIndex, clueIndex) => {
+const showClue = (socket, categoryIndex, clueIndex, clueText) => {
     const gameSession = sessionCache.get(socket.sessionName);
 
     gameSession.clients.map((client) => {
         client.emit('set_game_state', GameState.CLUE, () => {
             client.emit('categories', gameSession.categories);
-            client.emit('request_clue', categoryIndex, clueIndex);
+            client.emit('request_clue', categoryIndex, clueIndex, clueText);
             client.emit('players_answered', gameSession.playersAnswered);
             client.emit('player', _.get(gameSession, `players[${client.id}]`));
         });
@@ -330,7 +330,7 @@ io.on('connection', (socket) => {
             updatePlayers(socket.sessionName, socket.id, 'name', playerName);
             updatePlayers(socket.sessionName, socket.id, 'signature', signature);
 
-            socket.emit('submit_signature_success');
+            socket.emit('submit_signature_success', _.get(sessionCache.get(socket.sessionName), `players[${socket.id}]`));
             sessionCache.get(socket.sessionName).browserClient.emit('new_player_name', playerName);
         } else {
             socket.emit('submit_signature_failure');
@@ -361,23 +361,34 @@ io.on('connection', (socket) => {
 
         // TODO: Add this timeout to timer.js for use in BrowserBoard (this is for clue screen animation)
         setTimeout(() => {
-            showClue(socket, categoryIndex, clueIndex);
-
-            io.to(socket.sessionName).emit('start_timer');
-
-            updateCategories(socket.sessionName, categoryIndex, clueIndex);
-
-            setUpdatedPlayers(socket.sessionName);
-
-            setTimeout(() => {
-                if (!sessionCache.get(socket.sessionName)) {
-                    return;
-                }
-
-                const correctAnswer = sessionCache.get(socket.sessionName).categories[categoryIndex].clues[clueIndex].answer;
-                showCorrectAnswer(socket, correctAnswer, timeout=true);
-            }, timers.BUZZ_IN_TIMEOUT * 1000);
+            const clueText = sessionCache.get(socket.sessionName).categories[categoryIndex].clues[clueIndex].question;
+            showClue(socket, categoryIndex, clueIndex, clueText);
         }, 1100);
+    });
+
+    socket.on('start_timer', () => {
+        if (!sessionCache.get(socket.sessionName)) {
+            return;
+        }
+
+        const session = sessionCache.get(socket.sessionName);
+        const categoryIndex = session.categoryIndex;
+        const clueIndex = session.clueIndex;
+
+        sessionCache.get(socket.sessionName).browserClient.emit('start_timer');
+
+        updateCategories(socket.sessionName, categoryIndex, clueIndex);
+
+        setUpdatedPlayers(socket.sessionName);
+
+        setTimeout(() => {
+            if (!sessionCache.get(socket.sessionName)) {
+                return;
+            }
+
+            const correctAnswer = sessionCache.get(socket.sessionName).categories[categoryIndex].clues[clueIndex].answer;
+            showCorrectAnswer(socket, correctAnswer, timeout=true);
+        }, timers.BUZZ_IN_TIMEOUT * 1000);
     });
 
     socket.on('buzz_in', () => {

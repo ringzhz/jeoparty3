@@ -12,6 +12,9 @@ import mixins from '../../helpers/mixins';
 import MobileWait from '../../helpers/components/MobileWait';
 import Sketchpad from '../../helpers/components/Sketchpad';
 
+// DEBUG
+import {samplePlayers} from '../../constants/samplePlayers';
+
 const MobileLobbyRow = styled.div`
     ${mixins.flexAlignCenter}
     height: 100vh;
@@ -32,9 +35,17 @@ const MobileLobby = () => {
         IS_WAITING: 'isWaiting'
     };
 
+    // DEBUG
+    // const [sessionName, setSessionName] = useState('');
+    // const [playerName, setPlayerName] = useState('');
+    // const [mobileLobbyState, setMobileLobbyState] = useState(MobileLobbyState.SIGNATURE);
+    // const [player, setPlayer] = useState(samplePlayers['zsS3DKSSIUOegOQuAAAA']);
+
     const [sessionName, setSessionName] = useState('');
     const [playerName, setPlayerName] = useState('');
     const [mobileLobbyState, setMobileLobbyState] = useState(MobileLobbyState.SESSION_NAME);
+    const [player, setPlayer] = useState({});
+
     const socket = useContext(SocketContext);
 
     useEffect(() => {
@@ -51,8 +62,9 @@ const MobileLobby = () => {
             setSessionName('');
         });
 
-        socket.on('submit_signature_success', () => {
+        socket.on('submit_signature_success', (player) => {
             setMobileLobbyState(MobileLobbyState.IS_WAITING);
+            setPlayer(player);
         });
 
         socket.on('submit_signature_failure', () => {
@@ -109,7 +121,7 @@ const MobileLobby = () => {
 
             {
                 mobileLobbyState === MobileLobbyState.IS_WAITING &&
-                <MobileWait player={{ name: playerName, score: 0 }} />
+                <MobileWait player={player} />
             }
         </Container>
     );

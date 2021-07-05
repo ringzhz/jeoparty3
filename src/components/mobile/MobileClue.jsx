@@ -8,6 +8,9 @@ import { SocketContext } from '../../context/socket';
 import mixins from '../../helpers/mixins';
 import MobileWait from '../../helpers/components/MobileWait';
 
+// DEBUG
+import {samplePlayers} from '../../constants/samplePlayers';
+
 const BuzzerRow = styled(Row)`
     ${mixins.flexAlignCenter}
     height: 100vh;
@@ -68,6 +71,10 @@ const Buzzer = styled.div`
 `;
 
 const MobileClue = () => {
+    // DEBUG
+    // const [hasAnswered, setHasAnswered] = useState(false);
+    // const [player, setPlayer] = useState(samplePlayers['zsS3DKSSIUOegOQuAAAA']);
+
     const [hasAnswered, setHasAnswered] = useState(false);
     const [player, setPlayer] = useState({});
 

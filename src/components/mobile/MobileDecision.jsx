@@ -5,7 +5,13 @@ import Container from 'react-bootstrap/Container';
 import { SocketContext } from '../../context/socket';
 import MobileWait from '../../helpers/components/MobileWait';
 
+// DEBUG
+import {samplePlayers} from '../../constants/samplePlayers';
+
 const MobileDecision = () => {
+    // DEBUG
+    // const [player, setPlayer] = useState(samplePlayers['zsS3DKSSIUOegOQuAAAA']);
+
     const [player, setPlayer] = useState({});
 
     const socket = useContext(SocketContext);

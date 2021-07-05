@@ -14,6 +14,7 @@ import MobileWait from '../../helpers/components/MobileWait';
 
 // DEBUG
 import { sampleCategories } from '../../constants/sampleCategories';
+import { samplePlayers } from '../../constants/samplePlayers';
 
 const getCategoryTextCompressor = (textLength) => {
     let compressor = null;
@@ -77,9 +78,9 @@ const MobileBoard = () => {
 
     // DEBUG
     // const [categories, setCategories] = useState(sampleCategories);
-    // const [isBoardController, setIsBoardController] = useState(false);
+    // const [isBoardController, setIsBoardController] = useState(true);
     // const [categoryIndex, setCategoryIndex] = useState(null);
-    // const [player, setPlayer] = useState({name: 'Isaac', score: -69000});
+    // const [player, setPlayer] = useState(samplePlayers['zsS3DKSSIUOegOQuAAAA']);
 
     const [categories, setCategories] = useState([]);
     const [isBoardController, setIsBoardController] = useState(false);
@@ -138,7 +139,7 @@ const MobileBoard = () => {
                 }
             }}>
                 <PriceCol>
-                    <FitText compressor={0.5}>
+                    <FitText compressor={0.6}>
                         {_.get(clue, 'completed') ? '' :
                             <PriceText>
                                 <DollarValueText dollarValue={dollarValue} />

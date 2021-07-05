@@ -1,4 +1,5 @@
 import React from 'react';
+import _ from 'lodash';
 
 import styled from 'styled-components';
 import Row from 'react-bootstrap/Row';
@@ -30,8 +31,6 @@ const getScoreCompressor = (score) => {
 
     if (score >= 10000) {
         compressor = 0.3;
-    } else if (score >= 1000) {
-        compressor = 0.25;
     } else {
         compressor = 0.25;
     }
@@ -109,7 +108,7 @@ const MobilePlayerCard = (props) => {
             <PlayerCardCol lg={'12'}>
                 <InfoRow>
                     <SignatureCol lg={'2'}>
-                        <Signature src={props.player.signature && props.player.signature} />
+                        <Signature src={_.get(props, 'player.signature')} />
                     </SignatureCol>
 
                     <PlayerNameCol lg={'5'}>
@@ -121,7 +120,7 @@ const MobilePlayerCard = (props) => {
                     <PlayerScoreCol lg={'5'}>
                         <FitText compressor={props.player.score && getScoreCompressor(Math.abs(props.player.score))}>
                             <PlayerScoreText>
-                                <DollarValueText dollarValue={props.player.score && props.player.score} />
+                                <DollarValueText dollarValue={_.get(props, 'player.score')} />
                             </PlayerScoreText>
                         </FitText>
                     </PlayerScoreCol>

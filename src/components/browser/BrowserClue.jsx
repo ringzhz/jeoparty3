@@ -1,5 +1,4 @@
 import React, { useContext, useEffect, useState } from 'react';
-import _ from 'lodash';
 
 import styled from 'styled-components';
 import Container from 'react-bootstrap/Container';
@@ -9,13 +8,14 @@ import FitText from '@kennethormandy/react-fittext';
 
 import { SocketContext } from '../../context/socket';
 import { timers } from '../../constants/timers';
+import say from '../../helpers/say';
 import mixins from '../../helpers/mixins';
 import Timer from '../../helpers/components/Timer';
 
 // DEBUG
 import { sampleCategories } from '../../constants/sampleCategories';
 
-const getClueTextCompressor = (textLength, mini=false) => {
+const getClueTextCompressor = (textLength) => {
     let compressor = null;
 
     if (textLength > 200) {
@@ -77,9 +77,15 @@ const BrowserClue = () => {
             setCategories(categories);
         });
 
-        socket.on('request_clue', (categoryIndex, clueIndex) => {
+        socket.on('request_clue', (categoryIndex, clueIndex, clueText) => {
             setCategoryIndex(categoryIndex);
             setClueIndex(clueIndex);
+
+            if (clueText) {
+                say(clueText, () => {
+                    socket.emit('start_timer');
+                });
+            }
         });
 
         socket.on('start_timer', () => {
@@ -93,7 +99,7 @@ const BrowserClue = () => {
         });
     }, []);
 
-    const clueText = (categoryIndex !== null && clueIndex !== null) && categories[categoryIndex].clues[clueIndex].question;
+    const clueText = (categoryIndex !== null && clueIndex !== null && categories && categories[categoryIndex]) && categories[categoryIndex].clues[clueIndex].question;
     const textLength = clueText ? clueText.length : 0;
 
     return (
