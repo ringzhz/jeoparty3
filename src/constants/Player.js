@@ -1,8 +1,10 @@
-exports.Player = {
-    socketId: '',
-    sessionName: '',
-    name: '',
-    signature: '',
-    score: 0,
-    answer: ''
-};
+function Player() {
+    this.socketId = '';
+    this.sessionName = '';
+    this.name = '';
+    this.signature = '';
+    this.score = 0;
+    this.answer = '';
+}
+
+exports.Player = Player;

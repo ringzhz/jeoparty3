@@ -147,7 +147,7 @@ const BrowserScoreboard = () => {
     return (
         <Container fluid>
             {players.map((player) => {
-                const numPlayers = Object.keys(players).length > 5 ? 5 : Object.keys(players).length;
+                const numPlayers = Math.min(Math.max(3, Object.keys(players).length), 5);
 
                 const position = players.findIndex((el) => hasPlayerName(el, player.name));
                 const updatedPosition = updatedPlayers.findIndex((el) => hasPlayerName(el, player.name));

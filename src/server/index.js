@@ -55,7 +55,7 @@ const updatePlayers = (sessionName, socketId, key, value) => {
     let players = gameSession.players;
 
     if (!players[socketId]) {
-        players[socketId] = Object.create(Player);
+        players[socketId] = new Player();
         players[socketId].socketId = socketId;
         players[socketId].score = 0;
     }
@@ -87,6 +87,7 @@ const setPlayers = (sessionName) => {
 
     if (Object.keys(gameSession.updatedPlayers).length > 0) {
         gameSession.players = _.cloneDeep(gameSession.updatedPlayers);
+        gameSession.updatedPlayers = {};
     }
 
     sessionCache.put(sessionName, gameSession);
@@ -216,6 +217,27 @@ const showClue = (socket, categoryIndex, clueIndex, clueText) => {
     updateGameSession(socket.sessionName, 'currentGameState', GameState.CLUE);
 };
 
+const startTimer = (socket) => {
+    if (!sessionCache.get(socket.sessionName)) {
+        return;
+    }
+
+    const session = sessionCache.get(socket.sessionName);
+    const categoryIndex = session.categoryIndex;
+    const clueIndex = session.clueIndex;
+
+    sessionCache.get(socket.sessionName).browserClient.emit('start_timer');
+
+    setTimeout(() => {
+        if (!sessionCache.get(socket.sessionName)) {
+            return;
+        }
+
+        const correctAnswer = sessionCache.get(socket.sessionName).categories[categoryIndex].clues[clueIndex].answer;
+        showCorrectAnswer(socket, correctAnswer, timeout=true);
+    }, timers.BUZZ_IN_TIMEOUT * 1000);
+};
+
 const showCorrectAnswer = (socket, correctAnswer, timeout) => {
     const gameSession = sessionCache.get(socket.sessionName);
 
@@ -284,7 +306,7 @@ io.on('connection', (socket) => {
             handlePlayerReconnection(socket);
         } else {
             const sessionName = randomWords({exactly: 1, maxLength: 5})[0];
-            let session = Object.create(GameSession);
+            let session = new GameSession();
 
             socket.sessionName = sessionName;
             socket.join(sessionName);
@@ -328,7 +350,7 @@ io.on('connection', (socket) => {
 
         if (checkSignature(playerName)) {
             updatePlayers(socket.sessionName, socket.id, 'name', playerName);
-            updatePlayers(socket.sessionName, socket.id, 'signature', signature);
+            // updatePlayers(socket.sessionName, socket.id, 'signature', signature);
 
             socket.emit('submit_signature_success', _.get(sessionCache.get(socket.sessionName), `players[${socket.id}]`));
             sessionCache.get(socket.sessionName).browserClient.emit('new_player_name', playerName);
@@ -361,34 +383,17 @@ io.on('connection', (socket) => {
 
         // TODO: Add this timeout to timer.js for use in BrowserBoard (this is for clue screen animation)
         setTimeout(() => {
+            updateCategories(socket.sessionName, categoryIndex, clueIndex);
+            setUpdatedPlayers(socket.sessionName);
+
             const clueText = sessionCache.get(socket.sessionName).categories[categoryIndex].clues[clueIndex].question;
+
             showClue(socket, categoryIndex, clueIndex, clueText);
         }, 1100);
     });
 
     socket.on('start_timer', () => {
-        if (!sessionCache.get(socket.sessionName)) {
-            return;
-        }
-
-        const session = sessionCache.get(socket.sessionName);
-        const categoryIndex = session.categoryIndex;
-        const clueIndex = session.clueIndex;
-
-        sessionCache.get(socket.sessionName).browserClient.emit('start_timer');
-
-        updateCategories(socket.sessionName, categoryIndex, clueIndex);
-
-        setUpdatedPlayers(socket.sessionName);
-
-        setTimeout(() => {
-            if (!sessionCache.get(socket.sessionName)) {
-                return;
-            }
-
-            const correctAnswer = sessionCache.get(socket.sessionName).categories[categoryIndex].clues[clueIndex].answer;
-            showCorrectAnswer(socket, correctAnswer, timeout=true);
-        }, timers.BUZZ_IN_TIMEOUT * 1000);
+        startTimer(socket);
     });
 
     socket.on('buzz_in', () => {
@@ -477,6 +482,7 @@ io.on('connection', (socket) => {
                     showCorrectAnswer(socket, correctAnswer, timeout=false);
                 } else {
                     showClue(socket, categoryIndex, clueIndex);
+                    startTimer(socket);
                 }
             }, timers.SHOW_DECISION_TIME * 1000);
         }, timers.SHOW_PRE_DECISION_TIME * 1000);

@@ -98,6 +98,8 @@ const Game = () => {
     const [gameStateAck, setGameStateAck] = useState(() => () => {});
 
     useEffect(() => {
+        window.speechSynthesis.getVoices();
+
         socket.onAny((eventName, ...args) => {
             // DEBUG
             // console.log(`Heard ${eventName} with args ${args}`);

@@ -9,29 +9,29 @@ exports.samplePlayers = {
         score: 200
     },
 
-    zsS3DKSSIUOegOQuAAAB: {
-        socketId: 'zsS3DKSSIUOegOQuAAAB',
-        sessionName: 'think',
-        name: 'Zoro',
-        signature: signature,
-        score: 1000
-    },
-
-    zsS3DKSSIUOegOQuAAAC: {
-        socketId: 'zsS3DKSSIUOegOQuAAAC',
-        sessionName: 'think',
-        name: 'Nami',
-        signature: signature,
-        score: 2000
-    },
-
-    zsS3DKSSIUOegOQuAAAD: {
-        socketId: 'zsS3DKSSIUOegOQuAAAD',
-        sessionName: 'think',
-        name: 'Usopp',
-        signature: signature,
-        score: 300
-    }
+    // zsS3DKSSIUOegOQuAAAB: {
+    //     socketId: 'zsS3DKSSIUOegOQuAAAB',
+    //     sessionName: 'think',
+    //     name: 'Zoro',
+    //     signature: signature,
+    //     score: 1000
+    // },
+    //
+    // zsS3DKSSIUOegOQuAAAC: {
+    //     socketId: 'zsS3DKSSIUOegOQuAAAC',
+    //     sessionName: 'think',
+    //     name: 'Nami',
+    //     signature: signature,
+    //     score: 2000
+    // },
+    //
+    // zsS3DKSSIUOegOQuAAAD: {
+    //     socketId: 'zsS3DKSSIUOegOQuAAAD',
+    //     sessionName: 'think',
+    //     name: 'Usopp',
+    //     signature: signature,
+    //     score: 300
+    // }
 };
 
 exports.sampleUpdatedPlayers = {
@@ -42,28 +42,28 @@ exports.sampleUpdatedPlayers = {
         signature: signature,
         score: 3000
     },
-
-    zsS3DKSSIUOegOQuAAAB: {
-        socketId: 'zsS3DKSSIUOegOQuAAAB',
-        sessionName: 'think',
-        name: 'Zoro',
-        signature: signature,
-        score: 2000
-    },
-
-    zsS3DKSSIUOegOQuAAAC: {
-        socketId: 'zsS3DKSSIUOegOQuAAAC',
-        sessionName: 'think',
-        name: 'Nami',
-        signature: signature,
-        score: 1000
-    },
-
-    zsS3DKSSIUOegOQuAAAD: {
-        socketId: 'zsS3DKSSIUOegOQuAAAD',
-        sessionName: 'think',
-        name: 'Usopp',
-        signature: signature,
-        score: 300
-    }
+    //
+    // zsS3DKSSIUOegOQuAAAB: {
+    //     socketId: 'zsS3DKSSIUOegOQuAAAB',
+    //     sessionName: 'think',
+    //     name: 'Zoro',
+    //     signature: signature,
+    //     score: 2000
+    // },
+    //
+    // zsS3DKSSIUOegOQuAAAC: {
+    //     socketId: 'zsS3DKSSIUOegOQuAAAC',
+    //     sessionName: 'think',
+    //     name: 'Nami',
+    //     signature: signature,
+    //     score: 1000
+    // },
+    //
+    // zsS3DKSSIUOegOQuAAAD: {
+    //     socketId: 'zsS3DKSSIUOegOQuAAAD',
+    //     sessionName: 'think',
+    //     name: 'Usopp',
+    //     signature: signature,
+    //     score: 300
+    // }
 };

@@ -23,13 +23,11 @@ const say = (text, onComplete) => {
         return;
     }
 
-    window.speechSynthesis.onvoiceschanged = () => {
-        let utterance = new SpeechSynthesisUtterance(text);
-        utterance.voice = getVoice();
-        utterance.onend = () => onComplete();
+    let utterance = new SpeechSynthesisUtterance(text);
+    utterance.voice = getVoice();
+    utterance.onend = () => onComplete();
 
-        window.speechSynthesis.speak(utterance);
-    };
+    window.speechSynthesis.speak(utterance);
 };
 
 export default say;

@@ -1,19 +1,21 @@
 const GameState = require('../constants/GameState').GameState;
 
-exports.GameSession = {
-    browserClient: null,
-    clients: [],
+function GameSession() {
+    this.browserClient = null;
+    this.clients = [];
 
-    currentGameState: GameState.LOBBY,
-    categories: [],
-    players: {},
-    updatedPlayers: {},
-    playersAnswered: [],
+    this.currentGameState = GameState.LOBBY;
+    this.categories = [];
+    this.players = {};
+    this.updatedPlayers = {};
+    this.playersAnswered = [];
 
-    boardController: null,
+    this.boardController = null;
 
-    categoryIndex: null,
-    clueIndex: null,
+    this.categoryIndex = null;
+    this.clueIndex = null;
 
-    buzzInTimeout: true
-};
+    this.buzzInTimeout = true;
+}
+
+exports.GameSession = GameSession;
