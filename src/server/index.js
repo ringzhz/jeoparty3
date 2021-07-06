@@ -350,7 +350,7 @@ io.on('connection', (socket) => {
 
         if (checkSignature(playerName)) {
             updatePlayers(socket.sessionName, socket.id, 'name', playerName);
-            // updatePlayers(socket.sessionName, socket.id, 'signature', signature);
+            updatePlayers(socket.sessionName, socket.id, 'signature', signature);
 
             socket.emit('submit_signature_success', _.get(sessionCache.get(socket.sessionName), `players[${socket.id}]`));
             sessionCache.get(socket.sessionName).browserClient.emit('new_player_name', playerName);
