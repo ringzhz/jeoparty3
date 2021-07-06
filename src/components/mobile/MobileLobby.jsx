@@ -32,13 +32,13 @@ const MobileLobby = () => {
     const MobileLobbyState = {
         SESSION_NAME: 'sessionName',
         SIGNATURE: 'signature',
-        IS_WAITING: 'isWaiting'
+        WAITING: 'waiting'
     };
 
     // DEBUG
     // const [sessionName, setSessionName] = useState('');
     // const [playerName, setPlayerName] = useState('');
-    // const [mobileLobbyState, setMobileLobbyState] = useState(MobileLobbyState.SIGNATURE);
+    // const [mobileLobbyState, setMobileLobbyState] = useState(MobileLobbyState.WAITING);
     // const [player, setPlayer] = useState(samplePlayers['zsS3DKSSIUOegOQuAAAA']);
 
     const [sessionName, setSessionName] = useState('');
@@ -63,7 +63,7 @@ const MobileLobby = () => {
         });
 
         socket.on('submit_signature_success', (player) => {
-            setMobileLobbyState(MobileLobbyState.IS_WAITING);
+            setMobileLobbyState(MobileLobbyState.WAITING);
             setPlayer(player);
         });
 
@@ -74,7 +74,7 @@ const MobileLobby = () => {
         });
 
         socket.on('reconnect', () => {
-            setMobileLobbyState(MobileLobbyState.IS_WAITING);
+            setMobileLobbyState(MobileLobbyState.WAITING);
         });
     }, []);
 
@@ -120,7 +120,7 @@ const MobileLobby = () => {
             }
 
             {
-                mobileLobbyState === MobileLobbyState.IS_WAITING &&
+                mobileLobbyState === MobileLobbyState.WAITING &&
                 <MobileWait player={player} />
             }
         </Container>

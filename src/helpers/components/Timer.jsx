@@ -2,8 +2,8 @@ import React from 'react';
 
 import styled from 'styled-components';
 
-import timerFrameImage from '../../assets/images/timer-frame.png';
-import timerBackgroundImage from '../../assets/images/timer-background.png';
+import timerFrameImage from '../../assets/images/timerFrame.png';
+import timerBackgroundImage from '../../assets/images/timerBackground.png';
 import timerImage from '../../assets/images/timer.png';
 
 const TimerContainer = styled.div`

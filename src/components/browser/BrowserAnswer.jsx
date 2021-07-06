@@ -10,7 +10,7 @@ import { SocketContext } from '../../context/socket';
 import { timers } from '../../constants/timers';
 import mixins from '../../helpers/mixins';
 import DollarValueText from '../../helpers/components/DollarValueText';
-import starBackgroundImage from '../../assets/images/star-background.png';
+import starBackgroundImage from '../../assets/images/starBackground.png';
 import Timer from '../../helpers/components/Timer';
 
 // DEBUG
