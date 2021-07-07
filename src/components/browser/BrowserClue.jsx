@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
+import _ from 'lodash';
 
 import styled from 'styled-components';
 import Container from 'react-bootstrap/Container';
@@ -59,7 +60,7 @@ const BrowserClue = () => {
     // const [categories, setCategories] = useState(sampleCategories);
     // const [categoryIndex, setCategoryIndex] = useState(0);
     // const [clueIndex, setClueIndex] = useState(0);
-
+    //
     // const [showTimer, setShowTimer] = useState(false);
     // const [startTimer, setStartTimer] = useState(false);
 
@@ -99,21 +100,22 @@ const BrowserClue = () => {
         });
     }, []);
 
-    const clueText = (categoryIndex !== null && clueIndex !== null && categories && categories[categoryIndex]) && categories[categoryIndex].clues[clueIndex].question;
-    const textLength = clueText ? clueText.length : 0;
+    const clueText = _.get(categories, `[${categoryIndex}].clues[${clueIndex}].question`);
+    const clueTextLength = _.size(clueText) || 0;
+    const clueTextCompressor = getClueTextCompressor(clueTextLength);
 
     return (
         <BrowserClueContainer fluid>
             <ClueRow>
                 <ClueCol lg={'12'}>
-                    <FitText compressor={getClueTextCompressor(textLength)}>
-                        {clueText && clueText.toUpperCase()}
+                    <FitText compressor={clueTextCompressor}>
+                        {_.invoke(clueText, 'toUpperCase')}
                     </FitText>
                 </ClueCol>
             </ClueRow>
 
             <TimerRow>
-                {showTimer ? <Timer height={'6vh'} width={'60vw'} start={startTimer} time={timers.BUZZ_IN_TIMEOUT} slideUp={true} /> : ''}
+                {showTimer && <Timer height={'6vh'} width={'60vw'} start={startTimer} time={timers.BUZZ_IN_TIMEOUT} slideUp={true} />}
             </TimerRow>
         </BrowserClueContainer>
     );

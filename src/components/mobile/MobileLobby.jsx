@@ -95,7 +95,7 @@ const MobileLobby = () => {
                         <LogoText>JEOPARTY!</LogoText>
 
                         <InputGroup className={'mb-3'}>
-                            <FormControl placeholder={'Enter session name...'} value={sessionName.toUpperCase()} onChange={e => setSessionName(e.target.value)} aria-describedby={'basic-addon1'} />
+                            <FormControl placeholder={'Enter session name...'} value={sessionName.toUpperCase()} onChange={e => setSessionName(e.target.value)} />
                             <InputGroup.Prepend>
                                 <Button onClick={() => handleJoinSession(sessionName)} variant={'outline-light'}>JOIN</Button>
                             </InputGroup.Prepend>
@@ -111,7 +111,7 @@ const MobileLobby = () => {
                         <LogoText>JEOPARTY!</LogoText>
 
                         <InputGroup className={'mb-3'}>
-                            <FormControl placeholder={'Enter your name...'} value={playerName.toUpperCase()} onChange={e => setPlayerName(e.target.value)} aria-describedby={'basic-addon1'} />
+                            <FormControl placeholder={'Enter your name...'} value={playerName.toUpperCase()} onChange={e => setPlayerName(e.target.value)} />
                         </InputGroup>
 
                         <Sketchpad onSubmit={() => handleSubmitSignature(playerName)} />

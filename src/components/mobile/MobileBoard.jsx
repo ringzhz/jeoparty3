@@ -16,7 +16,7 @@ import MobileWait from '../../helpers/components/MobileWait';
 import { sampleCategories } from '../../constants/sampleCategories';
 import { samplePlayers } from '../../constants/samplePlayers';
 
-const getCategoryTextCompressor = (textLength) => {
+const getCategoryNameCompressor = (textLength) => {
     let compressor = null;
 
     if (textLength > 20) {
@@ -113,14 +113,16 @@ const MobileBoard = () => {
 
     let categoryRows = categories && Array.from(Array(NUM_CATEGORIES).keys()).map((i) => {
         const category = categories[i];
-        const categoryTitle = _.get(category, 'title');
+        const categoryName = _.get(category, 'title');
+        const categoryNameLength = _.size(categoryName) || 0;
+        const categoryNameCompressor = getCategoryNameCompressor(categoryNameLength);
 
         return (
             <CategoryRow onClick={() => handleSelectCategory(i)}>
                 <CategoryCol>
-                    <FitText compressor={categoryTitle ? getCategoryTextCompressor(categoryTitle.length) : 0}>
+                    <FitText compressor={categoryNameCompressor}>
                         <CategoryText>
-                            {_.get(category, 'completed') ? '' : categoryTitle && categoryTitle.toUpperCase()}
+                            {_.get(category, 'completed') ? '' : _.invoke(categoryName, 'toUpperCase')}
                         </CategoryText>
                     </FitText>
                 </CategoryCol>
@@ -129,12 +131,12 @@ const MobileBoard = () => {
     });
 
     let priceRows = categories && Array.from(Array(NUM_CLUES).keys()).map((i) => {
-        const clue = categoryIndex !== null && categories && categories[categoryIndex] && categories[categoryIndex].clues[i];
+        const clue = _.get(categories, `[${categoryIndex}].clues[${i}]`);
         const dollarValue = 200 * (i + 1);
 
         return (
             <PriceRow onClick={() => {
-                if (categories && !categories[categoryIndex].clues[i].completed) {
+                if (!_.get(clue, 'completed')) {
                     handleRequestClue(categoryIndex, i);
                 }
             }}>

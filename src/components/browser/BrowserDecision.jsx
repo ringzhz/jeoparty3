@@ -1,4 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
+import _ from 'lodash';
 
 import styled from 'styled-components';
 import Container from 'react-bootstrap/Container';
@@ -8,6 +9,10 @@ import FitText from '@kennethormandy/react-fittext';
 
 import { SocketContext } from '../../context/socket';
 import mixins from '../../helpers/mixins';
+
+import correct from '../../assets/audio/correct.mp3';
+import incorrect from '../../assets/audio/incorrect.mp3';
+import buzzInTimeout from '../../assets/audio/buzzInTimeout.mp3';
 
 const AnswerRow = styled(Row)`
     height: 100vh;
@@ -92,13 +97,26 @@ const BrowserDecision = () => {
 
             setTimeout(() => {
                 setShowPrice(true);
+
+                if (isCorrect) {
+                    const correctSound = new Audio(correct);
+                    correctSound.play();
+                } else {
+                    const incorrectSound = new Audio(incorrect);
+                    incorrectSound.play();
+                }
             }, 100);
         });
 
-        socket.on('show_correct_answer', (correctAnswer) => {
+        socket.on('show_correct_answer', (correctAnswer, timeout) => {
             setShowDecision(false);
             setShowCorrectAnswer(true);
             setCorrectAnswer(correctAnswer);
+
+            if (timeout) {
+                const buzzInTimeoutSound = new Audio(buzzInTimeout);
+                buzzInTimeoutSound.play();
+            }
         });
 
         // DEBUG
@@ -116,8 +134,8 @@ const BrowserDecision = () => {
                     <AnswerPanel>
                         <FitText compressor={2}>
                             {(!showAnswer && !showDecision && !showCorrectAnswer && !showPrice) && <span>&nbsp;</span>}
-                            {(showAnswer || showDecision) && (answer.length > 0 ? answer.toUpperCase() : <span>&nbsp;</span>)}
-                            {showCorrectAnswer && correctAnswer.toUpperCase()}
+                            {(showAnswer || showDecision) && _.isEmpty(answer) ? answer.toUpperCase() : <span>&nbsp;</span>}
+                            {showCorrectAnswer && _.invoke(correctAnswer, 'toUpperCase')}
                         </FitText>
                     </AnswerPanel>
 

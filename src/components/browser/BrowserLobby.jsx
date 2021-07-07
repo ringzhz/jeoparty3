@@ -8,13 +8,33 @@ import InputGroup from 'react-bootstrap/InputGroup';
 import Button from 'react-bootstrap/Button';
 
 import { SocketContext } from '../../context/socket';
-import say from '../../helpers/say';
 import mixins from '../../helpers/mixins';
 import HypeText from '../../helpers/components/HypeText';
 import DollarValueText from '../../helpers/components/DollarValueText';
 
+import lobbyMusic from '../../assets/audio/lobbyMusic.mp3';
+
 // DEBUG
 import { sampleLeaderboard } from '../../constants/sampleLeaderboard';
+
+const BrowserLobbyContainer = styled(Container)`
+    opacity: ${props => props.mute ? '0.1' : '1'};
+`;
+
+const MuteScreenText = styled.div`
+    ${mixins.flexAlignCenter};
+    position: absolute;
+    z-index: 2;
+    
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%,-50%);
+`;
+
+const MuteScreenButton = styled(Button)`
+    font-family: clue, serif;
+    font-size: 10vh;
+`;
 
 const LogoRow = styled(Row)`
     ${mixins.flexAlignCenter}
@@ -106,16 +126,29 @@ const BrowserLobby = () => {
     // const [playerNames, setPlayerNames] = useState(['Luffy', 'Nami', 'Zoro']);
     // const [sessionName, setSessionName] = useState('TEST');
     // const [leaderboard, setLeaderboard] = useState(sampleLeaderboard);
+    // const [mute, setMute] = useState(true);
 
     const [playerNames, setPlayerNames] = useState([]);
     const [sessionName, setSessionName] = useState('');
     const [leaderboard, setLeaderboard] = useState([]);
+    const [mute, setMute] = useState(true);
 
     const socket = useContext(SocketContext);
+
+    const lobbyMusicSound = new Audio(lobbyMusic);
 
     useEffect(() => {
         socket.on('session_name', (sessionName) => {
             setSessionName(sessionName);
+        });
+
+        socket.on('unmute', () => {
+            lobbyMusicSound.loop = true;
+            lobbyMusicSound.play();
+        });
+
+        socket.on('start_game_success', () => {
+            lobbyMusicSound.pause();
         });
 
         socket.on('start_game_failure', () => {
@@ -138,66 +171,79 @@ const BrowserLobby = () => {
         // }
     }, []);
 
+    const handleUnmute = useCallback(() => {
+        setMute(false);
+        socket.emit('unmute');
+    }, []);
+
     const handleStartGame = useCallback(() => {
         socket.emit('start_game');
     }, []);
 
     return (
-        <Container fluid>
-            <LogoRow>
-                <Col lg={'12'}>
-                    <LogoText>JEOPARTY!</LogoText>
-                    <JoinText>JOIN ON YOUR PHONE AT JEOPARTY.IO</JoinText>
-                </Col>
-            </LogoRow>
+        <div>
+            {mute &&
+                <MuteScreenText onClick={() => handleUnmute()}>
+                    <MuteScreenButton onClick={() => handleUnmute()} variant={'outline-light'}>CLICK TO UNMUTE</MuteScreenButton>
+                </MuteScreenText>
+            }
 
-            <InfoRow>
-                <Col lg={'4'}>
-                    <InfoHeading>PLAYERS</InfoHeading>
-                    <InfoList>
-                        {playerNames.map((name) => {
-                            return <li><InfoText><HypeText text={name.toUpperCase()} /></InfoText></li>
-                        })}
-                    </InfoList>
-                </Col>
+            <BrowserLobbyContainer mute={mute} fluid>
+                <LogoRow>
+                    <Col lg={'12'}>
+                        <LogoText>JEOPARTY!</LogoText>
+                        <JoinText>JOIN ON YOUR PHONE AT JEOPARTY.IO</JoinText>
+                    </Col>
+                </LogoRow>
 
-                <Col lg={'4'}>
-                    <InfoHeading>SESSION NAME</InfoHeading>
-                    <SessionNameText>{sessionName.toUpperCase()}</SessionNameText>
-                </Col>
+                <InfoRow>
+                    <Col lg={'4'}>
+                        <InfoHeading>PLAYERS</InfoHeading>
+                        <InfoList>
+                            {playerNames.map((name) => {
+                                return <li><InfoText><HypeText text={name.toUpperCase()} /></InfoText></li>
+                            })}
+                        </InfoList>
+                    </Col>
 
-                <Col lg={'4'}>
-                    <InfoHeading>LEADERBOARD</InfoHeading>
-                    <Row>
-                        <LeaderboardPlayerNames lg={'6'}>
-                            <InfoList>
-                                {leaderboard.map((player) => {
-                                    return <li><InfoText>{player.name.toUpperCase()}</InfoText></li>
-                                })}
-                            </InfoList>
-                        </LeaderboardPlayerNames>
+                    <Col lg={'4'}>
+                        <InfoHeading>SESSION NAME</InfoHeading>
+                        <SessionNameText>{sessionName.toUpperCase()}</SessionNameText>
+                    </Col>
 
-                        <LeaderboardScores lg={'6'}>
-                            <InfoList>
-                                {leaderboard.map((player) => {
-                                    return (
-                                        <li>
-                                            <InfoText>
-                                                <DollarValueText dollarValue={player.score} />
-                                            </InfoText>
-                                        </li>
-                                    );
-                                })}
-                            </InfoList>
-                        </LeaderboardScores>
-                    </Row>
-                </Col>
-            </InfoRow>
+                    <Col lg={'4'}>
+                        <InfoHeading>LEADERBOARD</InfoHeading>
+                        <Row>
+                            <LeaderboardPlayerNames lg={'6'}>
+                                <InfoList>
+                                    {leaderboard.map((player) => {
+                                        return <li><InfoText>{player.name.toUpperCase()}</InfoText></li>
+                                    })}
+                                </InfoList>
+                            </LeaderboardPlayerNames>
 
-            <StartGameInputGroup className={'mb-3 justify-content-center'}>
-                <StartGameButton onClick={() => handleStartGame()} variant={'outline-light'}>START GAME</StartGameButton>
-            </StartGameInputGroup>
-        </Container>
+                            <LeaderboardScores lg={'6'}>
+                                <InfoList>
+                                    {leaderboard.map((player) => {
+                                        return (
+                                            <li>
+                                                <InfoText>
+                                                    <DollarValueText dollarValue={player.score} />
+                                                </InfoText>
+                                            </li>
+                                        );
+                                    })}
+                                </InfoList>
+                            </LeaderboardScores>
+                        </Row>
+                    </Col>
+                </InfoRow>
+
+                <StartGameInputGroup className={'mb-3 justify-content-center'}>
+                    {!mute && <StartGameButton onClick={() => handleStartGame()} variant={'outline-light'}>START GAME</StartGameButton>}
+                </StartGameInputGroup>
+            </BrowserLobbyContainer>
+        </div>
     );
 };
 

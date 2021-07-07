@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
+import _ from 'lodash';
 
 import styled from 'styled-components';
 import Container from 'react-bootstrap/Container';
@@ -13,10 +14,12 @@ import DollarValueText from '../../helpers/components/DollarValueText';
 import starBackgroundImage from '../../assets/images/starBackground.png';
 import Timer from '../../helpers/components/Timer';
 
+import buzzIn from '../../assets/audio/buzzIn.mp3';
+
 // DEBUG
 import { sampleCategories } from '../../constants/sampleCategories';
 
-const getCategoryTextCompressor = (textLength) => {
+const getCategoryNameCompressor = (textLength) => {
     let compressor = null;
 
     if (textLength > 20) {
@@ -30,7 +33,7 @@ const getCategoryTextCompressor = (textLength) => {
     return compressor;
 };
 
-const getCategoryTextLineHeight = (textLength) => {
+const getCategoryNameLineHeight = (textLength) => {
     let lineHeight = null;
 
     if (textLength > 20) {
@@ -99,7 +102,7 @@ const CategoryText = styled.span`
     font-family: board, serif;
     color: white;
     text-shadow: 0.1em 0.1em #000;
-    line-height: ${props => getCategoryTextLineHeight(props.textLength)};
+    line-height: ${props => props.lineHeight};
 `;
 
 const PriceText = styled.span`
@@ -144,7 +147,7 @@ const BrowserAnswer = () => {
 
     const [categories, setCategories] = useState([]);
     const [categoryIndex, setCategoryIndex] = useState(null);
-    const [clueIndex, setClueIndex] = useState(null);
+    const [clueIndex, setClueIndex] = useState(0);
     const [playerName, setPlayerName] = useState('');
     const [answerLivefeed, setAnswerLivefeed] = useState('');
     const [startTimer, setStartTimer] = useState(false);
@@ -159,6 +162,9 @@ const BrowserAnswer = () => {
         socket.on('request_clue', (categoryIndex, clueIndex) => {
             setCategoryIndex(categoryIndex);
             setClueIndex(clueIndex);
+
+            const buzzInSound = new Audio(buzzIn);
+            buzzInSound.play();
         });
 
         socket.on('player_name', (playerName) => {
@@ -174,30 +180,36 @@ const BrowserAnswer = () => {
         }, 100);
     }, []);
 
+    const categoryName = _.get(categories, `[${categoryIndex}].title`);
+    const categoryNameLength = _.size(categoryName) || 0;
+    const categoryNameCompressor = getCategoryNameCompressor(categoryNameLength);
+    const categoryNameLineHeight = getCategoryNameLineHeight(categoryNameLength);
+
+    const clueText = _.get(categories, `[${categoryIndex}].clues[${clueIndex}].question`);
+    const clueTextLength = _.size(clueText) || 0;
+    const clueTextCompressor = getClueTextCompressor(clueTextLength);
+
     return (
         <Container fluid>
             <ClueRow>
                 <PanelCol lg={'6'}>
                     <CategoryPanel>
-                        <FitText compressor={getCategoryTextCompressor((categoryIndex !== null) ? categories[categoryIndex].title.length : 0)}>
-                            <CategoryText textLength={(categoryIndex !== null) ? categories[categoryIndex].title.length : 0}>
-                                {(categoryIndex !== null) && (
-                                    categories[categoryIndex].title.toUpperCase()
-                                )}
+                        <FitText compressor={categoryNameCompressor}>
+                            <CategoryText lineHeight={categoryNameLineHeight}>
+                                {_.invoke(categoryName, 'toUpperCase')}
                             </CategoryText>
                         </FitText>
+
                         <PriceText>
-                            <DollarValueText dollarValue={(categoryIndex !== null && clueIndex !== null) && (200 * (clueIndex + 1))} />
+                            <DollarValueText dollarValue={200 * (clueIndex + 1)} />
                         </PriceText>
                     </CategoryPanel>
                 </PanelCol>
 
                 <PanelCol lg={'6'}>
                     <CluePanel>
-                        <FitText compressor={getClueTextCompressor((categoryIndex !== null && clueIndex !== null) ? categories[categoryIndex].clues[clueIndex].question.length : 0)}>
-                            {(categoryIndex !== null && clueIndex !== null) && (
-                                categories[categoryIndex].clues[clueIndex].question.toUpperCase()
-                            )}
+                        <FitText compressor={clueTextCompressor}>
+                            {_.invoke(clueText, 'toUpperCase')}
                         </FitText>
                     </CluePanel>
 
@@ -207,10 +219,10 @@ const BrowserAnswer = () => {
 
             <LivefeedRow>
                 <PanelCol lg={'12'}>
-                    <PlayerNameText>{playerName.toUpperCase()}</PlayerNameText>
+                    <PlayerNameText>{_.invoke(playerName, 'toUpperCase')}</PlayerNameText>
                     <LivefeedPanel>
                         <FitText compressor={1.5}>
-                            {answerLivefeed.length > 0 ? answerLivefeed.toUpperCase() : <span>&nbsp;</span>}
+                            {_.isEmpty(answerLivefeed) ? <span>&nbsp;</span> : _.invoke(answerLivefeed, 'toUpperCase')}
                         </FitText>
                     </LivefeedPanel>
                 </PanelCol>

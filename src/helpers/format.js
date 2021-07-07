@@ -9,8 +9,6 @@ exports.formatRaw = (original) => {
     // HTML tags
     rawOriginal = rawOriginal.replace(/<i>/g, "");
     rawOriginal = rawOriginal.replace("</i>", "");
-    rawOriginal = rawOriginal.replace(/<I>/g, "");
-    rawOriginal = rawOriginal.replace("</I>", "");
 
     // Punctuation
     rawOriginal = rawOriginal.replace(/[.,\/#!$%\^&\*;:"'{}=\-_`~()]/g, "");

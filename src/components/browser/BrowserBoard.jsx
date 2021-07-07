@@ -16,7 +16,7 @@ import BrowserClue from './BrowserClue';
 // DEBUG
 import { sampleCategories } from '../../constants/sampleCategories';
 
-const getCategoryTextCompressor = (textLength) => {
+const getCategoryNameCompressor = (textLength) => {
     let compressor = null;
 
     if (textLength > 20) {
@@ -30,7 +30,7 @@ const getCategoryTextCompressor = (textLength) => {
     return compressor;
 };
 
-const getCategoryTextLineHeight = (textLength) => {
+const getCategoryNameLineHeight = (textLength) => {
     let lineHeight = null;
 
     if (textLength > 20) {
@@ -74,7 +74,7 @@ const FitTextWrapper = styled.div`
 `;
 
 const CategoryCol = styled(Col)`
-    line-height: ${props => getCategoryTextLineHeight(props.textLength)};
+    line-height: ${props => props.lineHeight};
 
     color: black;
     border-width: 0.2em;
@@ -146,27 +146,29 @@ const BrowserBoard = () => {
     }, []);
 
     // DEBUG
-    // document.body.onkeyup = (e) => {
-    //     if (e.keyCode === 32) {
-    //         setCategoryIndex(1);
-    //         setClueIndex(1);
-    //
-    //         setTimeout(() => {
-    //             setAnimateClue(true);
-    //         }, 100);
-    //     }
-    // };
+    document.body.onkeyup = (e) => {
+        if (e.keyCode === 32) {
+            setCategoryIndex(1);
+            setClueIndex(1);
+
+            setTimeout(() => {
+                setAnimateClue(true);
+            }, 100);
+        }
+    };
 
     let categoryTitleRow = categories && categories.map((category) => {
-        const categoryTitle = category.title;
-        const textLength = categoryTitle.length;
+        const categoryName = _.get(category, 'title');
+        const categoryNameLength = _.size(categoryName) || 0;
+        const categoryNameCompressor = getCategoryNameCompressor(categoryNameLength);
+        const categoryNameLineHeight = getCategoryNameLineHeight(categoryNameLength);
 
         return (
-            <CategoryCol textLength={textLength} lg={'2'}>
+            <CategoryCol lineHeight={categoryNameLineHeight} lg={'2'}>
                 <FitTextWrapper>
-                    <FitText compressor={getCategoryTextCompressor(textLength)}>
+                    <FitText compressor={categoryNameCompressor}>
                         <CategoryText>
-                            {_.get(category, 'completed') ? '' : categoryTitle.toUpperCase()}
+                            {_.get(category, 'completed') ? '' : _.invoke(categoryName, 'toUpperCase')}
                         </CategoryText>
                     </FitText>
                 </FitTextWrapper>
@@ -178,7 +180,7 @@ const BrowserBoard = () => {
         const dollarValue = 200 * (j + 1);
 
         const priceCols = Array.from(Array(NUM_CATEGORIES).keys()).map((i) => {
-            const clue = categories && categories[i] && categories[i].clues[j];
+            const clue = _.get(categories, `[${i}].clues[${j}]`);
 
             return (
                 <PriceCol lg={'2'}>
@@ -208,7 +210,7 @@ const BrowserBoard = () => {
                 {categoryTitleRow}
             </CategoryRow>
 
-            <ClueWrapper className={animateClue ? 'animate' : ''}
+            <ClueWrapper className={animateClue && 'animate'}
                          categoryIndex={categoryIndex && categoryIndex}
                          clueIndex={clueIndex && clueIndex}>
                 <BrowserClue />

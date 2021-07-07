@@ -10,14 +10,14 @@ import mixins from '../mixins';
 import HypeText from './HypeText';
 import DollarValueText from './DollarValueText';
 
-const getNameCompressor = (textLength) => {
+const getNameCompressor = (nameLength) => {
     let compressor = null;
 
-    if (textLength > 15) {
+    if (nameLength > 15) {
         compressor = 0.7;
-    } else if (textLength > 10) {
+    } else if (nameLength > 10) {
         compressor = 0.5;
-    } else if (textLength > 5) {
+    } else if (nameLength > 5) {
         compressor = 0.35;
     } else {
         compressor = 0.25;
@@ -29,7 +29,7 @@ const getNameCompressor = (textLength) => {
 const getScoreCompressor = (score) => {
     let compressor = null;
 
-    if (score >= 10000) {
+    if (Math.abs(score) >= 10000) {
         compressor = 0.3;
     } else {
         compressor = 0.25;
@@ -103,6 +103,13 @@ const PlayerScoreText = styled.span`
 `;
 
 const MobilePlayerCard = (props) => {
+    const name = _.get(props, 'player.name');
+    const nameLength = _.size(name) || 0;
+    const nameCompressor = getNameCompressor(nameLength);
+
+    const score = _.get(props, 'player.score', 0);
+    const scoreCompressor = getScoreCompressor(score);
+
     return (
         <PlayerCardRow>
             <PlayerCardCol lg={'12'}>
@@ -112,13 +119,13 @@ const MobilePlayerCard = (props) => {
                     </SignatureCol>
 
                     <PlayerNameCol lg={'5'}>
-                        <FitText compressor={props.player.name && getNameCompressor(props.player.name.length)}>
-                            <PlayerNameText>{props.player.name && props.player.name.toUpperCase()}</PlayerNameText>
+                        <FitText compressor={nameCompressor}>
+                            <PlayerNameText>{_.invoke(_.get(props, 'player.name'), 'toUpperCase')}</PlayerNameText>
                         </FitText>
                     </PlayerNameCol>
 
                     <PlayerScoreCol lg={'5'}>
-                        <FitText compressor={props.player.score && getScoreCompressor(Math.abs(props.player.score))}>
+                        <FitText compressor={scoreCompressor}>
                             <PlayerScoreText>
                                 <DollarValueText dollarValue={_.get(props, 'player.score')} />
                             </PlayerScoreText>
