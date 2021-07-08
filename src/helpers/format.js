@@ -33,6 +33,15 @@ exports.formatRaw = (original) => {
     return rawOriginal;
 };
 
+exports.formatUtterance = (original) => {
+    let rawOriginal = original.toLowerCase();
+
+    rawOriginal.replace(/(_)\1+/g, 'blank');
+    rawOriginal.replace(/(\.)\1+/g, ',');
+
+    return rawOriginal;
+};
+
 exports.formatCategory = (category) => {
     const NUM_CLUES = 5;
 

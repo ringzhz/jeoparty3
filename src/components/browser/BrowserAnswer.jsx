@@ -33,20 +33,6 @@ const getCategoryNameCompressor = (textLength) => {
     return compressor;
 };
 
-const getCategoryNameLineHeight = (textLength) => {
-    let lineHeight = null;
-
-    if (textLength > 20) {
-        lineHeight = '1.5em';
-    } else if (textLength > 10) {
-        lineHeight = '2em';
-    } else {
-        lineHeight = '2.5em';
-    }
-
-    return lineHeight;
-};
-
 const getClueTextCompressor = (textLength) => {
     let compressor = null;
 
@@ -94,18 +80,28 @@ const CluePanel = styled.div`
 `;
 
 const CategoryPanel = styled(CluePanel)`
-    letter-spacing: 0.1em;
+    letter-spacing: 0.15em;
     background-image: none;
+`;
+
+const CategoryTextPanel = styled.div`
+    ${mixins.flexAlignCenter};
+    height: 60%;
 `;
 
 const CategoryText = styled.span`
     font-family: board, serif;
     color: white;
     text-shadow: 0.1em 0.1em #000;
-    line-height: ${props => props.lineHeight};
+    line-height: 1em;
 `;
 
-const PriceText = styled.span`
+const DollarValueTextPanel = styled.div`
+    ${mixins.flexAlignCenter};
+    height: 40%;
+`;
+
+const DollarValueTextWrapper = styled.span`
     font-size: 10vh;
     font-family: board, serif;
     color: #d69f4c;
@@ -183,7 +179,6 @@ const BrowserAnswer = () => {
     const categoryName = _.get(categories, `[${categoryIndex}].title`);
     const categoryNameLength = _.size(categoryName) || 0;
     const categoryNameCompressor = getCategoryNameCompressor(categoryNameLength);
-    const categoryNameLineHeight = getCategoryNameLineHeight(categoryNameLength);
 
     const clueText = _.get(categories, `[${categoryIndex}].clues[${clueIndex}].question`);
     const clueTextLength = _.size(clueText) || 0;
@@ -194,15 +189,19 @@ const BrowserAnswer = () => {
             <ClueRow>
                 <PanelCol lg={'6'}>
                     <CategoryPanel>
-                        <FitText compressor={categoryNameCompressor}>
-                            <CategoryText lineHeight={categoryNameLineHeight}>
-                                {_.invoke(categoryName, 'toUpperCase')}
-                            </CategoryText>
-                        </FitText>
+                        <CategoryTextPanel>
+                            <FitText compressor={categoryNameCompressor}>
+                                <CategoryText>
+                                    {_.invoke(categoryName, 'toUpperCase')}
+                                </CategoryText>
+                            </FitText>
+                        </CategoryTextPanel>
 
-                        <PriceText>
-                            <DollarValueText dollarValue={200 * (clueIndex + 1)} />
-                        </PriceText>
+                        <DollarValueTextPanel>
+                            <DollarValueTextWrapper>
+                                <DollarValueText dollarValue={200 * (clueIndex + 1)} />
+                            </DollarValueTextWrapper>
+                        </DollarValueTextPanel>
                     </CategoryPanel>
                 </PanelCol>
 

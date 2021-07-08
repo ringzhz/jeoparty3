@@ -13,6 +13,7 @@ import mixins from '../../helpers/mixins';
 import correct from '../../assets/audio/correct.mp3';
 import incorrect from '../../assets/audio/incorrect.mp3';
 import buzzInTimeout from '../../assets/audio/buzzInTimeout.mp3';
+import { sayDollarValueFiller, sayCorrectAnswerFiller } from '../../helpers/sayFiller';
 
 const AnswerRow = styled(Row)`
     height: 100vh;
@@ -42,7 +43,7 @@ const AnswerPanel = styled.div`
     text-overflow: ellipsis;
 `;
 
-const PriceText = styled.span`
+const DollarValueText = styled.span`
     position: absolute;
     left: 50%;
     -webkit-transform: translateX(-50%);
@@ -53,7 +54,7 @@ const PriceText = styled.span`
     text-shadow: 0.08em 0.08em #000;
     font-size: 10vh;
     
-    top: ${props => props.showPrice ? '15vh' : '60vh'};
+    top: ${props => props.showDollarValue ? '15vh' : '60vh'};
     transition-property: top;
     transition-duration: 1s;
     transition-timing-function: ease-out;
@@ -64,22 +65,22 @@ const BrowserDecision = () => {
     // const [showAnswer, setShowAnswer] = useState(true);
     // const [showDecision, setShowDecision] = useState(false);
     // const [showCorrectAnswer, setShowCorrectAnswer] = useState(false);
-    // const [showPrice, setShowPrice] = useState(false);
+    // const [showDollarValue, setShowDollarValue] = useState(false);
     //
     // const [answer, setAnswer] = useState('');
     // const [correctAnswer, setCorrectAnswer] = useState('');
     // const [isCorrect, setIsCorrect] = useState(false);
-    // const [price, setPrice] = useState(200);
+    // const [dollarValue, setDollarValue] = useState(200);
 
     const [showAnswer, setShowAnswer] = useState(false);
     const [showDecision, setShowDecision] = useState(false);
     const [showCorrectAnswer, setShowCorrectAnswer] = useState(false);
-    const [showPrice, setShowPrice] = useState(false);
+    const [showDollarValue, setShowDollarValue] = useState(false);
 
     const [answer, setAnswer] = useState('');
     const [correctAnswer, setCorrectAnswer] = useState('');
     const [isCorrect, setIsCorrect] = useState(false);
-    const [price, setPrice] = useState(0);
+    const [dollarValue, setDollarValue] = useState(0);
 
     const socket = useContext(SocketContext);
 
@@ -89,18 +90,19 @@ const BrowserDecision = () => {
             setAnswer(answer);
         });
 
-        socket.on('show_decision', (isCorrect, price) => {
+        socket.on('show_decision', (isCorrect, dollarValue) => {
             setShowAnswer(false);
             setShowDecision(true);
             setIsCorrect(isCorrect);
-            setPrice(price);
+            setDollarValue(dollarValue);
 
             setTimeout(() => {
-                setShowPrice(true);
+                setShowDollarValue(true);
 
                 if (isCorrect) {
                     const correctSound = new Audio(correct);
                     correctSound.play();
+                    sayDollarValueFiller(dollarValue);
                 } else {
                     const incorrectSound = new Audio(incorrect);
                     incorrectSound.play();
@@ -115,6 +117,10 @@ const BrowserDecision = () => {
 
             if (timeout) {
                 const buzzInTimeoutSound = new Audio(buzzInTimeout);
+                buzzInTimeoutSound.onended = () => {
+                    sayCorrectAnswerFiller(correctAnswer);
+                };
+
                 buzzInTimeoutSound.play();
             }
         });
@@ -122,7 +128,7 @@ const BrowserDecision = () => {
         // DEBUG
         // document.body.onkeyup = (e) => {
         //     if (e.keyCode === 32) {
-        //         setShowPrice(true);
+        //         setShowDollarValue(true);
         //     }
         // }
     }, []);
@@ -133,15 +139,15 @@ const BrowserDecision = () => {
                 <AnswerCol lg={'12'}>
                     <AnswerPanel>
                         <FitText compressor={2}>
-                            {(!showAnswer && !showDecision && !showCorrectAnswer && !showPrice) && <span>&nbsp;</span>}
-                            {(showAnswer || showDecision) && _.isEmpty(answer) ? answer.toUpperCase() : <span>&nbsp;</span>}
+                            {(!showAnswer && !showDecision && !showCorrectAnswer && !showDollarValue) && <span>&nbsp;</span>}
+                            {(showAnswer || showDecision) && _.isEmpty(answer) ? <span>&nbsp;</span> : answer.toUpperCase()}
                             {showCorrectAnswer && _.invoke(correctAnswer, 'toUpperCase')}
                         </FitText>
                     </AnswerPanel>
 
-                    <PriceText isCorrect={isCorrect} showPrice={showPrice}>
-                        {!showCorrectAnswer && `${isCorrect ? '+' : '-'}$${price}`}
-                    </PriceText>
+                    <DollarValueText isCorrect={isCorrect} showDollarValue={showDollarValue}>
+                        {!showCorrectAnswer && `${isCorrect ? '+' : '-'}$${dollarValue}`}
+                    </DollarValueText>
                 </AnswerCol>
             </AnswerRow>
         </Container>

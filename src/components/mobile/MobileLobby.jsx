@@ -38,7 +38,7 @@ const MobileLobby = () => {
     // DEBUG
     // const [sessionName, setSessionName] = useState('');
     // const [playerName, setPlayerName] = useState('');
-    // const [mobileLobbyState, setMobileLobbyState] = useState(MobileLobbyState.WAITING);
+    // const [mobileLobbyState, setMobileLobbyState] = useState(MobileLobbyState.SIGNATURE);
     // const [player, setPlayer] = useState(samplePlayers['zsS3DKSSIUOegOQuAAAA']);
 
     const [sessionName, setSessionName] = useState('');

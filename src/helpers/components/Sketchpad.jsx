@@ -40,12 +40,13 @@ const ColorPickerWrapper = styled.div`
 const Sketchpad = (props) => {
     const [color, setColor] = useState('#ff0000');
     const [points, setPoints] = useState([]);
+    const [undo, setUndo] = useState(false);
 
     const handleChange = (color) => {
         setColor(color.hex);
     };
 
-    const undo = () => {
+    const undoStroke = () => {
         const canvas = document.getElementById('signature-canvas');
         const context = canvas.getContext('2d');
 
@@ -87,6 +88,7 @@ const Sketchpad = (props) => {
         }
 
         setPoints(newPoints);
+        setUndo(!undo);
     };
 
     const reset = () => {
@@ -175,7 +177,6 @@ const Sketchpad = (props) => {
 
         const touchStartEvent = e => {
             lastEvent = e;
-            drawing = true;
 
             const touchPos = getTouchPos(e);
 
@@ -229,7 +230,7 @@ const Sketchpad = (props) => {
         canvas.addEventListener('touchstart', touchStartEvent);
         canvas.addEventListener('touchmove', touchMoveEvent);
         canvas.addEventListener('touchend', touchEndEvent);
-    }, [color, points]);
+    }, [color, undo]);
 
     return (
         <Container>
@@ -255,7 +256,7 @@ const Sketchpad = (props) => {
                     <br />
 
                     <ButtonGroup>
-                        <Button variant={'outline-light'} onClick={() => undo()}>UNDO</Button>
+                        <Button variant={'outline-light'} onClick={() => undoStroke()}>UNDO</Button>
                         <Button variant={'outline-light'} onClick={() => reset()}>RESET</Button>
                         <Button variant={'outline-light'} onClick={() => props.onSubmit()}>SUBMIT</Button>
                     </ButtonGroup>

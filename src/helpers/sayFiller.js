@@ -1,12 +1,12 @@
 import say from './say';
 
-export const sayBoardControllerFiller = (boardController) => {
-    const text = `Select a clue, ${boardController}`;
+export const sayBoardControllerNameFiller = (boardControllerName) => {
+    const text = `Select a clue, ${boardControllerName}`;
     say(text);
 };
 
 export const sayDollarValueFiller = (dollarValue) => {
-    const text = `Correct for ${dollarValue} dollars`;
+    const text = `Correct for ${dollarValue}`;
     say(text);
 };
 

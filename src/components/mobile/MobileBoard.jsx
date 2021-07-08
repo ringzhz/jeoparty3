@@ -53,20 +53,20 @@ const CategoryText = styled.span`
     text-shadow: 0.1em 0.1em #000;
 `;
 
-const PriceRow = styled(Row)`
+const DollarValueRow = styled(Row)`
     ${mixins.flexAlignCenter}
     height: 20vh;
     height: calc(var(--vh, 1vh) * 20);
 `;
 
-const PriceCol = styled(Col)`
+const DollarValueCol = styled(Col)`
     ${mixins.flexAlignCenter}
     color: black;
     border-width: 0.2em;
     border-style: solid;
 `;
 
-const PriceText = styled.span`
+const DollarValueTextWrapper = styled.span`
     font-family: board, serif;
     color: #d69f4c;
     text-shadow: 0.08em 0.08em #000;
@@ -130,26 +130,26 @@ const MobileBoard = () => {
         );
     });
 
-    let priceRows = categories && Array.from(Array(NUM_CLUES).keys()).map((i) => {
+    let dollarValueRows = categories && Array.from(Array(NUM_CLUES).keys()).map((i) => {
         const clue = _.get(categories, `[${categoryIndex}].clues[${i}]`);
         const dollarValue = 200 * (i + 1);
 
         return (
-            <PriceRow onClick={() => {
+            <DollarValueRow onClick={() => {
                 if (!_.get(clue, 'completed')) {
                     handleRequestClue(categoryIndex, i);
                 }
             }}>
-                <PriceCol>
+                <DollarValueCol>
                     <FitText compressor={0.6}>
                         {_.get(clue, 'completed') ? '' :
-                            <PriceText>
+                            <DollarValueTextWrapper>
                                 <DollarValueText dollarValue={dollarValue} />
-                            </PriceText>
+                            </DollarValueTextWrapper>
                         }
                     </FitText>
-                </PriceCol>
-            </PriceRow>
+                </DollarValueCol>
+            </DollarValueRow>
         );
     });
 
@@ -158,7 +158,7 @@ const MobileBoard = () => {
     if (categoryIndex === null) {
         rows = categoryRows;
     } else {
-        rows = priceRows;
+        rows = dollarValueRows;
     }
 
     return (

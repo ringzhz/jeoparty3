@@ -9,9 +9,10 @@ import FitText from '@kennethormandy/react-fittext';
 
 import { SocketContext } from '../../context/socket';
 import { timers } from '../../constants/timers';
-import say from '../../helpers/say';
 import mixins from '../../helpers/mixins';
 import Timer from '../../helpers/components/Timer';
+
+import say from '../../helpers/say';
 
 // DEBUG
 import { sampleCategories } from '../../constants/sampleCategories';

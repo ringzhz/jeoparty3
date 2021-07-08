@@ -13,6 +13,8 @@ import DollarValueText from '../../helpers/components/DollarValueText';
 import backgroundImage from '../../assets/images/background.png'
 import BrowserClue from './BrowserClue';
 
+import { sayBoardControllerNameFiller } from '../../helpers/sayFiller';
+
 // DEBUG
 import { sampleCategories } from '../../constants/sampleCategories';
 
@@ -54,7 +56,7 @@ const CategoryText = styled.span`
     text-shadow: 0.1em 0.1em #000;
 `;
 
-const PriceText = styled.span`
+const DollarValueTextWrapper = styled.span`
     font-family: board, serif;
     color: #d69f4c;
     text-shadow: 0.08em 0.08em #000;
@@ -64,8 +66,8 @@ const CategoryRow = styled(BoardRow)`
     ${CategoryText}
 `;
 
-const PriceRow = styled(BoardRow)`
-    ${PriceText}
+const DollarValueRow = styled(BoardRow)`
+    ${DollarValueText}
 `;
 
 const FitTextWrapper = styled.div`
@@ -84,7 +86,7 @@ const CategoryCol = styled(Col)`
     max-height: 100%;
 `;
 
-const PriceCol = styled(Col)`
+const DollarValueCol = styled(Col)`
     vertical-align: middle;
     color: black;
     border-width: 0.2em;
@@ -135,6 +137,10 @@ const BrowserBoard = () => {
             setCategories(categories);
         });
 
+        socket.on('board_controller_name', (boardControllerName) => {
+            sayBoardControllerNameFiller(boardControllerName);
+        });
+
         socket.on('request_clue', (categoryIndex, clueIndex) => {
             setCategoryIndex(categoryIndex);
             setClueIndex(clueIndex);
@@ -146,16 +152,16 @@ const BrowserBoard = () => {
     }, []);
 
     // DEBUG
-    document.body.onkeyup = (e) => {
-        if (e.keyCode === 32) {
-            setCategoryIndex(1);
-            setClueIndex(1);
-
-            setTimeout(() => {
-                setAnimateClue(true);
-            }, 100);
-        }
-    };
+    // document.body.onkeyup = (e) => {
+    //     if (e.keyCode === 32) {
+    //         setCategoryIndex(1);
+    //         setClueIndex(1);
+    //
+    //         setTimeout(() => {
+    //             setAnimateClue(true);
+    //         }, 100);
+    //     }
+    // };
 
     let categoryTitleRow = categories && categories.map((category) => {
         const categoryName = _.get(category, 'title');
@@ -176,31 +182,31 @@ const BrowserBoard = () => {
         );
     });
 
-    const priceRows = categories && Array.from(Array(NUM_CLUES).keys()).map((j) => {
+    const dollarValueRows = categories && Array.from(Array(NUM_CLUES).keys()).map((j) => {
         const dollarValue = 200 * (j + 1);
 
-        const priceCols = Array.from(Array(NUM_CATEGORIES).keys()).map((i) => {
+        const dollarValueCols = Array.from(Array(NUM_CATEGORIES).keys()).map((i) => {
             const clue = _.get(categories, `[${i}].clues[${j}]`);
 
             return (
-                <PriceCol lg={'2'}>
+                <DollarValueCol lg={'2'}>
                     <FitTextWrapper>
                         <FitText compressor={0.3}>
                             {_.get(clue, 'completed') ? '' :
-                                <PriceText>
+                                <DollarValueTextWrapper>
                                     <DollarValueText dollarValue={dollarValue} />
-                                </PriceText>
+                                </DollarValueTextWrapper>
                             }
                         </FitText>
                     </FitTextWrapper>
-                </PriceCol>
+                </DollarValueCol>
             );
         });
 
         return (
-            <PriceRow>
-                {priceCols}
-            </PriceRow>
+            <DollarValueRow>
+                {dollarValueCols}
+            </DollarValueRow>
         );
     });
 
@@ -216,7 +222,7 @@ const BrowserBoard = () => {
                 <BrowserClue />
             </ClueWrapper>
 
-            {priceRows}
+            {dollarValueRows}
         </Container>
     );
 };

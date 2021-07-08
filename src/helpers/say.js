@@ -1,3 +1,5 @@
+const formatUtterance = require('./format').formatUtterance;
+
 const getVoice = () => {
     const voices = window.speechSynthesis.getVoices();
 
@@ -23,7 +25,7 @@ const say = (text, onComplete) => {
         return;
     }
 
-    let utterance = new SpeechSynthesisUtterance(text);
+    let utterance = new SpeechSynthesisUtterance(formatUtterance(text));
     utterance.voice = getVoice();
     utterance.onend = () => onComplete();
 

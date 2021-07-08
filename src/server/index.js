@@ -193,6 +193,7 @@ const showBoard = (socket) => {
     gameSession.clients.map((client) => {
         client.emit('set_game_state', GameState.BOARD, () => {
             client.emit('categories', gameSession.categories);
+            client.emit('board_controller_name', _.get(gameSession, `players[${gameSession.boardController}].name`));
             client.emit('is_board_controller', client.id === gameSession.boardController);
             client.emit('player', _.get(gameSession, `players[${client.id}]`));
         });
@@ -222,7 +223,7 @@ const startTimer = (socket) => {
     const categoryIndex = session.categoryIndex;
     const clueIndex = session.clueIndex;
 
-    sessionCache.get(socket.sessionName).browserClient.emit('start_timer');
+    io.to(socket.sessionName).emit('start_timer');
 
     setTimeout(() => {
         if (!sessionCache.get(socket.sessionName)) {
@@ -251,7 +252,7 @@ const showCorrectAnswer = (socket, correctAnswer, timeout) => {
             return;
         }
     } else {
-        io.to(socket.sessionName).emit('show_correct_answer', correctAnswer);
+        gameSession.browserClient.emit('show_correct_answer', correctAnswer);
     }
 
     setTimeout(() => {
@@ -455,7 +456,7 @@ io.on('connection', (socket) => {
         const clueIndex = gameSession.clueIndex;
         const correctAnswer = gameSession.categories[categoryIndex].clues[clueIndex].answer;
         const isCorrect = checkAnswer(correctAnswer, answer);
-        const price = 200 * (clueIndex + 1);
+        const dollarValue = 200 * (clueIndex + 1);
 
         updatePlayerScore(socket, clueIndex, isCorrect);
 
@@ -473,7 +474,7 @@ io.on('connection', (socket) => {
                 return;
             }
 
-            io.to(socket.sessionName).emit('show_decision', isCorrect, price);
+            gameSession.browserClient.emit('show_decision', isCorrect, dollarValue);
 
             setTimeout(() => {
                 if (!sessionCache.get(socket.sessionName)) {

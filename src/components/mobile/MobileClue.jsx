@@ -74,9 +74,11 @@ const MobileClue = () => {
     // DEBUG
     // const [hasAnswered, setHasAnswered] = useState(false);
     // const [player, setPlayer] = useState(samplePlayers['zsS3DKSSIUOegOQuAAAA']);
+    // const [startTimer, setStartTimer] = useState(false);
 
     const [hasAnswered, setHasAnswered] = useState(false);
     const [player, setPlayer] = useState({});
+    const [startTimer, setStartTimer] = useState(false);
 
     const socket = useContext(SocketContext);
 
@@ -88,10 +90,16 @@ const MobileClue = () => {
         socket.on('player', (player) => {
             setPlayer(player);
         });
+
+        socket.on('start_timer', () => {
+            setStartTimer(true);
+        });
     }, []);
 
     const handleBuzzIn = useCallback(() => {
-        socket.emit('buzz_in');
+        if (startTimer) {
+            socket.emit('buzz_in');
+        }
     }, []);
 
     return (
