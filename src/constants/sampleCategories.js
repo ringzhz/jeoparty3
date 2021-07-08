@@ -229,7 +229,7 @@ exports.sampleCategories = [
     },
     {
         id: 11006,
-        title: '____off!',
+        title: '____ off!',
         clues_count: 5,
         clues: [
             {

@@ -36,8 +36,8 @@ exports.formatRaw = (original) => {
 exports.formatUtterance = (original) => {
     let rawOriginal = original.toLowerCase();
 
-    rawOriginal.replace(/(_)\1+/g, 'blank');
-    rawOriginal.replace(/(\.)\1+/g, ',');
+    rawOriginal = rawOriginal.replace(/_+/g, 'blank');
+    rawOriginal = rawOriginal.replace(/\.+/g, ',');
 
     return rawOriginal;
 };

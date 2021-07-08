@@ -80,7 +80,7 @@ const CluePanel = styled.div`
 `;
 
 const CategoryPanel = styled(CluePanel)`
-    letter-spacing: 0.15em;
+    letter-spacing: 0.1em;
     background-image: none;
 `;
 
@@ -90,6 +90,8 @@ const CategoryTextPanel = styled.div`
 `;
 
 const CategoryText = styled.span`
+    display: block;
+    
     font-family: board, serif;
     color: white;
     text-shadow: 0.1em 0.1em #000;

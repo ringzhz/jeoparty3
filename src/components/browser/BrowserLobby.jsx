@@ -17,8 +17,14 @@ import lobbyMusic from '../../assets/audio/lobbyMusic.mp3';
 // DEBUG
 import { sampleLeaderboard } from '../../constants/sampleLeaderboard';
 
-const BrowserLobbyContainer = styled(Container)`
-    opacity: ${props => props.mute ? '0.1' : '1'};
+const MuteScreen = styled.div`
+    position: absolute;
+    z-index: 3;
+    
+    height: 100vh;
+    width: 100vw;
+    
+    backdrop-filter: blur(8px);
 `;
 
 const MuteScreenText = styled.div`
@@ -183,12 +189,14 @@ const BrowserLobby = () => {
     return (
         <div>
             {mute &&
-                <MuteScreenText onClick={() => handleUnmute()}>
-                    <MuteScreenButton onClick={() => handleUnmute()} variant={'outline-light'}>CLICK TO UNMUTE</MuteScreenButton>
-                </MuteScreenText>
+                <MuteScreen>
+                    <MuteScreenText onClick={() => handleUnmute()}>
+                        <MuteScreenButton onClick={() => handleUnmute()} variant={'outline-light'}>CLICK TO UNMUTE</MuteScreenButton>
+                    </MuteScreenText>
+                </MuteScreen>
             }
 
-            <BrowserLobbyContainer mute={mute} fluid>
+            <Container fluid>
                 <LogoRow>
                     <Col lg={'12'}>
                         <LogoText>JEOPARTY!</LogoText>
@@ -242,7 +250,7 @@ const BrowserLobby = () => {
                 <StartGameInputGroup className={'mb-3 justify-content-center'}>
                     {!mute && <StartGameButton onClick={() => handleStartGame()} variant={'outline-light'}>START GAME</StartGameButton>}
                 </StartGameInputGroup>
-            </BrowserLobbyContainer>
+            </Container>
         </div>
     );
 };

@@ -11,9 +11,11 @@ import { SocketContext } from '../../context/socket';
 import mixins from '../../helpers/mixins';
 import DollarValueText from '../../helpers/components/DollarValueText';
 import backgroundImage from '../../assets/images/background.png'
+import starBackgroundImage from '../../assets/images/starBackground.png';
 import BrowserClue from './BrowserClue';
 
 import { sayBoardControllerNameFiller } from '../../helpers/sayFiller';
+import say from '../../helpers/say';
 
 // DEBUG
 import { sampleCategories } from '../../constants/sampleCategories';
@@ -38,13 +40,70 @@ const getCategoryNameLineHeight = (textLength) => {
     if (textLength > 20) {
         lineHeight = '1.5em';
     } else if (textLength > 10) {
-        lineHeight = '2.1em';
+        lineHeight = '2em';
     } else {
         lineHeight = '2.5em';
     }
 
     return lineHeight;
 };
+
+const CategoryRevealWrapper = styled.div`
+    display: flex;
+    flex-direction: row;
+    position: absolute;
+    z-index: 2;
+    
+    left: ${props => `-${props.categoryRevealIndex * 100}vw`};
+    transition-property: left;
+    transition-duration: 1s;
+    transition-timing-function: linear;
+`;
+
+const CategoryRevealPanel = styled.div`
+    ${mixins.flexAlignCenter};
+    height: 100vh;
+    width: 100vw;
+    z-index: 2;
+    
+    background-image: url(${backgroundImage});
+    
+    color: black;
+    border-width: 2em;
+    border-style: solid;
+`;
+
+const CategoryRevealLogoPanel = styled.div`
+    ${mixins.flexAlignCenter};
+    position: absolute;
+    height: 100vh;
+    width: 100vw;
+    z-index: 3;
+    
+    background-image: url(${starBackgroundImage});
+    background-size: cover;
+    opacity: ${props => props.reveal ? 0 : 1};
+    transition-property: opacity;
+    transition-duration: 0.5s;
+    transition-timing-function: linear;
+    
+    color: black;
+    border-width: 2em;
+    border-style: solid;
+`;
+
+const CategoryRevealLogoText = styled.span`
+    color: white;
+    font-family: logo, serif;
+    font-size: 36vh;
+    text-shadow: 0.05em 0.05em #000;
+`;
+
+const CategoryRevealText = styled.span`
+    font-family: board, serif;
+    color: white;
+    text-shadow: 0.075em 0.075em #000;
+`;
 
 const BoardRow = styled(Row)`
     height: calc(100vh / 6);
@@ -120,17 +179,82 @@ const BrowserBoard = () => {
     const NUM_CLUES = 5;
 
     // DEBUG
-    // const [animateClue, setAnimateClue] = useState(false);
-    // const [categories, setCategories] = useState(sampleCategories);
-    // const [categoryIndex, setCategoryIndex] = useState(0);
-    // const [clueIndex, setClueIndex] = useState(1);
-
     const [animateClue, setAnimateClue] = useState(false);
-    const [categories, setCategories] = useState([]);
-    const [categoryIndex, setCategoryIndex] = useState(null);
-    const [clueIndex, setClueIndex] = useState(null);
+    const [categories, setCategories] = useState(sampleCategories);
+    const [categoryIndex, setCategoryIndex] = useState(0);
+    const [clueIndex, setClueIndex] = useState(1);
+    const [categoryRevealIndex, setCategoryRevealIndex] = useState(0);
+    const [categoryPanelIndex, setCategoryPanelIndex] = useState(-1);
+
+    // const [animateClue, setAnimateClue] = useState(false);
+    // const [categories, setCategories] = useState([]);
+    // const [categoryIndex, setCategoryIndex] = useState(null);
+    // const [clueIndex, setClueIndex] = useState(null);
+    // const [categoryRevealIndex, setCategoryRevealIndex] = useState(0);
 
     const socket = useContext(SocketContext);
+
+    const revealCategories = () => {
+        say('Here are the categories...', () => {
+            setCategoryPanelIndex(0);
+
+            setTimeout(() => {
+                say(_.get(categories, '[0].title'), () => {
+                    setCategoryRevealIndex(1);
+
+                    setTimeout(() => {
+                        setCategoryPanelIndex(1);
+
+                        setTimeout(() => {
+                            say(_.get(categories, '[1].title'), () => {
+                                setCategoryRevealIndex(2);
+
+                                setTimeout(() => {
+                                    setCategoryPanelIndex(2);
+
+                                    setTimeout(() => {
+                                        say(_.get(categories, '[2].title'), () => {
+                                            setCategoryRevealIndex(3);
+
+                                            setTimeout(() => {
+                                                setCategoryPanelIndex(3);
+
+                                                setTimeout(() => {
+                                                    say(_.get(categories, '[3].title'), () => {
+                                                        setCategoryRevealIndex(4);
+
+                                                        setTimeout(() => {
+                                                            setCategoryPanelIndex(4);
+
+                                                            setTimeout(() => {
+                                                                say(_.get(categories, '[4].title'), () => {
+                                                                    setCategoryRevealIndex(5);
+
+                                                                    setTimeout(() => {
+                                                                        setCategoryPanelIndex(5);
+
+                                                                        setTimeout(() => {
+                                                                            say(`and ${_.get(categories, '[5].title')}`, () => {
+                                                                                setCategoryRevealIndex(6);
+                                                                            });
+                                                                        }, 500);
+                                                                    }, 1000);
+                                                                });
+                                                            }, 500);
+                                                        }, 1000);
+                                                    });
+                                                }, 500);
+                                            }, 1000);
+                                        });
+                                    }, 500);
+                                }, 1000);
+                            });
+                        }, 500);
+                    }, 1000);
+                });
+            }, 500);
+        });
+    };
 
     useEffect(() => {
         socket.on('categories', (categories) => {
@@ -152,18 +276,36 @@ const BrowserBoard = () => {
     }, []);
 
     // DEBUG
-    // document.body.onkeyup = (e) => {
-    //     if (e.keyCode === 32) {
-    //         setCategoryIndex(1);
-    //         setClueIndex(1);
-    //
-    //         setTimeout(() => {
-    //             setAnimateClue(true);
-    //         }, 100);
-    //     }
-    // };
+    document.body.onkeyup = (e) => {
+        if (e.keyCode === 32) {
+            revealCategories();
+        }
+    };
 
-    let categoryTitleRow = categories && categories.map((category) => {
+    const categoryRevealPanels = categories && Array.from(Array(NUM_CATEGORIES).keys()).map((i) => {
+        const category = categories[i];
+        const categoryName = _.get(category, 'title');
+
+        return (
+            <div>
+                <CategoryRevealLogoPanel reveal={categoryPanelIndex === i}>
+                    <CategoryRevealLogoText>
+                        JEOPARTY!
+                    </CategoryRevealLogoText>
+                </CategoryRevealLogoPanel>
+
+                <CategoryRevealPanel>
+                    <FitText compressor={1}>
+                        <CategoryRevealText>
+                            {_.invoke(categoryName, 'toUpperCase')}
+                        </CategoryRevealText>
+                    </FitText>
+                </CategoryRevealPanel>
+            </div>
+        );
+    });
+
+    const categoryTitleRow = categories && categories.map((category) => {
         const categoryName = _.get(category, 'title');
         const categoryNameLength = _.size(categoryName) || 0;
         const categoryNameCompressor = getCategoryNameCompressor(categoryNameLength);
@@ -211,19 +353,25 @@ const BrowserBoard = () => {
     });
 
     return (
-        <Container fluid>
-            <CategoryRow>
-                {categoryTitleRow}
-            </CategoryRow>
+        <div>
+            <CategoryRevealWrapper categoryRevealIndex={categoryRevealIndex}>
+                {categoryRevealPanels}
+            </CategoryRevealWrapper>
 
-            <ClueWrapper className={animateClue && 'animate'}
-                         categoryIndex={categoryIndex && categoryIndex}
-                         clueIndex={clueIndex && clueIndex}>
-                <BrowserClue />
-            </ClueWrapper>
+            <Container fluid>
+                <CategoryRow>
+                    {categoryTitleRow}
+                </CategoryRow>
 
-            {dollarValueRows}
-        </Container>
+                <ClueWrapper className={animateClue && 'animate'}
+                             categoryIndex={categoryIndex && categoryIndex}
+                             clueIndex={clueIndex && clueIndex}>
+                    <BrowserClue />
+                </ClueWrapper>
+
+                {dollarValueRows}
+            </Container>
+        </div>
     );
 };
 

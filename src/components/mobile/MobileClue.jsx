@@ -96,7 +96,7 @@ const MobileClue = () => {
         });
     }, []);
 
-    const handleBuzzIn = useCallback(() => {
+    const handleBuzzIn = useCallback((startTimer) => {
         if (startTimer) {
             socket.emit('buzz_in');
         }
@@ -107,7 +107,7 @@ const MobileClue = () => {
             {
                 !hasAnswered && (
                     <BuzzerRow>
-                        <Buzzer onClick={() => handleBuzzIn()} />
+                        <Buzzer onClick={() => handleBuzzIn(startTimer)} />
                     </BuzzerRow>
                 )
             }
