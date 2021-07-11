@@ -5,6 +5,7 @@ function GameSession() {
     this.clients = [];
 
     this.currentGameState = GameState.LOBBY;
+    this.boardRevealed = false;
     this.categories = [];
     this.players = {};
     this.updatedPlayers = {};

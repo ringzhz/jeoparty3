@@ -1,5 +1,12 @@
 import say from './say';
 
+export const sayJeopartyRoundFiller = (boardControllerName) => {
+    const text = `We'll begin with the Je-party round!`;
+    say(text, () => {
+        sayBoardControllerNameFiller(boardControllerName);
+    });
+};
+
 export const sayBoardControllerNameFiller = (boardControllerName) => {
     const text = `Select a clue, ${boardControllerName}`;
     say(text);

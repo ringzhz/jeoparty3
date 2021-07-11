@@ -23,9 +23,9 @@ const getCategoryNameCompressor = (textLength) => {
     let compressor = null;
 
     if (textLength > 20) {
-        compressor = 1;
-    } else if (textLength > 10) {
         compressor = 0.75;
+    } else if (textLength > 10) {
+        compressor = 0.5;
     } else {
         compressor = 0.5;
     }

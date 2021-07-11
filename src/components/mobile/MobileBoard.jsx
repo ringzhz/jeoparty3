@@ -84,6 +84,7 @@ const MobileBoard = () => {
 
     const [categories, setCategories] = useState([]);
     const [isBoardController, setIsBoardController] = useState(false);
+    const [boardRevealed, setBoardRevealed] = useState(false);
     const [categoryIndex, setCategoryIndex] = useState(null);
     const [player, setPlayer] = useState({});
 
@@ -94,8 +95,13 @@ const MobileBoard = () => {
             setCategories(categories);
         });
 
-        socket.on('is_board_controller', (isBoardController) => {
+        socket.on('is_board_controller', (isBoardController, boardRevealed) => {
             setIsBoardController(isBoardController);
+            setBoardRevealed(boardRevealed);
+        });
+
+        socket.on('board_revealed', () => {
+            setBoardRevealed(true);
         });
 
         socket.on('player', (player) => {
@@ -164,7 +170,7 @@ const MobileBoard = () => {
     return (
         <MobileBoardContainer fluid>
             {
-                isBoardController && (
+                (isBoardController && boardRevealed) && (
                     <div>
                         {rows}
                     </div>

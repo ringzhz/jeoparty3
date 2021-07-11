@@ -13,23 +13,22 @@ import DollarValueText from '../../helpers/components/DollarValueText';
 import backgroundImage from '../../assets/images/background.png'
 import starBackgroundImage from '../../assets/images/starBackground.png';
 import BrowserClue from './BrowserClue';
+import { revealBoard, revealCategories } from '../../helpers/reveal';
 
-import { sayBoardControllerNameFiller } from '../../helpers/sayFiller';
-import say from '../../helpers/say';
-import boardReveal from '../../assets/audio/boardReveal.mp3';
+import { sayJeopartyRoundFiller, sayBoardControllerNameFiller } from '../../helpers/sayFiller';
 
 // DEBUG
 import { sampleCategories } from '../../constants/sampleCategories';
 
-const getCategoryNameCompressor = (textLength) => {
+const getCategoryNameCompressor = (textLength, reveal) => {
     let compressor = null;
 
     if (textLength > 20) {
-        compressor = 0.75;
+        compressor = reveal ? 1 : 0.75;
     } else if (textLength > 10) {
-        compressor = 0.5;
+        compressor = reveal ? 0.75 : 0.5;
     } else {
-        compressor = 0.5;
+        compressor = reveal ? 0.5 : 0.5;
     }
 
     return compressor;
@@ -56,9 +55,9 @@ const CategoryRevealWrapper = styled.div`
     z-index: 2;
     
     left: ${props => `-${props.categoryRevealIndex * 100}vw`};
-    transition-property: left;
-    transition-duration: 1s;
-    transition-timing-function: linear;
+    opacity: ${props => props.showCategoryReveal ? 1 : 0};
+    
+    transition: left 1s linear, opacity 1s;
 `;
 
 const CategoryRevealPanel = styled.div`
@@ -72,6 +71,8 @@ const CategoryRevealPanel = styled.div`
     color: black;
     border-width: 2em;
     border-style: solid;
+    
+    line-height: 1;
 `;
 
 const CategoryRevealLogoPanel = styled.div`
@@ -106,6 +107,11 @@ const CategoryRevealText = styled.span`
     text-shadow: 0.075em 0.075em #000;
 `;
 
+const BrowserBoardContainer = styled(Container)`
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+`;
+
 const BoardRow = styled(Row)`
     height: calc(100vh / 6);
 `;
@@ -122,16 +128,11 @@ const DollarValueTextWrapper = styled.span`
     text-shadow: 0.08em 0.08em #000;
 `;
 
-const SauceContainer = styled(Container)`
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-`;
-
 const CategoryRow = styled(BoardRow)`
     ${CategoryText}
 `;
 
-const LogoText = styled.div`
+const BoardRevealBackground = styled.div`
     ${mixins.flexAlignCenter};
     position: absolute;
     height: calc(500vh / 6);
@@ -143,6 +144,7 @@ const LogoText = styled.div`
     text-shadow: 0.05em 0.05em #000;
     
     background-image: url(${starBackgroundImage});
+    background-size: cover;
 `;
 
 const DollarValueRow = styled(BoardRow)`
@@ -163,6 +165,19 @@ const CategoryCol = styled(Col)`
     border-bottom-width: 0.4em;
     
     max-height: 100%;
+    
+    &.board-reveal {
+        ${mixins.flexAlignCenter}
+        background-image: url(${starBackgroundImage});
+        background-size: cover;
+    }
+`;
+
+const CategoryColLogoText = styled.span`
+    font-family: logo, serif;
+    font-size: 6vh;
+    color: white;
+    text-shadow: 0.1em 0.1em #000;
 `;
 
 const DollarValueCol = styled(Col)`
@@ -201,11 +216,28 @@ const BrowserBoard = () => {
     const NUM_CLUES = 5;
 
     // DEBUG
-    const [animateClue, setAnimateClue] = useState(false);
-    const [categories, setCategories] = useState(sampleCategories);
-    const [categoryIndex, setCategoryIndex] = useState(0);
-    const [clueIndex, setClueIndex] = useState(1);
+    // const [animateClue, setAnimateClue] = useState(false);
+    // const [categories, setCategories] = useState(sampleCategories);
+    // const [categoryIndex, setCategoryIndex] = useState(0);
+    // const [clueIndex, setClueIndex] = useState(1);
+    // const [boardRevealed, setBoardRevealed] = useState(false);
+    // const [boardRevealMatrix, setBoardRevealMatrix] = useState([
+    //     [false, false, false, false, false],
+    //     [false, false, false, false, false],
+    //     [false, false, false, false, false],
+    //     [false, false, false, false, false],
+    //     [false, false, false, false, false],
+    //     [false, false, false, false, false]
+    // ]);
+    // const [showCategoryReveal, setShowCategoryReveal] = useState(false);
+    // const [categoryRevealIndex, setCategoryRevealIndex] = useState(0);
+    // const [categoryPanelIndex, setCategoryPanelIndex] = useState(-1);
 
+    const [animateClue, setAnimateClue] = useState(false);
+    const [categories, setCategories] = useState([]);
+    const [categoryIndex, setCategoryIndex] = useState(null);
+    const [clueIndex, setClueIndex] = useState(null);
+    const [boardRevealed, setBoardRevealed] = useState(false);
     const [boardRevealMatrix, setBoardRevealMatrix] = useState([
         [false, false, false, false, false],
         [false, false, false, false, false],
@@ -214,147 +246,29 @@ const BrowserBoard = () => {
         [false, false, false, false, false],
         [false, false, false, false, false]
     ]);
+    const [showCategoryReveal, setShowCategoryReveal] = useState(false);
     const [categoryRevealIndex, setCategoryRevealIndex] = useState(0);
     const [categoryPanelIndex, setCategoryPanelIndex] = useState(-1);
 
-    // const [animateClue, setAnimateClue] = useState(false);
-    // const [categories, setCategories] = useState([]);
-    // const [categoryIndex, setCategoryIndex] = useState(null);
-    // const [clueIndex, setClueIndex] = useState(null);
-    // const [categoryRevealIndex, setCategoryRevealIndex] = useState(0);
-
     const socket = useContext(SocketContext);
 
-    const revealBoard = () => {
-        setTimeout(() => {
-            const boardRevealSound = new Audio(boardReveal);
-            boardRevealSound.play();
-
-            setBoardRevealMatrix([
-                [false, false, true, false, false],
-                [true, false, false, false, false],
-                [false, false, false, true, false],
-                [false, false, false, false, false],
-                [false, true, false, false, false],
-                [false, false, false, false, true]
-            ]);
-
+    const reveal = (categories, boardControllerName) => {
+        revealBoard(setBoardRevealMatrix, () => {
             setTimeout(() => {
-                setBoardRevealMatrix([
-                    [false, false, true, false, true],
-                    [true, false, false, true, false],
-                    [false, false, false, true, false],
-                    [true, false, true, false, false],
-                    [false, true, false, false, false],
-                    [false, true, false, false, true]
-                ]);
+                setShowCategoryReveal(true);
 
                 setTimeout(() => {
-                    setBoardRevealMatrix([
-                        [true, false, true, false, true],
-                        [true, false, true, true, false],
-                        [false, true, false, true, false],
-                        [true, false, true, false, true],
-                        [false, true, false, true, false],
-                        [false, true, false, false, true]
-                    ]);
-
-                    setTimeout(() => {
-                        setBoardRevealMatrix([
-                            [true, false, true, true, true],
-                            [true, true, true, true, false],
-                            [false, true, false, true, true],
-                            [true, false, true, false, true],
-                            [false, true, true, true, false],
-                            [true, true, false, false, true]
-                        ]);
+                    revealCategories(categories, setCategoryPanelIndex, setCategoryRevealIndex, () => {
+                        setShowCategoryReveal(false);
+                        setBoardRevealed(true);
+                        socket.emit('board_revealed');
 
                         setTimeout(() => {
-                            setBoardRevealMatrix([
-                                [true, false, true, true, true],
-                                [true, true, true, true, false],
-                                [true, true, true, true, true],
-                                [true, true, true, false, true],
-                                [false, true, true, true, true],
-                                [true, true, false, true, true]
-                            ]);
-
-                            setTimeout(() => {
-                                setBoardRevealMatrix([
-                                    [true, true, true, true, true],
-                                    [true, true, true, true, true],
-                                    [true, true, true, true, true],
-                                    [true, true, true, true, true],
-                                    [true, true, true, true, true],
-                                    [true, true, true, true, true]
-                                ]);
-                            }, 400);
-                        }, 400);
-                    }, 400);
-                }, 400);
-            }, 400);
-        }, 400);
-    };
-
-    const revealCategories = () => {
-        say('Here are the categories...', () => {
-            setCategoryPanelIndex(0);
-
-            setTimeout(() => {
-                say(_.get(categories, '[0].title'), () => {
-                    setCategoryRevealIndex(1);
-
-                    setTimeout(() => {
-                        setCategoryPanelIndex(1);
-
-                        setTimeout(() => {
-                            say(_.get(categories, '[1].title'), () => {
-                                setCategoryRevealIndex(2);
-
-                                setTimeout(() => {
-                                    setCategoryPanelIndex(2);
-
-                                    setTimeout(() => {
-                                        say(_.get(categories, '[2].title'), () => {
-                                            setCategoryRevealIndex(3);
-
-                                            setTimeout(() => {
-                                                setCategoryPanelIndex(3);
-
-                                                setTimeout(() => {
-                                                    say(_.get(categories, '[3].title'), () => {
-                                                        setCategoryRevealIndex(4);
-
-                                                        setTimeout(() => {
-                                                            setCategoryPanelIndex(4);
-
-                                                            setTimeout(() => {
-                                                                say(_.get(categories, '[4].title'), () => {
-                                                                    setCategoryRevealIndex(5);
-
-                                                                    setTimeout(() => {
-                                                                        setCategoryPanelIndex(5);
-
-                                                                        setTimeout(() => {
-                                                                            say(`and ${_.get(categories, '[5].title')}`, () => {
-                                                                                setCategoryRevealIndex(6);
-                                                                            });
-                                                                        }, 500);
-                                                                    }, 1000);
-                                                                });
-                                                            }, 500);
-                                                        }, 1000);
-                                                    });
-                                                }, 500);
-                                            }, 1000);
-                                        });
-                                    }, 500);
-                                }, 1000);
-                            });
-                        }, 500);
-                    }, 1000);
-                });
-            }, 500);
+                            sayJeopartyRoundFiller(boardControllerName);
+                        }, 1000);
+                    });
+                }, 1000);
+            }, 1000);
         });
     };
 
@@ -363,8 +277,21 @@ const BrowserBoard = () => {
             setCategories(categories);
         });
 
-        socket.on('board_controller_name', (boardControllerName) => {
-            sayBoardControllerNameFiller(boardControllerName);
+        socket.on('board_controller_name', (boardControllerName, boardRevealed, categories) => {
+            if (boardRevealed) {
+                setBoardRevealed(true);
+                setBoardRevealMatrix([
+                    [true, true, true, true, true],
+                    [true, true, true, true, true],
+                    [true, true, true, true, true],
+                    [true, true, true, true, true],
+                    [true, true, true, true, true],
+                    [true, true, true, true, true]
+                ]);
+                sayBoardControllerNameFiller(boardControllerName);
+            } else {
+                reveal(categories, boardControllerName);
+            }
         });
 
         socket.on('request_clue', (categoryIndex, clueIndex) => {
@@ -380,14 +307,15 @@ const BrowserBoard = () => {
     // DEBUG
     document.body.onkeyup = (e) => {
         if (e.keyCode === 32) {
-            revealBoard();
-            // revealCategories();
+            reveal(categories, 'Isaac');
         }
     };
 
     const categoryRevealPanels = categories && Array.from(Array(NUM_CATEGORIES).keys()).map((i) => {
         const category = categories[i];
         const categoryName = _.get(category, 'title');
+        const categoryNameLength = _.size(categoryName) || 0;
+        const categoryNameCompressor = getCategoryNameCompressor(categoryNameLength, true);
 
         return (
             <div>
@@ -398,7 +326,7 @@ const BrowserBoard = () => {
                 </CategoryRevealLogoPanel>
 
                 <CategoryRevealPanel>
-                    <FitText compressor={1}>
+                    <FitText compressor={categoryNameCompressor}>
                         <CategoryRevealText>
                             {_.invoke(categoryName, 'toUpperCase')}
                         </CategoryRevealText>
@@ -411,20 +339,34 @@ const BrowserBoard = () => {
     const categoryTitleRow = categories && categories.map((category) => {
         const categoryName = _.get(category, 'title');
         const categoryNameLength = _.size(categoryName) || 0;
-        const categoryNameCompressor = getCategoryNameCompressor(categoryNameLength);
+        const categoryNameCompressor = getCategoryNameCompressor(categoryNameLength, false);
         const categoryNameLineHeight = getCategoryNameLineHeight(categoryNameLength);
 
-        return (
-            <CategoryCol lineHeight={categoryNameLineHeight} lg={'2'}>
-                <FitTextWrapper>
-                    <FitText compressor={categoryNameCompressor}>
-                        <CategoryText>
-                            {_.get(category, 'completed') ? '' : _.invoke(categoryName, 'toUpperCase')}
-                        </CategoryText>
-                    </FitText>
-                </FitTextWrapper>
-            </CategoryCol>
-        );
+        let categoryCol = null;
+
+        if (boardRevealed) {
+            categoryCol = (
+                <CategoryCol lineHeight={categoryNameLineHeight} lg={'2'}>
+                    <FitTextWrapper>
+                        <FitText compressor={categoryNameCompressor}>
+                            <CategoryText>
+                                {_.get(category, 'completed') ? '' : _.invoke(categoryName, 'toUpperCase')}
+                            </CategoryText>
+                        </FitText>
+                    </FitTextWrapper>
+                </CategoryCol>
+            );
+        } else {
+            categoryCol = (
+                <CategoryCol lineHeight={categoryNameLineHeight} lg={'2'} className={'board-reveal'}>
+                    <CategoryColLogoText>
+                        JEOPARTY!
+                    </CategoryColLogoText>
+                </CategoryCol>
+            );
+        }
+
+        return categoryCol;
     });
 
     const dollarValueRows = categories && Array.from(Array(NUM_CLUES).keys()).map((j) => {
@@ -458,11 +400,11 @@ const BrowserBoard = () => {
 
     return (
         <div>
-            {/*<CategoryRevealWrapper categoryRevealIndex={categoryRevealIndex}>*/}
-            {/*    {categoryRevealPanels}*/}
-            {/*</CategoryRevealWrapper>*/}
+            <CategoryRevealWrapper showCategoryReveal={showCategoryReveal} categoryRevealIndex={categoryRevealIndex}>
+                {categoryRevealPanels}
+            </CategoryRevealWrapper>
 
-            <SauceContainer fluid>
+            <BrowserBoardContainer fluid>
                 <CategoryRow>
                     {categoryTitleRow}
                 </CategoryRow>
@@ -473,14 +415,10 @@ const BrowserBoard = () => {
                     <BrowserClue />
                 </ClueWrapper>
 
-                <LogoText>
-                    JEOPARTY!
-                </LogoText>
-
-                {/*<Foo />*/}
+                {!boardRevealed && <BoardRevealBackground>JEOPARTY!</BoardRevealBackground>}
 
                 {dollarValueRows}
-            </SauceContainer>
+            </BrowserBoardContainer>
         </div>
     );
 };

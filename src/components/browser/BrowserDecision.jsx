@@ -112,6 +112,7 @@ const BrowserDecision = () => {
 
         socket.on('show_correct_answer', (correctAnswer, timeout) => {
             setShowDecision(false);
+            setShowAnswer(false);
             setShowCorrectAnswer(true);
             setCorrectAnswer(correctAnswer);
 

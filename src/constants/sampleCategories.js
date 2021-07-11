@@ -1,7 +1,7 @@
 exports.sampleCategories = [
     {
         id: 12619,
-        title: 'classic rock',
+        title: 'the nba',
         clues_count: 5,
         clues: [
             {

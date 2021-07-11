@@ -29,6 +29,7 @@ const say = (text, onComplete) => {
     utterance.voice = getVoice();
     utterance.onend = () => onComplete();
 
+    window.speechSynthesis.cancel();
     window.speechSynthesis.speak(utterance);
 };
 

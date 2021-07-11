@@ -189,12 +189,13 @@ const showBoard = (socket) => {
     }
 
     const gameSession = sessionCache.get(socket.sessionName);
+    const boardRevealed = _.get(gameSession, 'boardRevealed');
 
     gameSession.clients.map((client) => {
         client.emit('set_game_state', GameState.BOARD, () => {
             client.emit('categories', gameSession.categories);
-            client.emit('board_controller_name', _.get(gameSession, `players[${gameSession.boardController}].name`));
-            client.emit('is_board_controller', client.id === gameSession.boardController);
+            client.emit('board_controller_name', _.get(gameSession, `players[${gameSession.boardController}].name`), boardRevealed, gameSession.categories);
+            client.emit('is_board_controller', client.id === gameSession.boardController, boardRevealed);
             client.emit('player', _.get(gameSession, `players[${client.id}]`));
         });
     });
@@ -371,6 +372,11 @@ io.on('connection', (socket) => {
         } else {
             socket.emit('start_game_failure');
         }
+    });
+
+    socket.on('board_revealed', () => {
+        updateGameSession(socket.sessionName, 'boardRevealed', true);
+        io.to(socket.sessionName).emit('board_revealed');
     });
 
     socket.on('request_clue', (categoryIndex, clueIndex) => {
