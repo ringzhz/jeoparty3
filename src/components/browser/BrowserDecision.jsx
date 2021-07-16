@@ -134,15 +134,23 @@ const BrowserDecision = () => {
         // }
     }, []);
 
+    let text = null;
+
+    if (!showAnswer && !showDecision && !showCorrectAnswer && !showDollarValue) {
+        text = <span>&nbsp;</span>
+    } else if (showAnswer || showDecision) {
+        text = _.isEmpty(answer) ? <span>&nbsp;</span> : answer.toUpperCase();
+    } else if (showCorrectAnswer) {
+        text = _.invoke(correctAnswer, 'toUpperCase');
+    }
+
     return (
         <Container fluid>
             <AnswerRow>
                 <AnswerCol lg={'12'}>
                     <AnswerPanel>
                         <FitText compressor={2}>
-                            {(!showAnswer && !showDecision && !showCorrectAnswer && !showDollarValue) && <span>&nbsp;</span>}
-                            {(showAnswer || showDecision) && _.isEmpty(answer) ? <span>&nbsp;</span> : answer.toUpperCase()}
-                            {showCorrectAnswer && _.invoke(correctAnswer, 'toUpperCase')}
+                            {text}
                         </FitText>
                     </AnswerPanel>
 

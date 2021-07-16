@@ -21,3 +21,8 @@ export const sayCorrectAnswerFiller = (correctAnswer) => {
     const text = `The correct answer was ${correctAnswer}`;
     say(text);
 };
+
+export const sayBestStreakFiller = (playerName, streak) => {
+    const text = `${playerName} is on a ${streak} answer streak`;
+    say(text);
+};

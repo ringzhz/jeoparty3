@@ -16,6 +16,7 @@ const GameSession = require('../constants/GameSession').GameSession;
 const GameState = require('../constants/GameState').GameState;
 
 const timers = require('../constants/timers').timers;
+const titles = require('../constants/titles').titles;
 const getRandomCategories = require('../helpers/jservice').getRandomCategories;
 const checkSignature = require('../helpers/checkSignature').checkSignature;
 const checkAnswer = require('../helpers/checkAnswer').checkAnswer;
@@ -50,7 +51,7 @@ const updateClients = (sessionName, socket) => {
     sessionCache.put(sessionName, gameSession);
 };
 
-const updatePlayers = (sessionName, socketId, key, value) => {
+const updatePlayer = (sessionName, socketId, key, value) => {
     let gameSession = sessionCache.get(sessionName);
     let players = gameSession.players;
 
@@ -80,6 +81,32 @@ const updatePlayerScore = (socket, clueIndex, isCorrect) => {
 
     gameSession.updatedPlayers = updatedPlayers;
     sessionCache.put(socket.sessionName, gameSession);
+};
+
+const updatePlayerStreaks = (socket) => {
+    let gameSession = sessionCache.get(socket.sessionName);
+    const players = gameSession.players;
+    const playersAnswered = gameSession.playersAnswered;
+
+    // console.log('~~~~before~~~~');
+    // console.log(gameSession.players);
+
+    for (let socketId of Object.keys(players)) {
+        const heat = players[socketId];
+
+        if (!playersAnswered.includes(socketId)) {
+            updatePlayer(socket.sessionName, socketId, 'heat', Math.min(0, heat - 1));
+
+            if (heat - 1 === 0) {
+                updatePlayer(socket.sessionName, socketId, 'streak', 0);
+                updatePlayer(socket.sessionName, socket.id, 'title', '');
+            }
+        }
+    }
+
+    // console.log('~~~~after~~~~');
+    // console.log(gameSession.players);
+    // console.log('-------------------------');
 };
 
 const setPlayers = (sessionName) => {
@@ -270,6 +297,8 @@ const showScoreboard = (socket) => {
         return;
     }
 
+    updatePlayerStreaks(socket);
+
     const gameSession = sessionCache.get(socket.sessionName);
 
     gameSession.clients.map((client) => {
@@ -333,7 +362,7 @@ io.on('connection', (socket) => {
             socket.join(sessionName);
             updateClients(sessionName, socket);
 
-            updatePlayers(socket.sessionName, socket.id, 'sessionName', sessionName);
+            updatePlayer(socket.sessionName, socket.id, 'sessionName', sessionName);
 
             if (!sessionCache.get(socket.sessionName).boardController) {
                 updateGameSession(socket.sessionName, 'boardController', socket.id);
@@ -351,8 +380,8 @@ io.on('connection', (socket) => {
         }
 
         if (checkSignature(playerName)) {
-            updatePlayers(socket.sessionName, socket.id, 'name', playerName);
-            updatePlayers(socket.sessionName, socket.id, 'signature', signature);
+            updatePlayer(socket.sessionName, socket.id, 'name', playerName);
+            updatePlayer(socket.sessionName, socket.id, 'signature', signature);
 
             socket.emit('submit_signature_success', _.get(sessionCache.get(socket.sessionName), `players[${socket.id}]`));
             sessionCache.get(socket.sessionName).browserClient.emit('new_player_name', playerName);
@@ -445,7 +474,7 @@ io.on('connection', (socket) => {
             return;
         }
 
-        updatePlayers(socket.sessionName, socket.id, 'answer', answerLivefeed);
+        updatePlayer(socket.sessionName, socket.id, 'answer', answerLivefeed);
         sessionCache.get(socket.sessionName).browserClient.emit('answer_livefeed', answerLivefeed);
     });
 
@@ -455,7 +484,7 @@ io.on('connection', (socket) => {
         }
 
         updatePlayersAnswered(socket.sessionName, socket.id);
-        updatePlayers(socket.sessionName, socket.id, 'answer', '');
+        updatePlayer(socket.sessionName, socket.id, 'answer', '');
 
         const gameSession = sessionCache.get(socket.sessionName);
         const categoryIndex = gameSession.categoryIndex;
@@ -465,6 +494,19 @@ io.on('connection', (socket) => {
         const dollarValue = 200 * (clueIndex + 1);
 
         updatePlayerScore(socket, clueIndex, isCorrect);
+
+        const player = sessionCache.get(socket.sessionName).players[socket.id];
+        const streak = _.get(player, 'streak');
+
+        if (isCorrect) {
+            updatePlayer(socket.sessionName, socket.id, 'streak', streak + 1);
+            updatePlayer(socket.sessionName, socket.id, 'heat', 2);
+            updatePlayer(socket.sessionName, socket.id, 'title', titles[streak + 1]);
+        } else {
+            updatePlayer(socket.sessionName, socket.id, 'streak', 0);
+            updatePlayer(socket.sessionName, socket.id, 'heat', 0);
+            updatePlayer(socket.sessionName, socket.id, 'title', '');
+        }
 
         gameSession.clients.map((client) => {
             client.emit('set_game_state', GameState.DECISION, () => {

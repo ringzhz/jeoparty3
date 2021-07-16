@@ -1,4 +1,5 @@
 import React from 'react';
+import _ from 'lodash';
 
 import styled from 'styled-components';
 
@@ -14,6 +15,10 @@ const HypeTextLetter = styled.span`
 `;
 
 const HypeText = (props) => {
+    if (!_.get(props, 'text')) {
+        return null;
+    }
+
     return (
         <span>
             {

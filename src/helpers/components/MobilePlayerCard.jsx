@@ -7,7 +7,6 @@ import Col from 'react-bootstrap/Col';
 import FitText from '@kennethormandy/react-fittext';
 
 import mixins from '../mixins';
-import HypeText from './HypeText';
 import DollarValueText from './DollarValueText';
 
 const getNameCompressor = (nameLength) => {

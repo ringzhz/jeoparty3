@@ -1,4 +1,5 @@
 import React, {useState, useEffect, useContext} from 'react';
+import _ from 'lodash';
 
 import styled from 'styled-components';
 import Container from 'react-bootstrap/Container';
@@ -9,6 +10,9 @@ import FitText from '@kennethormandy/react-fittext';
 import { SocketContext } from '../../context/socket';
 import mixins from '../../helpers/mixins';
 import DollarValueText from '../../helpers/components/DollarValueText';
+import HypeText from '../../helpers/components/HypeText';
+
+import { sayBestStreakFiller } from '../../helpers/sayFiller';
 
 // DEBUG
 import { samplePlayers, sampleUpdatedPlayers } from '../../constants/samplePlayers';
@@ -76,33 +80,34 @@ const PlayerScoreText = styled.span`
 `;
 
 const sortByScore = (players) => Object.values(players).sort((a, b) => b.score - a.score);
+const sortByStreak = (players) => Object.values(players).sort((a, b) => b.streak - a.streak);
 const hasPlayerName = (player, playerName) => player.name === playerName;
 
 const PlayerCard = (props) => {
     return (
-        <PlayerCardRow numPlayers={props.numPlayers} positionChange={props.positionChange}>
+        <PlayerCardRow numPlayers={_.get(props, 'numPlayers')} positionChange={_.get(props, 'positionChange')}>
             <PlayerCardCol lg={'12'}>
                 <InfoRow>
                     <SignatureCol lg={'3'}>
-                        <Signature src={props.player.signature} numPlayers={props.numPlayers} />
+                        <Signature src={_.get(props, 'player.signature')} numPlayers={_.get(props, 'numPlayers')} />
                     </SignatureCol>
 
                     <PlayerNameCol lg={'3'}>
                         <FitText compressor={0.5}>
-                            <PlayerNameText>{props.player.name.toUpperCase()}</PlayerNameText>
+                            <PlayerNameText>{_.invoke(_.get(props, 'player.name'), 'toUpperCase')}</PlayerNameText>
                         </FitText>
                     </PlayerNameCol>
 
                     <HypeCol lg={'3'}>
                         <FitText compressor={1}>
-                            {/*<HypeText text={'GENIUS'} rainbow={true} />*/}
+                            <HypeText text={_.invoke(_.get(props, 'player.title'), 'toUpperCase')} rainbow={true} />
                         </FitText>
                     </HypeCol>
 
                     <PlayerScoreCol lg={'3'}>
                         <FitText compressor={0.5}>
                             <PlayerScoreText>
-                                <DollarValueText dollarValue={props.player.score} />
+                                <DollarValueText dollarValue={_.get(props, 'player.score')} />
                             </PlayerScoreText>
                         </FitText>
                     </PlayerScoreCol>
@@ -134,12 +139,22 @@ const BrowserScoreboard = () => {
 
         socket.on('show_update', () => {
             setShowUpdate(true);
+
+            const bestStreakPlayer = sortByStreak(updatedPlayers)[0];
+            if (_.get(bestStreakPlayer, 'streak') && _.get(bestStreakPlayer, 'streak') >= 2) {
+                sayBestStreakFiller(bestStreakPlayer.name, bestStreakPlayer.streak);
+            }
         });
 
         // DEBUG
         document.body.onkeyup = (e) => {
             if (e.keyCode === 32) {
                 setShowUpdate(true);
+
+                const bestStreakPlayer = sortByStreak(updatedPlayers)[0];
+                if (_.get(bestStreakPlayer, 'streak') && _.get(bestStreakPlayer, 'streak') >= 2) {
+                    sayBestStreakFiller(bestStreakPlayer.name, bestStreakPlayer.streak);
+                }
             }
         }
     }, []);

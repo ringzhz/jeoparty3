@@ -27,7 +27,7 @@ const say = (text, onComplete) => {
 
     let utterance = new SpeechSynthesisUtterance(formatUtterance(text));
     utterance.voice = getVoice();
-    utterance.onend = () => onComplete();
+    utterance.onend = () => onComplete && onComplete();
 
     window.speechSynthesis.cancel();
     window.speechSynthesis.speak(utterance);

@@ -38,6 +38,8 @@ const CategoryRow = styled(Row)`
     ${mixins.flexAlignCenter}
     height: calc(100vh / 6);
     height: calc(var(--vh, 1vh) * ${100 / 6});
+    
+    cursor: pointer;
 `;
 
 const CategoryCol = styled(Col)`
@@ -57,6 +59,8 @@ const DollarValueRow = styled(Row)`
     ${mixins.flexAlignCenter}
     height: 20vh;
     height: calc(var(--vh, 1vh) * 20);
+    
+    cursor: pointer;
 `;
 
 const DollarValueCol = styled(Col)`

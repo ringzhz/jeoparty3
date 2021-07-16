@@ -229,9 +229,9 @@ const BrowserBoard = () => {
     //     [false, false, false, false, false],
     //     [false, false, false, false, false]
     // ]);
-    // const [showCategoryReveal, setShowCategoryReveal] = useState(false);
+    // const [showCategoryReveal, setShowCategoryReveal] = useState(true);
     // const [categoryRevealIndex, setCategoryRevealIndex] = useState(0);
-    // const [categoryPanelIndex, setCategoryPanelIndex] = useState(-1);
+    // const [categoryPanelIndex, setCategoryPanelIndex] = useState(0);
 
     const [animateClue, setAnimateClue] = useState(false);
     const [categories, setCategories] = useState([]);
@@ -305,11 +305,11 @@ const BrowserBoard = () => {
     }, []);
 
     // DEBUG
-    document.body.onkeyup = (e) => {
-        if (e.keyCode === 32) {
-            reveal(categories, 'Isaac');
-        }
-    };
+    // document.body.onkeyup = (e) => {
+    //     if (e.keyCode === 32) {
+    //         reveal(categories, 'Isaac');
+    //     }
+    // };
 
     const categoryRevealPanels = categories && Array.from(Array(NUM_CATEGORIES).keys()).map((i) => {
         const category = categories[i];
@@ -318,7 +318,7 @@ const BrowserBoard = () => {
         const categoryNameCompressor = getCategoryNameCompressor(categoryNameLength, true);
 
         return (
-            <div>
+            <div key={i}>
                 <CategoryRevealLogoPanel reveal={categoryPanelIndex === i}>
                     <CategoryRevealLogoText>
                         JEOPARTY!
@@ -336,7 +336,8 @@ const BrowserBoard = () => {
         );
     });
 
-    const categoryTitleRow = categories && categories.map((category) => {
+    const categoryTitleRow = categories && Array.from(Array(NUM_CATEGORIES).keys()).map((i) => {
+        const category = categories[i];
         const categoryName = _.get(category, 'title');
         const categoryNameLength = _.size(categoryName) || 0;
         const categoryNameCompressor = getCategoryNameCompressor(categoryNameLength, false);
@@ -346,7 +347,7 @@ const BrowserBoard = () => {
 
         if (boardRevealed) {
             categoryCol = (
-                <CategoryCol lineHeight={categoryNameLineHeight} lg={'2'}>
+                <CategoryCol lineHeight={categoryNameLineHeight} lg={'2'} key={i}>
                     <FitTextWrapper>
                         <FitText compressor={categoryNameCompressor}>
                             <CategoryText>
@@ -358,7 +359,7 @@ const BrowserBoard = () => {
             );
         } else {
             categoryCol = (
-                <CategoryCol lineHeight={categoryNameLineHeight} lg={'2'} className={'board-reveal'}>
+                <CategoryCol lineHeight={categoryNameLineHeight} lg={'2'} className={'board-reveal'} key={`board-reveal-${i}`}>
                     <CategoryColLogoText>
                         JEOPARTY!
                     </CategoryColLogoText>
@@ -377,7 +378,7 @@ const BrowserBoard = () => {
             const revealed = boardRevealMatrix[i][j];
 
             return (
-                <DollarValueCol lg={'2'} revealed={revealed}>
+                <DollarValueCol lg={'2'} revealed={revealed} key={`${i}-${j}`}>
                     <FitTextWrapper>
                         <FitText compressor={0.3}>
                             {_.get(clue, 'completed') || !revealed ? '' :
@@ -392,7 +393,7 @@ const BrowserBoard = () => {
         });
 
         return (
-            <DollarValueRow>
+            <DollarValueRow key={j}>
                 {dollarValueCols}
             </DollarValueRow>
         );

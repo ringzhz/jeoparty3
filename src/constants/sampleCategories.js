@@ -1,7 +1,7 @@
 exports.sampleCategories = [
     {
         id: 12619,
-        title: 'the nba',
+        title: `that's totally historical`,
         clues_count: 5,
         clues: [
             {

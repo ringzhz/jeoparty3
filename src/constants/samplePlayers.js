@@ -6,32 +6,48 @@ exports.samplePlayers = {
         sessionName: 'think',
         name: 'Luffy',
         signature: signature,
-        score: 200
+        score: 200,
+
+        heat: 2,
+        streak: 1,
+        title: ''
     },
 
-    // zsS3DKSSIUOegOQuAAAB: {
-    //     socketId: 'zsS3DKSSIUOegOQuAAAB',
-    //     sessionName: 'think',
-    //     name: 'Zoro',
-    //     signature: signature,
-    //     score: 1000
-    // },
-    //
-    // zsS3DKSSIUOegOQuAAAC: {
-    //     socketId: 'zsS3DKSSIUOegOQuAAAC',
-    //     sessionName: 'think',
-    //     name: 'Nami',
-    //     signature: signature,
-    //     score: 2000
-    // },
-    //
-    // zsS3DKSSIUOegOQuAAAD: {
-    //     socketId: 'zsS3DKSSIUOegOQuAAAD',
-    //     sessionName: 'think',
-    //     name: 'Usopp',
-    //     signature: signature,
-    //     score: 300
-    // }
+    zsS3DKSSIUOegOQuAAAB: {
+        socketId: 'zsS3DKSSIUOegOQuAAAB',
+        sessionName: 'think',
+        name: 'Zoro',
+        signature: signature,
+        score: 1000,
+
+        heat: 0,
+        streak: 0,
+        title: ''
+    },
+
+    zsS3DKSSIUOegOQuAAAC: {
+        socketId: 'zsS3DKSSIUOegOQuAAAC',
+        sessionName: 'think',
+        name: 'Nami',
+        signature: signature,
+        score: 2000,
+
+        heat: 2,
+        streak: 4,
+        title: 'p.h.d. student'
+    },
+
+    zsS3DKSSIUOegOQuAAAD: {
+        socketId: 'zsS3DKSSIUOegOQuAAAD',
+        sessionName: 'think',
+        name: 'Usopp',
+        signature: signature,
+        score: 300,
+
+        heat: 0,
+        streak: 0,
+        title: ''
+    }
 };
 
 exports.sampleUpdatedPlayers = {
@@ -40,30 +56,46 @@ exports.sampleUpdatedPlayers = {
         sessionName: 'think',
         name: 'Luffy',
         signature: signature,
-        score: 3000
+        score: 500,
+
+        heat: 2,
+        streak: 2,
+        title: 'smarty pants'
     },
-    //
-    // zsS3DKSSIUOegOQuAAAB: {
-    //     socketId: 'zsS3DKSSIUOegOQuAAAB',
-    //     sessionName: 'think',
-    //     name: 'Zoro',
-    //     signature: signature,
-    //     score: 2000
-    // },
-    //
-    // zsS3DKSSIUOegOQuAAAC: {
-    //     socketId: 'zsS3DKSSIUOegOQuAAAC',
-    //     sessionName: 'think',
-    //     name: 'Nami',
-    //     signature: signature,
-    //     score: 1000
-    // },
-    //
-    // zsS3DKSSIUOegOQuAAAD: {
-    //     socketId: 'zsS3DKSSIUOegOQuAAAD',
-    //     sessionName: 'think',
-    //     name: 'Usopp',
-    //     signature: signature,
-    //     score: 300
-    // }
+
+    zsS3DKSSIUOegOQuAAAB: {
+        socketId: 'zsS3DKSSIUOegOQuAAAB',
+        sessionName: 'think',
+        name: 'Zoro',
+        signature: signature,
+        score: 2000,
+
+        heat: 0,
+        streak: 0,
+        title: ''
+    },
+
+    zsS3DKSSIUOegOQuAAAC: {
+        socketId: 'zsS3DKSSIUOegOQuAAAC',
+        sessionName: 'think',
+        name: 'Nami',
+        signature: signature,
+        score: 3000,
+
+        heat: 2,
+        streak: 5,
+        title: 'research fellow'
+    },
+
+    zsS3DKSSIUOegOQuAAAD: {
+        socketId: 'zsS3DKSSIUOegOQuAAAD',
+        sessionName: 'think',
+        name: 'Usopp',
+        signature: signature,
+        score: 300,
+
+        heat: 0,
+        streak: 0,
+        title: ''
+    }
 };
