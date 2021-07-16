@@ -1,7 +1,7 @@
 exports.sampleCategories = [
     {
         id: 12619,
-        title: `that's totally historical`,
+        title: 'british prime ministers when',
         clues_count: 5,
         clues: [
             {

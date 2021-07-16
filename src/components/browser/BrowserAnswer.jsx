@@ -86,7 +86,7 @@ const CategoryPanel = styled(CluePanel)`
 
 const CategoryTextPanel = styled.div`
     ${mixins.flexAlignCenter};
-    height: 60%;
+    height: 100%;
 `;
 
 const CategoryText = styled.span`
@@ -95,12 +95,16 @@ const CategoryText = styled.span`
     font-family: board, serif;
     color: white;
     text-shadow: 0.1em 0.1em #000;
-    line-height: 1em;
+    line-height: 1;
+    letter-spacing: 0.025em;
 `;
 
 const DollarValueTextPanel = styled.div`
     ${mixins.flexAlignCenter};
-    height: 40%;
+    position: absolute;
+    transform: translateX(-50%);
+    left: 50%;
+    bottom: -10%;
 `;
 
 const DollarValueTextWrapper = styled.span`
@@ -113,7 +117,7 @@ const DollarValueTextWrapper = styled.span`
 const PlayerNameText = styled.span`
     font-size: 5vh;
     font-family: clue, serif;
-    text-shadow: 0.15em 0.15em #000;
+    text-shadow: 0.1em 0.1em #000;
 `;
 
 const LivefeedPanel = styled.div`
@@ -160,7 +164,9 @@ const BrowserAnswer = () => {
         socket.on('request_clue', (categoryIndex, clueIndex) => {
             setCategoryIndex(categoryIndex);
             setClueIndex(clueIndex);
+        });
 
+        socket.on('buzz_in', () => {
             const buzzInSound = new Audio(buzzIn);
             buzzInSound.play();
         });

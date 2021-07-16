@@ -88,9 +88,6 @@ const updatePlayerStreaks = (socket) => {
     const players = gameSession.players;
     const playersAnswered = gameSession.playersAnswered;
 
-    // console.log('~~~~before~~~~');
-    // console.log(gameSession.players);
-
     for (let socketId of Object.keys(players)) {
         const heat = players[socketId];
 
@@ -103,10 +100,6 @@ const updatePlayerStreaks = (socket) => {
             }
         }
     }
-
-    // console.log('~~~~after~~~~');
-    // console.log(gameSession.players);
-    // console.log('-------------------------');
 };
 
 const setPlayers = (sessionName) => {
@@ -281,15 +274,11 @@ const showCorrectAnswer = (socket, correctAnswer, timeout) => {
         }
     } else {
         gameSession.browserClient.emit('show_correct_answer', correctAnswer);
-    }
-
-    setTimeout(() => {
-        showScoreboard(socket);
 
         setTimeout(() => {
-            showBoard(socket);
-        }, timers.SHOW_SCOREBOARD_TIME * 1000);
-    }, timers.SHOW_CORRECT_ANSWER_TIME * 1000);
+            showScoreboard(socket);
+        }, timers.SHOW_CORRECT_ANSWER_TIME * 1000);
+    }
 };
 
 const showScoreboard = (socket) => {
@@ -453,6 +442,7 @@ io.on('connection', (socket) => {
                 client.emit('is_answering', client.id === socket.id);
                 client.emit('categories', gameSession.categories);
                 client.emit('request_clue', categoryIndex, clueIndex);
+                client.emit('buzz_in');
                 client.emit('player_name', _.get(gameSession, `players[${socket.id}].name`));
                 client.emit('player', _.get(gameSession, `players[${client.id}]`));
             });
@@ -540,6 +530,10 @@ io.on('connection', (socket) => {
                 }
             }, timers.SHOW_DECISION_TIME * 1000);
         }, timers.SHOW_PRE_DECISION_TIME * 1000);
+    });
+
+    socket.on('show_board', () => {
+        showBoard(socket);
     });
 
     socket.on('disconnect', () => {

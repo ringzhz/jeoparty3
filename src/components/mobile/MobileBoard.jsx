@@ -121,7 +121,7 @@ const MobileBoard = () => {
         socket.emit('request_clue', categoryIndex, clueIndex);
     }, []);
 
-    let categoryRows = categories && Array.from(Array(NUM_CATEGORIES).keys()).map((i) => {
+    let categoryRows = _.get(categories, `[0].title`) && Array.from(Array(NUM_CATEGORIES).keys()).map((i) => {
         const category = categories[i];
         const categoryName = _.get(category, 'title');
         const categoryNameLength = _.size(categoryName) || 0;
@@ -140,7 +140,7 @@ const MobileBoard = () => {
         );
     });
 
-    let dollarValueRows = categories && Array.from(Array(NUM_CLUES).keys()).map((i) => {
+    let dollarValueRows = _.get(categories, `[0].title`) && Array.from(Array(NUM_CLUES).keys()).map((i) => {
         const clue = _.get(categories, `[${categoryIndex}].clues[${i}]`);
         const dollarValue = 200 * (i + 1);
 

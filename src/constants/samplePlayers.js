@@ -34,7 +34,7 @@ exports.samplePlayers = {
 
         heat: 2,
         streak: 4,
-        title: 'p.h.d. student'
+        title: 'senior professor'
     },
 
     zsS3DKSSIUOegOQuAAAD: {
@@ -84,7 +84,7 @@ exports.sampleUpdatedPlayers = {
 
         heat: 2,
         streak: 5,
-        title: 'research fellow'
+        title: 'phd candidate'
     },
 
     zsS3DKSSIUOegOQuAAAD: {

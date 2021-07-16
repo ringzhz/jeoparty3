@@ -60,6 +60,7 @@ const GlobalStyle = createGlobalStyle`
       0% {
         color: #e6261f;
       }
+    
       12.5% {
         color: #eb7532;
       }
@@ -78,7 +79,7 @@ const GlobalStyle = createGlobalStyle`
       75% {
         color: #d23be7;
       }
-      87.5 {
+      87.5% {
         color: #ffb6c1;
       }
       100% {
@@ -92,7 +93,6 @@ const GlobalStyle = createGlobalStyle`
         100% { bottom: 0; opacity: 1; }
     }
 `;
-
 const Game = () => {
     const [gameState, setGameState] = useState(GameState.LOBBY);
     const [gameStateAck, setGameStateAck] = useState(() => () => {});

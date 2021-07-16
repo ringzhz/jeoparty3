@@ -34,20 +34,6 @@ const getCategoryNameCompressor = (textLength, reveal) => {
     return compressor;
 };
 
-const getCategoryNameLineHeight = (textLength) => {
-    let lineHeight = null;
-
-    if (textLength > 20) {
-        lineHeight = '1.5em';
-    } else if (textLength > 10) {
-        lineHeight = '2em';
-    } else {
-        lineHeight = '2.5em';
-    }
-
-    return lineHeight;
-};
-
 const CategoryRevealWrapper = styled.div`
     display: flex;
     flex-direction: row;
@@ -64,6 +50,7 @@ const CategoryRevealPanel = styled.div`
     ${mixins.flexAlignCenter};
     height: 100vh;
     width: 100vw;
+    padding: 5%;
     z-index: 2;
     
     background-image: url(${backgroundImage});
@@ -157,12 +144,11 @@ const FitTextWrapper = styled.div`
 `;
 
 const CategoryCol = styled(Col)`
-    line-height: ${props => props.lineHeight};
-
     color: black;
     border-width: 0.2em;
     border-style: solid;
     border-bottom-width: 0.4em;
+    line-height: 1;
     
     max-height: 100%;
     
@@ -220,7 +206,7 @@ const BrowserBoard = () => {
     // const [categories, setCategories] = useState(sampleCategories);
     // const [categoryIndex, setCategoryIndex] = useState(0);
     // const [clueIndex, setClueIndex] = useState(1);
-    // const [boardRevealed, setBoardRevealed] = useState(false);
+    // const [boardRevealed, setBoardRevealed] = useState(true);
     // const [boardRevealMatrix, setBoardRevealMatrix] = useState([
     //     [false, false, false, false, false],
     //     [false, false, false, false, false],
@@ -229,7 +215,7 @@ const BrowserBoard = () => {
     //     [false, false, false, false, false],
     //     [false, false, false, false, false]
     // ]);
-    // const [showCategoryReveal, setShowCategoryReveal] = useState(true);
+    // const [showCategoryReveal, setShowCategoryReveal] = useState(false);
     // const [categoryRevealIndex, setCategoryRevealIndex] = useState(0);
     // const [categoryPanelIndex, setCategoryPanelIndex] = useState(0);
 
@@ -261,10 +247,9 @@ const BrowserBoard = () => {
                     revealCategories(categories, setCategoryPanelIndex, setCategoryRevealIndex, () => {
                         setShowCategoryReveal(false);
                         setBoardRevealed(true);
-                        socket.emit('board_revealed');
 
                         setTimeout(() => {
-                            sayJeopartyRoundFiller(boardControllerName);
+                            sayJeopartyRoundFiller(boardControllerName, () => socket.emit('board_revealed'));
                         }, 1000);
                     });
                 }, 1000);
@@ -311,7 +296,7 @@ const BrowserBoard = () => {
     //     }
     // };
 
-    const categoryRevealPanels = categories && Array.from(Array(NUM_CATEGORIES).keys()).map((i) => {
+    const categoryRevealPanels = _.get(categories, `[0].title`) && Array.from(Array(NUM_CATEGORIES).keys()).map((i) => {
         const category = categories[i];
         const categoryName = _.get(category, 'title');
         const categoryNameLength = _.size(categoryName) || 0;
@@ -336,18 +321,17 @@ const BrowserBoard = () => {
         );
     });
 
-    const categoryTitleRow = categories && Array.from(Array(NUM_CATEGORIES).keys()).map((i) => {
+    const categoryTitleRow = _.get(categories, `[0].title`) && Array.from(Array(NUM_CATEGORIES).keys()).map((i) => {
         const category = categories[i];
         const categoryName = _.get(category, 'title');
         const categoryNameLength = _.size(categoryName) || 0;
         const categoryNameCompressor = getCategoryNameCompressor(categoryNameLength, false);
-        const categoryNameLineHeight = getCategoryNameLineHeight(categoryNameLength);
 
         let categoryCol = null;
 
         if (boardRevealed) {
             categoryCol = (
-                <CategoryCol lineHeight={categoryNameLineHeight} lg={'2'} key={i}>
+                <CategoryCol lg={'2'} key={i}>
                     <FitTextWrapper>
                         <FitText compressor={categoryNameCompressor}>
                             <CategoryText>
@@ -359,7 +343,7 @@ const BrowserBoard = () => {
             );
         } else {
             categoryCol = (
-                <CategoryCol lineHeight={categoryNameLineHeight} lg={'2'} className={'board-reveal'} key={`board-reveal-${i}`}>
+                <CategoryCol lg={'2'} className={'board-reveal'} key={`board-reveal-${i}`}>
                     <CategoryColLogoText>
                         JEOPARTY!
                     </CategoryColLogoText>
@@ -370,7 +354,7 @@ const BrowserBoard = () => {
         return categoryCol;
     });
 
-    const dollarValueRows = categories && Array.from(Array(NUM_CLUES).keys()).map((j) => {
+    const dollarValueRows = _.get(categories, `[0].title`) && Array.from(Array(NUM_CLUES).keys()).map((j) => {
         const dollarValue = 200 * (j + 1);
 
         const dollarValueCols = Array.from(Array(NUM_CATEGORIES).keys()).map((i) => {

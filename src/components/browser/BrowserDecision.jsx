@@ -119,7 +119,9 @@ const BrowserDecision = () => {
             if (timeout) {
                 const buzzInTimeoutSound = new Audio(buzzInTimeout);
                 buzzInTimeoutSound.onended = () => {
-                    sayCorrectAnswerFiller(correctAnswer);
+                    sayCorrectAnswerFiller(correctAnswer, () => setTimeout(() => {
+                        socket.emit('show_board');
+                    }, 500));
                 };
 
                 buzzInTimeoutSound.play();

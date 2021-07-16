@@ -11,6 +11,7 @@ import { SocketContext } from '../../context/socket';
 import mixins from '../../helpers/mixins';
 import DollarValueText from '../../helpers/components/DollarValueText';
 import HypeText from '../../helpers/components/HypeText';
+import { timers } from '../../constants/timers';
 
 import { sayBestStreakFiller } from '../../helpers/sayFiller';
 
@@ -142,21 +143,27 @@ const BrowserScoreboard = () => {
 
             const bestStreakPlayer = sortByStreak(updatedPlayers)[0];
             if (_.get(bestStreakPlayer, 'streak') && _.get(bestStreakPlayer, 'streak') >= 2) {
-                sayBestStreakFiller(bestStreakPlayer.name, bestStreakPlayer.streak);
+                sayBestStreakFiller(bestStreakPlayer.name, bestStreakPlayer.streak, bestStreakPlayer.title, () => setTimeout(() => {
+                    socket.emit('show_board');
+                }, 500));
+            } else {
+                setTimeout(() => {
+                    socket.emit('show_board');
+                }, timers.SHOW_SCOREBOARD_UPDATE_TIME * 1000);
             }
         });
 
         // DEBUG
-        document.body.onkeyup = (e) => {
-            if (e.keyCode === 32) {
-                setShowUpdate(true);
-
-                const bestStreakPlayer = sortByStreak(updatedPlayers)[0];
-                if (_.get(bestStreakPlayer, 'streak') && _.get(bestStreakPlayer, 'streak') >= 2) {
-                    sayBestStreakFiller(bestStreakPlayer.name, bestStreakPlayer.streak);
-                }
-            }
-        }
+        // document.body.onkeyup = (e) => {
+        //     if (e.keyCode === 32) {
+        //         setShowUpdate(true);
+        //
+        //         const bestStreakPlayer = sortByStreak(updatedPlayers)[0];
+        //         if (_.get(bestStreakPlayer, 'streak') && _.get(bestStreakPlayer, 'streak') >= 2) {
+        //             sayBestStreakFiller(bestStreakPlayer.name, bestStreakPlayer.streak, bestStreakPlayer.title);
+        //         }
+        //     }
+        // }
     }, []);
 
     return (
