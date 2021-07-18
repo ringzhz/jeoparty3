@@ -74,9 +74,10 @@ const setUpdatedPlayers = (sessionName) => {
 
 const updatePlayerScore = (socket, clueIndex, isCorrect) => {
     let gameSession = sessionCache.get(socket.sessionName);
+    const doubleJeoparty = gameSession.doubleJeoparty;
     let updatedPlayers = gameSession.updatedPlayers;
 
-    const value = 200 * (clueIndex + 1);
+    const value = (doubleJeoparty ? 400 : 200) * (clueIndex + 1);
     updatedPlayers[socket.id].score = updatedPlayers[socket.id].score + (isCorrect ? value : -value);
 
     gameSession.updatedPlayers = updatedPlayers;
@@ -203,18 +204,45 @@ const handlePlayerReconnection = (socket) => {
     }
 };
 
+const checkBoardCompletion = (socket) => {
+    if (!sessionCache.get(socket.sessionName)) {
+        return;
+    }
+
+    const gameSession = sessionCache.get(socket.sessionName);
+    const categories = gameSession.categories;
+
+    for (let i = 0; i < NUM_CATEGORIES; i++) {
+        for (let j = 0; j < NUM_CLUES; j++) {
+            const clue = _.get(categories, `[${i}][${j}]`);
+
+            if (!clue.completed) {
+                return;
+            }
+        }
+    }
+
+    // All clues are completed, reset for double jeoparty
+    const doubleJeopartyCategories = gameSession.doubleJeopartyCategories;
+    updateGameSession(socket.sessionName, 'categories', doubleJeopartyCategories);
+    updateGameSession(socket.sessionName, 'doubleJeoparty', true);
+    updateGameSession(socket.sessionName, 'boardRevealed', false);
+};
+
 const showBoard = (socket) => {
     if (!sessionCache.get(socket.sessionName)) {
         return;
     }
+
+    checkBoardCompletion(socket);
 
     const gameSession = sessionCache.get(socket.sessionName);
     const boardRevealed = _.get(gameSession, 'boardRevealed');
 
     gameSession.clients.map((client) => {
         client.emit('set_game_state', GameState.BOARD, () => {
-            client.emit('categories', gameSession.categories);
-            client.emit('board_controller_name', _.get(gameSession, `players[${gameSession.boardController}].name`), boardRevealed, gameSession.categories);
+            client.emit('categories', gameSession.categories, gameSession.doubleJeoparty);
+            client.emit('board_controller_name', _.get(gameSession, `players[${gameSession.boardController}].name`), boardRevealed, gameSession.categories, gameSession.doubleJeoparty);
             client.emit('is_board_controller', client.id === gameSession.boardController, boardRevealed);
             client.emit('player', _.get(gameSession, `players[${client.id}]`));
         });
@@ -229,7 +257,7 @@ const showClue = (socket, categoryIndex, clueIndex, clueText) => {
 
     gameSession.clients.map((client) => {
         client.emit('set_game_state', GameState.CLUE, () => {
-            client.emit('categories', gameSession.categories);
+            client.emit('categories', gameSession.categories, gameSession.doubleJeoparty);
             client.emit('request_clue', categoryIndex, clueIndex, clueText);
             client.emit('players_answered', gameSession.playersAnswered);
             client.emit('player', _.get(gameSession, `players[${client.id}]`));
@@ -333,8 +361,9 @@ io.on('connection', (socket) => {
 
             socket.emit('session_name', sessionName);
 
-            getRandomCategories((categories) => {
+            getRandomCategories((categories, doubleJeopartyCategories) => {
                 updateGameSession(socket.sessionName, 'categories', categories);
+                updateGameSession(socket.sessionName, 'doubleJeopartyCategories', doubleJeopartyCategories);
             });
         }
     });
@@ -440,7 +469,7 @@ io.on('connection', (socket) => {
         gameSession.clients.map((client) => {
             client.emit('set_game_state', GameState.ANSWER, () => {
                 client.emit('is_answering', client.id === socket.id);
-                client.emit('categories', gameSession.categories);
+                client.emit('categories', gameSession.categories, gameSession.doubleJeoparty);
                 client.emit('request_clue', categoryIndex, clueIndex);
                 client.emit('buzz_in');
                 client.emit('player_name', _.get(gameSession, `players[${socket.id}].name`));
@@ -477,11 +506,12 @@ io.on('connection', (socket) => {
         updatePlayer(socket.sessionName, socket.id, 'answer', '');
 
         const gameSession = sessionCache.get(socket.sessionName);
+        const doubleJeoparty = gameSession.doubleJeoparty;
         const categoryIndex = gameSession.categoryIndex;
         const clueIndex = gameSession.clueIndex;
         const correctAnswer = gameSession.categories[categoryIndex].clues[clueIndex].answer;
         const isCorrect = checkAnswer(correctAnswer, answer);
-        const dollarValue = 200 * (clueIndex + 1);
+        const dollarValue = (doubleJeoparty ? 400 : 200) * (clueIndex + 1);
 
         updatePlayerScore(socket, clueIndex, isCorrect);
 

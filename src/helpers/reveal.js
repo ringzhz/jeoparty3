@@ -1,8 +1,8 @@
 import _ from 'lodash';
 
 import say from './say';
+import { sayCategoryRevealFiller } from './sayFiller';
 import boardReveal from '../assets/audio/boardReveal.mp3';
-import {sayJeopartyRoundFiller} from "./sayFiller";
 
 export const revealBoard = (setBoardRevealMatrix, onEnd) => {
     const boardRevealSound = new Audio(boardReveal);
@@ -75,8 +75,8 @@ export const revealBoard = (setBoardRevealMatrix, onEnd) => {
     }, 400);
 };
 
-export const revealCategories = (categories, setCategoryPanelIndex, setCategoryRevealIndex, onEnd) => {
-    say('Here are the categories...', () => {
+export const revealCategories = (categories, doubleJeoparty, setCategoryPanelIndex, setCategoryRevealIndex, onEnd) => {
+    sayCategoryRevealFiller(doubleJeoparty, () => {
         setCategoryPanelIndex(0);
 
         setTimeout(() => {

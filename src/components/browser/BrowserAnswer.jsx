@@ -141,6 +141,7 @@ const LivefeedPanel = styled.div`
 const BrowserAnswer = () => {
     // DEBUG
     // const [categories, setCategories] = useState(sampleCategories);
+    // const [doubleJeoparty, setDoubleJeoparty] = useState(false);
     // const [categoryIndex, setCategoryIndex] = useState(0);
     // const [clueIndex, setClueIndex] = useState(0);
     // const [playerName, setPlayerName] = useState('luffy');
@@ -148,6 +149,7 @@ const BrowserAnswer = () => {
     // const [startTimer, setStartTimer] = useState(false);
 
     const [categories, setCategories] = useState([]);
+    const [doubleJeoparty, setDoubleJeoparty] = useState(false);
     const [categoryIndex, setCategoryIndex] = useState(null);
     const [clueIndex, setClueIndex] = useState(0);
     const [playerName, setPlayerName] = useState('');
@@ -157,8 +159,9 @@ const BrowserAnswer = () => {
     const socket = useContext(SocketContext);
 
     useEffect(() => {
-        socket.on('categories', (categories) => {
+        socket.on('categories', (categories, doubleJeoparty) => {
             setCategories(categories);
+            setDoubleJeoparty(doubleJeoparty);
         });
 
         socket.on('request_clue', (categoryIndex, clueIndex) => {
@@ -207,7 +210,7 @@ const BrowserAnswer = () => {
 
                         <DollarValueTextPanel>
                             <DollarValueTextWrapper>
-                                <DollarValueText dollarValue={200 * (clueIndex + 1)} />
+                                <DollarValueText dollarValue={(doubleJeoparty ? 400 : 200) * (clueIndex + 1)} />
                             </DollarValueTextWrapper>
                         </DollarValueTextPanel>
                     </CategoryPanel>

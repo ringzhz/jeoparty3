@@ -82,11 +82,13 @@ const MobileBoard = () => {
 
     // DEBUG
     // const [categories, setCategories] = useState(sampleCategories);
+    // const [doubleJeoparty, setDoubleJeoparty] = useState(false);
     // const [isBoardController, setIsBoardController] = useState(true);
     // const [categoryIndex, setCategoryIndex] = useState(null);
     // const [player, setPlayer] = useState(samplePlayers['zsS3DKSSIUOegOQuAAAA']);
 
     const [categories, setCategories] = useState([]);
+    const [doubleJeoparty, setDoubleJeoparty] = useState(false);
     const [isBoardController, setIsBoardController] = useState(false);
     const [boardRevealed, setBoardRevealed] = useState(false);
     const [categoryIndex, setCategoryIndex] = useState(null);
@@ -95,8 +97,9 @@ const MobileBoard = () => {
     const socket = useContext(SocketContext);
 
     useEffect(() => {
-        socket.on('categories', (categories) => {
+        socket.on('categories', (categories, doubleJeoparty) => {
             setCategories(categories);
+            setDoubleJeoparty(doubleJeoparty);
         });
 
         socket.on('is_board_controller', (isBoardController, boardRevealed) => {
@@ -142,7 +145,7 @@ const MobileBoard = () => {
 
     let dollarValueRows = _.get(categories, `[0].title`) && Array.from(Array(NUM_CLUES).keys()).map((i) => {
         const clue = _.get(categories, `[${categoryIndex}].clues[${i}]`);
-        const dollarValue = 200 * (i + 1);
+        const dollarValue = (doubleJeoparty ? 400 : 200) * (i + 1);
 
         return (
             <DollarValueRow onClick={() => {

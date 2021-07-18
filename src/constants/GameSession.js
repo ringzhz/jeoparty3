@@ -5,8 +5,10 @@ function GameSession() {
     this.clients = [];
 
     this.currentGameState = GameState.LOBBY;
+    this.doubleJeoparty = false;
     this.boardRevealed = false;
     this.categories = [];
+    this.doubleJeopartyCategories = [];
     this.players = {};
     this.updatedPlayers = {};
     this.playersAnswered = [];

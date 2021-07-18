@@ -15,7 +15,7 @@ import starBackgroundImage from '../../assets/images/starBackground.png';
 import BrowserClue from './BrowserClue';
 import { revealBoard, revealCategories } from '../../helpers/reveal';
 
-import { sayJeopartyRoundFiller, sayBoardControllerNameFiller } from '../../helpers/sayFiller';
+import { sayRoundFiller, sayBoardControllerNameFiller } from '../../helpers/sayFiller';
 
 // DEBUG
 import { sampleCategories } from '../../constants/sampleCategories';
@@ -202,9 +202,10 @@ const BrowserBoard = () => {
     const NUM_CLUES = 5;
 
     // DEBUG
-    // const [animateClue, setAnimateClue] = useState(false);
     // const [categories, setCategories] = useState(sampleCategories);
+    // const [doubleJeoparty, setDoubleJeoparty] = useState(false);
     // const [categoryIndex, setCategoryIndex] = useState(0);
+    // const [animateClue, setAnimateClue] = useState(false);
     // const [clueIndex, setClueIndex] = useState(1);
     // const [boardRevealed, setBoardRevealed] = useState(true);
     // const [boardRevealMatrix, setBoardRevealMatrix] = useState([
@@ -219,9 +220,10 @@ const BrowserBoard = () => {
     // const [categoryRevealIndex, setCategoryRevealIndex] = useState(0);
     // const [categoryPanelIndex, setCategoryPanelIndex] = useState(0);
 
-    const [animateClue, setAnimateClue] = useState(false);
     const [categories, setCategories] = useState([]);
+    const [doubleJeoparty, setDoubleJeoparty] = useState(false);
     const [categoryIndex, setCategoryIndex] = useState(null);
+    const [animateClue, setAnimateClue] = useState(false);
     const [clueIndex, setClueIndex] = useState(null);
     const [boardRevealed, setBoardRevealed] = useState(false);
     const [boardRevealMatrix, setBoardRevealMatrix] = useState([
@@ -238,18 +240,18 @@ const BrowserBoard = () => {
 
     const socket = useContext(SocketContext);
 
-    const reveal = (categories, boardControllerName) => {
+    const reveal = (categories, doubleJeoparty, boardControllerName) => {
         revealBoard(setBoardRevealMatrix, () => {
             setTimeout(() => {
                 setShowCategoryReveal(true);
 
                 setTimeout(() => {
-                    revealCategories(categories, setCategoryPanelIndex, setCategoryRevealIndex, () => {
+                    revealCategories(categories, doubleJeoparty, setCategoryPanelIndex, setCategoryRevealIndex, () => {
                         setShowCategoryReveal(false);
                         setBoardRevealed(true);
 
                         setTimeout(() => {
-                            sayJeopartyRoundFiller(boardControllerName, () => socket.emit('board_revealed'));
+                            sayRoundFiller(boardControllerName, doubleJeoparty, () => socket.emit('board_revealed'));
                         }, 1000);
                     });
                 }, 1000);
@@ -258,11 +260,12 @@ const BrowserBoard = () => {
     };
 
     useEffect(() => {
-        socket.on('categories', (categories) => {
+        socket.on('categories', (categories, doubleJeoparty) => {
             setCategories(categories);
+            setDoubleJeoparty(doubleJeoparty);
         });
 
-        socket.on('board_controller_name', (boardControllerName, boardRevealed, categories) => {
+        socket.on('board_controller_name', (boardControllerName, boardRevealed, categories, doubleJeoparty) => {
             if (boardRevealed) {
                 setBoardRevealed(true);
                 setBoardRevealMatrix([
@@ -275,7 +278,7 @@ const BrowserBoard = () => {
                 ]);
                 sayBoardControllerNameFiller(boardControllerName);
             } else {
-                reveal(categories, boardControllerName);
+                reveal(categories, doubleJeoparty, boardControllerName);
             }
         });
 
@@ -355,7 +358,7 @@ const BrowserBoard = () => {
     });
 
     const dollarValueRows = _.get(categories, `[0].title`) && Array.from(Array(NUM_CLUES).keys()).map((j) => {
-        const dollarValue = 200 * (j + 1);
+        const dollarValue = (doubleJeoparty ? 400 : 200) * (j + 1);
 
         const dollarValueCols = Array.from(Array(NUM_CATEGORIES).keys()).map((i) => {
             const clue = _.get(categories, `[${i}].clues[${j}]`);

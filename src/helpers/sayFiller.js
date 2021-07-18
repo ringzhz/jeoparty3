@@ -1,7 +1,26 @@
 import say from './say';
 
-export const sayJeopartyRoundFiller = (boardControllerName, onComplete) => {
-    const text = `We'll begin with the Je-party round!`;
+export const sayCategoryRevealFiller = (doubleJeoparty, onComplete) => {
+    let text = '';
+
+    if (doubleJeoparty) {
+        text = `Here are the categories for double Je-party...`;
+    } else {
+        text = `Here are the categories...`;
+    }
+
+    say(text, onComplete);
+};
+
+export const sayRoundFiller = (boardControllerName, doubleJeoparty, onComplete) => {
+    let text = '';
+
+    if (doubleJeoparty) {
+        text = `Let's get the double Je-party round started!`;
+    } else {
+        text = `We'll begin with the Je-party round!`;
+    }
+
     say(text, () => {
         sayBoardControllerNameFiller(boardControllerName, onComplete);
     });

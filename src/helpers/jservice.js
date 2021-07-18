@@ -57,6 +57,7 @@ const approveCategory = (category) => {
 
 exports.getRandomCategories = (cb) => {
     let categories = [];
+    let doubleJeopartyCategories = [];
     let usedCategoryIds = [];
 
     const recursiveGetRandomCategory = () => {
@@ -64,11 +65,16 @@ exports.getRandomCategories = (cb) => {
             if (error || usedCategoryIds.includes(category.id)) {
                 recursiveGetRandomCategory();
             } else {
-                categories.push(category);
+                if (categories.length < NUM_CATEGORIES) {
+                    categories.push(category);
+                } else {
+                    doubleJeopartyCategories.push(category);
+                }
+
                 usedCategoryIds.push(category.id);
 
-                if (categories.length === NUM_CATEGORIES) {
-                    cb(categories);
+                if (doubleJeopartyCategories.length === NUM_CATEGORIES) {
+                    cb(categories, doubleJeopartyCategories);
                 } else {
                     recursiveGetRandomCategory();
                 }
