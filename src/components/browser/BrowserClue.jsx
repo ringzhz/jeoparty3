@@ -82,12 +82,12 @@ const BrowserClue = () => {
         socket.on('request_clue', (categoryIndex, clueIndex, clueText) => {
             setCategoryIndex(categoryIndex);
             setClueIndex(clueIndex);
+        });
 
-            if (clueText) {
-                say(clueText, () => {
-                    socket.emit('start_timer');
-                });
-            }
+        socket.on('say_clue_text', (clueText) => {
+            say(clueText, () => {
+                socket.emit('start_timer');
+            });
         });
 
         socket.on('start_timer', () => {
@@ -99,6 +99,10 @@ const BrowserClue = () => {
                 }, 100);
             }, 100);
         });
+
+        return () => {
+            socket.off('say_clue_text');
+        }
     }, []);
 
     const clueText = _.get(categories, `[${categoryIndex}].clues[${clueIndex}].question`);
@@ -109,9 +113,11 @@ const BrowserClue = () => {
         <BrowserClueContainer fluid>
             <ClueRow>
                 <ClueCol lg={'12'}>
-                    <FitText compressor={clueTextCompressor}>
-                        {_.invoke(clueText, 'toUpperCase')}
-                    </FitText>
+                    {_.get(categories, `[0].title`) && (
+                        <FitText compressor={clueTextCompressor}>
+                            {_.invoke(clueText, 'toUpperCase')}
+                        </FitText>
+                    )}
                 </ClueCol>
             </ClueRow>
 

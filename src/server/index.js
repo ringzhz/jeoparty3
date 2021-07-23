@@ -214,9 +214,9 @@ const checkBoardCompletion = (socket) => {
 
     for (let i = 0; i < NUM_CATEGORIES; i++) {
         for (let j = 0; j < NUM_CLUES; j++) {
-            const clue = _.get(categories, `[${i}][${j}]`);
+            const clue = _.get(categories, `[${i}].clues[${j}]`);
 
-            if (!clue.completed) {
+            if (!_.get(clue, 'completed')) {
                 return;
             }
         }
@@ -227,6 +227,7 @@ const checkBoardCompletion = (socket) => {
     updateGameSession(socket.sessionName, 'categories', doubleJeopartyCategories);
     updateGameSession(socket.sessionName, 'doubleJeoparty', true);
     updateGameSession(socket.sessionName, 'boardRevealed', false);
+    // TODO: Update board controller to be person in last place
 };
 
 const showBoard = (socket) => {
@@ -259,6 +260,7 @@ const showClue = (socket, categoryIndex, clueIndex, clueText) => {
         client.emit('set_game_state', GameState.CLUE, () => {
             client.emit('categories', gameSession.categories, gameSession.doubleJeoparty);
             client.emit('request_clue', categoryIndex, clueIndex, clueText);
+            client.emit('say_clue_text', clueText);
             client.emit('players_answered', gameSession.playersAnswered);
             client.emit('player', _.get(gameSession, `players[${client.id}]`));
         });
@@ -280,32 +282,32 @@ const startTimer = (socket) => {
         }
 
         const correctAnswer = _.get(sessionCache.get(socket.sessionName), `categories[${categoryIndex}].clues[${clueIndex}].answer`);
-        showCorrectAnswer(socket, correctAnswer, true);
+        showCorrectAnswer(socket, correctAnswer, true, true);
     }, timers.BUZZ_IN_TIMEOUT * 1000);
 };
 
-const showCorrectAnswer = (socket, correctAnswer, timeout) => {
+const showCorrectAnswer = (socket, correctAnswer, timeout, sayCorrectAnswer) => {
     const gameSession = sessionCache.get(socket.sessionName);
 
     if (timeout) {
         if (gameSession.buzzInTimeout) {
             gameSession.clients.map((client) => {
                 client.emit('set_game_state', GameState.DECISION, () => {
-                    client.emit('show_correct_answer', correctAnswer, timeout);
+                    client.emit('show_correct_answer', correctAnswer, sayCorrectAnswer, true);
                     client.emit('player', _.get(gameSession, `players[${client.id}]`));
                 });
             });
 
             updateGameSession(socket.sessionName, 'currentGameState', GameState.DECISION);
-        } else {
-            return;
         }
     } else {
-        gameSession.browserClient.emit('show_correct_answer', correctAnswer);
+        gameSession.browserClient.emit('show_correct_answer', correctAnswer, sayCorrectAnswer, false);
 
-        setTimeout(() => {
-            showScoreboard(socket);
-        }, timers.SHOW_CORRECT_ANSWER_TIME * 1000);
+        if (!sayCorrectAnswer) {
+            setTimeout(() => {
+                showScoreboard(socket);
+            }, timers.SHOW_CORRECT_ANSWER_TIME * 1000);
+        }
     }
 };
 
@@ -327,6 +329,7 @@ const showScoreboard = (socket) => {
             if (!_.isEqual(gameSession.players, gameSession.updatedPlayers)) {
                 setTimeout(() => {
                     client.emit('show_update');
+                    client.emit('player', _.get(gameSession, `updatedPlayers[${client.id}]`));
                 }, timers.SHOW_SCOREBOARD_PRE_UPDATE_TIME * 1000);
             }
         });
@@ -551,9 +554,9 @@ io.on('connection', (socket) => {
 
                 if (isCorrect) {
                     updateGameSession(socket.sessionName, 'boardController', socket.id);
-                    showCorrectAnswer(socket, correctAnswer, false);
+                    showCorrectAnswer(socket, correctAnswer, false, false);
                 } else if (_.size(gameSession.playersAnswered) === _.size(gameSession.players)) {
-                    showCorrectAnswer(socket, correctAnswer, false);
+                    showCorrectAnswer(socket, correctAnswer, false, true);
                 } else {
                     showClue(socket, categoryIndex, clueIndex);
                     startTimer(socket);
@@ -564,6 +567,10 @@ io.on('connection', (socket) => {
 
     socket.on('show_board', () => {
         showBoard(socket);
+    });
+
+    socket.on('show_scoreboard', () => {
+        showScoreboard(socket);
     });
 
     socket.on('disconnect', () => {

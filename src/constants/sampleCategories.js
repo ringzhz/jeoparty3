@@ -1,7 +1,7 @@
 exports.sampleCategories = [
     {
         id: 12619,
-        title: 'british prime ministers when',
+        title: 'Actors and their Oscar winning roles',
         clues_count: 5,
         clues: [
             {

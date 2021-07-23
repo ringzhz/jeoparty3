@@ -26,7 +26,7 @@ const getCategoryNameCompressor = (textLength, reveal) => {
     if (textLength > 20) {
         compressor = reveal ? 1 : 0.75;
     } else if (textLength > 10) {
-        compressor = reveal ? 0.75 : 0.5;
+        compressor = reveal ? 0.75 : 0.6;
     } else {
         compressor = reveal ? 0.5 : 0.5;
     }
@@ -290,12 +290,16 @@ const BrowserBoard = () => {
                 setAnimateClue(true);
             }, 100);
         });
+
+        return () => {
+            socket.off('board_controller_name');
+        }
     }, []);
 
     // DEBUG
     // document.body.onkeyup = (e) => {
     //     if (e.keyCode === 32) {
-    //         reveal(categories, 'Isaac');
+    //         reveal(categories, false, 'Isaac');
     //     }
     // };
 
@@ -306,7 +310,7 @@ const BrowserBoard = () => {
         const categoryNameCompressor = getCategoryNameCompressor(categoryNameLength, true);
 
         return (
-            <div key={i}>
+            <div key={categoryName}>
                 <CategoryRevealLogoPanel reveal={categoryPanelIndex === i}>
                     <CategoryRevealLogoText>
                         JEOPARTY!

@@ -21,15 +21,10 @@ const getVoice = () => {
 };
 
 const say = (text, onComplete) => {
-    if (window.speechSynthesis.speaking) {
-        return;
-    }
-
     let utterance = new SpeechSynthesisUtterance(formatUtterance(text));
     utterance.voice = getVoice();
     utterance.onend = () => onComplete && onComplete();
 
-    window.speechSynthesis.cancel();
     window.speechSynthesis.speak(utterance);
 };
 

@@ -47,6 +47,7 @@ const CategoryCol = styled(Col)`
     color: black;
     border-width: 0.2em;
     border-style: solid;
+    line-height: 1;
 `;
 
 const CategoryText = styled.span`
@@ -84,6 +85,7 @@ const MobileBoard = () => {
     // const [categories, setCategories] = useState(sampleCategories);
     // const [doubleJeoparty, setDoubleJeoparty] = useState(false);
     // const [isBoardController, setIsBoardController] = useState(true);
+    // const [boardRevealed, setBoardRevealed] = useState(true);
     // const [categoryIndex, setCategoryIndex] = useState(null);
     // const [player, setPlayer] = useState(samplePlayers['zsS3DKSSIUOegOQuAAAA']);
 
@@ -185,7 +187,7 @@ const MobileBoard = () => {
             }
 
             {
-                !isBoardController && (
+                (isBoardController && !boardRevealed) || !isBoardController && (
                     <div>
                         <MobileWait player={player} />
                     </div>

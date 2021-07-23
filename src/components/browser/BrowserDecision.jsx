@@ -9,6 +9,7 @@ import FitText from '@kennethormandy/react-fittext';
 
 import { SocketContext } from '../../context/socket';
 import mixins from '../../helpers/mixins';
+import { formatDisplay } from '../../helpers/format';
 
 import correct from '../../assets/audio/correct.mp3';
 import incorrect from '../../assets/audio/incorrect.mp3';
@@ -101,7 +102,9 @@ const BrowserDecision = () => {
 
                 if (isCorrect) {
                     const correctSound = new Audio(correct);
+                    correctSound.volume = 0.5;
                     correctSound.play();
+
                     sayDollarValueFiller(dollarValue);
                 } else {
                     const incorrectSound = new Audio(incorrect);
@@ -110,17 +113,21 @@ const BrowserDecision = () => {
             }, 100);
         });
 
-        socket.on('show_correct_answer', (correctAnswer, timeout) => {
+        socket.on('show_correct_answer', (correctAnswer, sayCorrectAnswer, skipScoreboard) => {
             setShowDecision(false);
             setShowAnswer(false);
             setShowCorrectAnswer(true);
             setCorrectAnswer(correctAnswer);
 
-            if (timeout) {
+            if (sayCorrectAnswer) {
                 const buzzInTimeoutSound = new Audio(buzzInTimeout);
                 buzzInTimeoutSound.onended = () => {
                     sayCorrectAnswerFiller(correctAnswer, () => setTimeout(() => {
-                        socket.emit('show_board');
+                        if (skipScoreboard) {
+                            socket.emit('show_board');
+                        } else {
+                            socket.emit('show_scoreboard');
+                        }
                     }, 500));
                 };
 
@@ -128,13 +135,21 @@ const BrowserDecision = () => {
             }
         });
 
-        // DEBUG
-        // document.body.onkeyup = (e) => {
-        //     if (e.keyCode === 32) {
-        //         setShowDollarValue(true);
-        //     }
-        // }
+        return () => {
+            socket.off('show_decision');
+            socket.off('show_correct_answer');
+        };
     }, []);
+
+    // DEBUG
+    // document.body.onkeyup = (e) => {
+    //     if (e.keyCode === 32) {
+    //         const correctSound = new Audio(correct);
+    //         correctSound.volume = 0.5;
+    //         correctSound.play();
+    //         sayDollarValueFiller(200);
+    //     }
+    // };
 
     let text = null;
 
@@ -143,7 +158,7 @@ const BrowserDecision = () => {
     } else if (showAnswer || showDecision) {
         text = _.isEmpty(answer) ? <span>&nbsp;</span> : answer.toUpperCase();
     } else if (showCorrectAnswer) {
-        text = _.invoke(correctAnswer, 'toUpperCase');
+        text = formatDisplay(correctAnswer).toUpperCase();
     }
 
     return (

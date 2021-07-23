@@ -34,12 +34,35 @@ exports.formatRaw = (original) => {
 };
 
 exports.formatUtterance = (original) => {
+    /*
+    Replace parts of the string that are difficult for speech synthesis to pronounce with easier ones
+     */
+
     let rawOriginal = original.toLowerCase();
 
+    // Replace '______' with 'blank'
     rawOriginal = rawOriginal.replace(/_+/g, 'blank');
+
+    // Replace '...' with ','
     rawOriginal = rawOriginal.replace(/\.+/g, ',');
 
     return rawOriginal;
+};
+
+exports.formatDisplay = (original) => {
+    let displayOriginal = original.toLowerCase();
+
+    // Remove accents
+    displayOriginal = removeAccents(displayOriginal);
+
+    // Backslashes
+    displayOriginal = displayOriginal.replace(String.fromCharCode(92), "");
+
+    // HTML tags
+    displayOriginal = displayOriginal.replace(/<i>/g, "");
+    displayOriginal = displayOriginal.replace("</i>", "");
+
+    return displayOriginal;
 };
 
 exports.formatCategory = (category) => {

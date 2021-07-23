@@ -201,11 +201,13 @@ const BrowserAnswer = () => {
                 <PanelCol lg={'6'}>
                     <CategoryPanel>
                         <CategoryTextPanel>
-                            <FitText compressor={categoryNameCompressor}>
-                                <CategoryText>
-                                    {_.invoke(categoryName, 'toUpperCase')}
-                                </CategoryText>
-                            </FitText>
+                            {_.get(categories, `[0].title`) && (
+                                <FitText compressor={categoryNameCompressor}>
+                                    <CategoryText>
+                                        {_.invoke(categoryName, 'toUpperCase')}
+                                    </CategoryText>
+                                </FitText>
+                            )}
                         </CategoryTextPanel>
 
                         <DollarValueTextPanel>
@@ -218,9 +220,11 @@ const BrowserAnswer = () => {
 
                 <PanelCol lg={'6'}>
                     <CluePanel>
-                        <FitText compressor={clueTextCompressor}>
-                            {_.invoke(clueText, 'toUpperCase')}
-                        </FitText>
+                        {_.get(categories, `[0].title`) && (
+                            <FitText compressor={clueTextCompressor}>
+                                {_.invoke(clueText, 'toUpperCase')}
+                            </FitText>
+                        )}
                     </CluePanel>
 
                     <Timer override={{ position: 'absolute', left: '25%', bottom: '0' }} height={'5%'} width={'50%'} start={startTimer} time={timers.ANSWER_TIMEOUT} slideUp={false} />
