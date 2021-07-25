@@ -31,6 +31,16 @@ export const sayBoardControllerNameFiller = (boardControllerName, onComplete) =>
     say(text, onComplete);
 };
 
+export const sayDailyDoubleFiller = () => {
+    const text = `That's the daily double!`;
+    say(text);
+};
+
+export const sayWagerFiller = (min, max) => {
+    const text = `Enter a wager between ${min} and ${max} dollars`;
+    say(text);
+};
+
 export const sayDollarValueFiller = (dollarValue) => {
     const text = `Correct for ${dollarValue}`;
     say(text);

@@ -2,6 +2,7 @@
 exports.GameState = {
     LOBBY: 'lobby',
     BOARD: 'board',
+    WAGER: 'wager',
     CLUE: 'clue',
     ANSWER: 'answer',
     DECISION: 'decision',

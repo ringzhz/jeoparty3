@@ -11,9 +11,9 @@ import { SocketContext } from '../../context/socket';
 import mixins from '../../helpers/mixins';
 import { formatDisplay } from '../../helpers/format';
 
-import correct from '../../assets/audio/correct.mp3';
-import incorrect from '../../assets/audio/incorrect.mp3';
-import buzzInTimeout from '../../assets/audio/buzzInTimeout.mp3';
+import correctSound from '../../assets/audio/correct.mp3';
+import incorrectSound from '../../assets/audio/incorrect.mp3';
+import buzzInTimeoutSound from '../../assets/audio/buzzInTimeout.mp3';
 import { sayDollarValueFiller, sayCorrectAnswerFiller } from '../../helpers/sayFiller';
 
 const AnswerRow = styled(Row)`
@@ -101,14 +101,14 @@ const BrowserDecision = () => {
                 setShowDollarValue(true);
 
                 if (isCorrect) {
-                    const correctSound = new Audio(correct);
-                    correctSound.volume = 0.5;
-                    correctSound.play();
+                    const correctAudio = new Audio(correctSound);
+                    correctAudio.volume = 0.5;
+                    correctAudio.play();
 
                     sayDollarValueFiller(dollarValue);
                 } else {
-                    const incorrectSound = new Audio(incorrect);
-                    incorrectSound.play();
+                    const incorrectAudio = new Audio(incorrectSound);
+                    incorrectAudio.play();
                 }
             }, 100);
         });
@@ -120,8 +120,8 @@ const BrowserDecision = () => {
             setCorrectAnswer(correctAnswer);
 
             if (sayCorrectAnswer) {
-                const buzzInTimeoutSound = new Audio(buzzInTimeout);
-                buzzInTimeoutSound.onended = () => {
+                const buzzInTimeoutAudio = new Audio(buzzInTimeoutSound);
+                buzzInTimeoutAudio.onended = () => {
                     sayCorrectAnswerFiller(correctAnswer, () => setTimeout(() => {
                         if (skipScoreboard) {
                             socket.emit('show_board');
@@ -131,7 +131,7 @@ const BrowserDecision = () => {
                     }, 500));
                 };
 
-                buzzInTimeoutSound.play();
+                buzzInTimeoutAudio.play();
             }
         });
 

@@ -10,12 +10,15 @@ import FitText from '@kennethormandy/react-fittext';
 import { SocketContext } from '../../context/socket';
 import mixins from '../../helpers/mixins';
 import DollarValueText from '../../helpers/components/DollarValueText';
-import backgroundImage from '../../assets/images/background.png'
+import backgroundImage from '../../assets/images/background.png';
+import dailyDoubleBackgroundImage from '../../assets/images/dailyDoubleBackground.jpeg';
 import starBackgroundImage from '../../assets/images/starBackground.png';
+import dailyDoubleSound from '../../assets/audio/dailyDouble.mp3';
+import applauseSound from '../../assets/audio/correct.mp3';
 import BrowserClue from './BrowserClue';
 import { revealBoard, revealCategories } from '../../helpers/reveal';
 
-import { sayRoundFiller, sayBoardControllerNameFiller } from '../../helpers/sayFiller';
+import { sayRoundFiller, sayBoardControllerNameFiller, sayDailyDoubleFiller } from '../../helpers/sayFiller';
 
 // DEBUG
 import { sampleCategories } from '../../constants/sampleCategories';
@@ -197,6 +200,38 @@ const ClueWrapper = styled.div`
     }
 `;
 
+const DailyDoubleBackground = styled.div`
+    ${mixins.flexAlignCenter};
+    height: 100vh;
+    width: 100vw;
+    background-image: url(${dailyDoubleBackgroundImage});
+    background-size: cover;
+`;
+
+const DailyDoubleText = styled.span`
+    color: #f5f5f5;
+    text-shadow: 1px 1px 1px #919191,
+                 1px 2px 1px #919191,
+                 1px 3px 1px #919191,
+                 1px 4px 1px #919191,
+                 1px 5px 1px #919191,
+                 1px 6px 1px #919191,
+                 1px 7px 1px #919191,
+                 1px 8px 1px #919191,
+                 1px 9px 1px #919191,
+                 1px 10px 1px #919191,
+                 1px 18px 6px rgba(16,16,16,0.4),
+                 1px 22px 10px rgba(16,16,16,0.2),
+                 1px 25px 35px rgba(16,16,16,0.2),
+                 1px 30px 60px rgba(16,16,16,0.4);
+
+    font-family: dailyDouble;
+    font-size: 30vh;
+    font-weight: bold;
+    line-height: 1;
+    letter-spacing: -0.04em;
+`;
+
 const BrowserBoard = () => {
     const NUM_CATEGORIES = 6;
     const NUM_CLUES = 5;
@@ -205,8 +240,9 @@ const BrowserBoard = () => {
     // const [categories, setCategories] = useState(sampleCategories);
     // const [doubleJeoparty, setDoubleJeoparty] = useState(false);
     // const [categoryIndex, setCategoryIndex] = useState(0);
-    // const [animateClue, setAnimateClue] = useState(false);
     // const [clueIndex, setClueIndex] = useState(1);
+    // const [dailyDouble, setDailyDouble] = useState(true);
+    // const [animateClue, setAnimateClue] = useState(false);
     // const [boardRevealed, setBoardRevealed] = useState(true);
     // const [boardRevealMatrix, setBoardRevealMatrix] = useState([
     //     [false, false, false, false, false],
@@ -223,8 +259,9 @@ const BrowserBoard = () => {
     const [categories, setCategories] = useState([]);
     const [doubleJeoparty, setDoubleJeoparty] = useState(false);
     const [categoryIndex, setCategoryIndex] = useState(null);
-    const [animateClue, setAnimateClue] = useState(false);
     const [clueIndex, setClueIndex] = useState(null);
+    const [dailyDouble, setDailyDouble] = useState(false);
+    const [animateClue, setAnimateClue] = useState(false);
     const [boardRevealed, setBoardRevealed] = useState(false);
     const [boardRevealMatrix, setBoardRevealMatrix] = useState([
         [false, false, false, false, false],
@@ -282,9 +319,10 @@ const BrowserBoard = () => {
             }
         });
 
-        socket.on('request_clue', (categoryIndex, clueIndex) => {
+        socket.on('request_clue', (categoryIndex, clueIndex, dailyDouble) => {
             setCategoryIndex(categoryIndex);
             setClueIndex(clueIndex);
+            setDailyDouble(dailyDouble);
 
             setTimeout(() => {
                 setAnimateClue(true);
@@ -299,7 +337,21 @@ const BrowserBoard = () => {
     // DEBUG
     // document.body.onkeyup = (e) => {
     //     if (e.keyCode === 32) {
-    //         reveal(categories, false, 'Isaac');
+    //         setTimeout(() => {
+    //             setAnimateClue(true);
+    //
+    //             if (dailyDouble) {
+    //                 const dailyDoubleAudio = new Audio(dailyDoubleSound);
+    //                 dailyDoubleAudio.volume = 0.25;
+    //
+    //                 const applauseAudio = new Audio(applauseSound);
+    //                 applauseAudio.volume = 0.5;
+    //
+    //                 dailyDoubleAudio.play();
+    //                 applauseAudio.play();
+    //                 sayDailyDoubleFiller();
+    //             }
+    //         }, 100);
     //     }
     // };
 
@@ -404,7 +456,17 @@ const BrowserBoard = () => {
                 <ClueWrapper className={animateClue && 'animate'}
                              categoryIndex={categoryIndex && categoryIndex}
                              clueIndex={clueIndex && clueIndex}>
-                    <BrowserClue />
+                    {
+                        dailyDouble ? (
+                            <DailyDoubleBackground>
+                                <DailyDoubleText>
+                                    DAILY DOUBLE
+                                </DailyDoubleText>
+                            </DailyDoubleBackground>
+                        ) : (
+                            <BrowserClue />
+                        )
+                    }
                 </ClueWrapper>
 
                 {!boardRevealed && <BoardRevealBackground>JEOPARTY!</BoardRevealBackground>}

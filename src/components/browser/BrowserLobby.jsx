@@ -141,7 +141,7 @@ const BrowserLobby = () => {
 
     const socket = useContext(SocketContext);
 
-    const lobbyMusicSound = new Audio(lobbyMusic);
+    const lobbyMusicAudio = new Audio(lobbyMusic);
 
     useEffect(() => {
         socket.on('session_name', (sessionName) => {
@@ -149,12 +149,12 @@ const BrowserLobby = () => {
         });
 
         socket.on('unmute', () => {
-            lobbyMusicSound.loop = true;
-            lobbyMusicSound.play();
+            lobbyMusicAudio.loop = true;
+            lobbyMusicAudio.play();
         });
 
         socket.on('start_game_success', () => {
-            lobbyMusicSound.pause();
+            lobbyMusicAudio.pause();
         });
 
         socket.on('start_game_failure', () => {

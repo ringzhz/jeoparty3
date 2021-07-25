@@ -253,6 +253,21 @@ const showBoard = (socket) => {
     updateGameSession(socket.sessionName, 'currentGameState', GameState.BOARD);
 };
 
+const showWager = (socket, dailyDouble) => {
+    const gameSession = sessionCache.get(socket.sessionName);
+
+    gameSession.clients.map((client) => {
+        client.emit('set_game_state', GameState.WAGER, () => {
+            client.emit('categories', gameSession.categories, gameSession.doubleJeoparty);
+            client.emit('request_clue', gameSession.categoryIndex, gameSession.clueIndex);
+            client.emit('board_controller', _.get(gameSession, `players[${gameSession.boardController}]`));
+            client.emit('player', _.get(gameSession, `players[${client.id}]`));
+        });
+    });
+
+    updateGameSession(socket.sessionName, 'currentGameState', GameState.WAGER);
+};
+
 const showClue = (socket, categoryIndex, clueIndex, clueText) => {
     const gameSession = sessionCache.get(socket.sessionName);
 
@@ -437,17 +452,26 @@ io.on('connection', (socket) => {
         updateGameSession(socket.sessionName, 'categoryIndex', categoryIndex);
         updateGameSession(socket.sessionName, 'clueIndex', clueIndex);
 
-        io.to(socket.sessionName).emit('request_clue', categoryIndex, clueIndex);
+        const clue = sessionCache.get(socket.sessionName).categories[categoryIndex].clues[clueIndex];
+        const dailyDouble = clue.dailyDouble;
+        const clueText = clue.question;
 
-        // TODO: Add this timeout to timer.js for use in BrowserBoard (this is for clue screen animation)
-        setTimeout(() => {
-            updateCategories(socket.sessionName, categoryIndex, clueIndex);
-            setUpdatedPlayers(socket.sessionName);
+        io.to(socket.sessionName).emit('request_clue', categoryIndex, clueIndex, dailyDouble);
 
-            const clueText = sessionCache.get(socket.sessionName).categories[categoryIndex].clues[clueIndex].question;
+        updateCategories(socket.sessionName, categoryIndex, clueIndex);
+        setUpdatedPlayers(socket.sessionName);
 
-            showClue(socket, categoryIndex, clueIndex, clueText);
-        }, 1100);
+        if (dailyDouble) {
+            // TODO: Add this timeout to timer.js for use in BrowserBoard (this is for dailyDouble screen animation)
+            setTimeout(() => {
+                showWager(socket, dailyDouble);
+            }, 5000);
+        } else {
+            // TODO: Add this timeout to timer.js for use in BrowserBoard (this is for clue screen animation)
+            setTimeout(() => {
+                showClue(socket, categoryIndex, clueIndex, clueText);
+            }, 1100);
+        }
     });
 
     socket.on('start_timer', () => {

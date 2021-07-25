@@ -1,21 +1,24 @@
 {
   "files": {
-    "main.js": "/static/js/main.f362272e.chunk.js",
-    "main.js.map": "/static/js/main.f362272e.chunk.js.map",
+    "main.js": "/static/js/main.076c9b0c.chunk.js",
+    "main.js.map": "/static/js/main.076c9b0c.chunk.js.map",
     "runtime-main.js": "/static/js/runtime-main.816ad83a.js",
     "runtime-main.js.map": "/static/js/runtime-main.816ad83a.js.map",
     "static/css/2.4c97ca4f.chunk.css": "/static/css/2.4c97ca4f.chunk.css",
-    "static/js/2.9d1b73c0.chunk.js": "/static/js/2.9d1b73c0.chunk.js",
-    "static/js/2.9d1b73c0.chunk.js.map": "/static/js/2.9d1b73c0.chunk.js.map",
+    "static/js/2.268f3f5c.chunk.js": "/static/js/2.268f3f5c.chunk.js",
+    "static/js/2.268f3f5c.chunk.js.map": "/static/js/2.268f3f5c.chunk.js.map",
     "index.html": "/index.html",
     "static/css/2.4c97ca4f.chunk.css.map": "/static/css/2.4c97ca4f.chunk.css.map",
-    "static/js/2.9d1b73c0.chunk.js.LICENSE.txt": "/static/js/2.9d1b73c0.chunk.js.LICENSE.txt",
+    "static/js/2.268f3f5c.chunk.js.LICENSE.txt": "/static/js/2.268f3f5c.chunk.js.LICENSE.txt",
     "static/media/board.6e41ffde.otf": "/static/media/board.6e41ffde.otf",
     "static/media/boardReveal.14f3f114.mp3": "/static/media/boardReveal.14f3f114.mp3",
     "static/media/buzzIn.b25c3cb4.mp3": "/static/media/buzzIn.b25c3cb4.mp3",
     "static/media/buzzInTimeout.4cd6ccee.mp3": "/static/media/buzzInTimeout.4cd6ccee.mp3",
     "static/media/clue.9433be45.otf": "/static/media/clue.9433be45.otf",
     "static/media/correct.d347c2fc.mp3": "/static/media/correct.d347c2fc.mp3",
+    "static/media/dailyDouble.02230f32.mp3": "/static/media/dailyDouble.02230f32.mp3",
+    "static/media/dailyDouble.60158041.ttf": "/static/media/dailyDouble.60158041.ttf",
+    "static/media/dailyDoubleBackground.83dd9710.jpeg": "/static/media/dailyDoubleBackground.83dd9710.jpeg",
     "static/media/incorrect.2d8968fa.mp3": "/static/media/incorrect.2d8968fa.mp3",
     "static/media/lobbyMusic.c5d53321.mp3": "/static/media/lobbyMusic.c5d53321.mp3",
     "static/media/logo.3792752c.ttf": "/static/media/logo.3792752c.ttf",
@@ -25,7 +28,7 @@
   "entrypoints": [
     "static/js/runtime-main.816ad83a.js",
     "static/css/2.4c97ca4f.chunk.css",
-    "static/js/2.9d1b73c0.chunk.js",
-    "static/js/main.f362272e.chunk.js"
+    "static/js/2.268f3f5c.chunk.js",
+    "static/js/main.076c9b0c.chunk.js"
   ]
 }

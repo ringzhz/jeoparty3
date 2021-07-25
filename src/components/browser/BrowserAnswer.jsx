@@ -14,7 +14,7 @@ import DollarValueText from '../../helpers/components/DollarValueText';
 import starBackgroundImage from '../../assets/images/starBackground.png';
 import Timer from '../../helpers/components/Timer';
 
-import buzzIn from '../../assets/audio/buzzIn.mp3';
+import buzzInSound from '../../assets/audio/buzzIn.mp3';
 
 // DEBUG
 import { sampleCategories } from '../../constants/sampleCategories';
@@ -170,8 +170,8 @@ const BrowserAnswer = () => {
         });
 
         socket.on('buzz_in', () => {
-            const buzzInSound = new Audio(buzzIn);
-            buzzInSound.play();
+            const buzzInAudio = new Audio(buzzInSound);
+            buzzInAudio.play();
         });
 
         socket.on('player_name', (playerName) => {

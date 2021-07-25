@@ -7,6 +7,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import BrowserWrapper from './components/browser/BrowserWrapper';
 import BrowserLobby from './components/browser/BrowserLobby';
 import BrowserBoard from './components/browser/BrowserBoard';
+import BrowserWager from './components/browser/BrowserWager';
 import BrowserClue from './components/browser/BrowserClue';
 import BrowserAnswer from './components/browser/BrowserAnswer';
 import BrowserDecision from './components/browser/BrowserDecision';
@@ -15,6 +16,7 @@ import BrowserScoreboard from './components/browser/BrowserScoreboard';
 import MobileWrapper from './components/mobile/MobileWrapper';
 import MobileLobby from './components/mobile/MobileLobby';
 import MobileBoard from './components/mobile/MobileBoard';
+import MobileWager from './components/mobile/MobileWager';
 import MobileClue from './components/mobile/MobileClue';
 import MobileAnswer from './components/mobile/MobileAnswer';
 import MobileDecision from './components/mobile/MobileDecision';
@@ -27,6 +29,7 @@ import backgroundImage from './assets/images/background.png';
 import logoFont from './assets/fonts/logo.ttf';
 import clueFont from './assets/fonts/clue.otf';
 import boardFont from './assets/fonts/board.otf';
+import dailyDoubleFont from './assets/fonts/dailyDouble.ttf';
 
 const GlobalStyle = createGlobalStyle`
     body {
@@ -54,6 +57,11 @@ const GlobalStyle = createGlobalStyle`
     @font-face {
         font-family: board;
         src: url(${boardFont});
+    }
+    
+    @font-face {
+        font-family: dailyDouble;
+        src: url(${dailyDoubleFont});
     }
     
     @keyframes rainbow {
@@ -94,7 +102,7 @@ const GlobalStyle = createGlobalStyle`
     }
 `;
 const Game = () => {
-    const [gameState, setGameState] = useState(GameState.LOBBY);
+    const [gameState, setGameState] = useState(GameState.WAGER);
     const [gameStateAck, setGameStateAck] = useState(() => () => {});
 
     useEffect(() => {
@@ -137,6 +145,10 @@ const Game = () => {
         case GameState.BOARD:
             browserView = <BrowserBoard />;
             mobileView = <MobileBoard />;
+            break;
+        case GameState.WAGER:
+            browserView = <BrowserWager />;
+            mobileView = <MobileWager />;
             break;
         case GameState.CLUE:
             browserView = <BrowserClue />;

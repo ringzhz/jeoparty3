@@ -1,4 +1,5 @@
 const js = require('jservice-node');
+const _ = require('lodash');
 
 const formatRaw = require('./format').formatRaw;
 const formatCategory = require('./format').formatCategory;
@@ -6,6 +7,37 @@ const formatCategory = require('./format').formatCategory;
 const MAX_CATEGORY_ID = 18418;
 const NUM_CATEGORIES = 6;
 const NUM_CLUES = 5;
+
+const getDailyDoubleIndices = () => {
+    const weightedRandom = (distribution) => {
+        let sum = 0;
+        let r = Math.random();
+
+        for (const i in distribution) {
+            sum += distribution[i];
+
+            if (r <= sum) {
+                return parseInt(i);
+            }
+        }
+    };
+
+    const distribution = {0: 0.05, 1: 0.2, 2: 0.4, 3: 0.2, 4: 0.15};
+
+    const categoryIndex = Math.floor(Math.random() * NUM_CATEGORIES) + 1;
+    const clueIndex = weightedRandom(distribution);
+
+    const djCategoryIndex1 = Math.floor(Math.random() * NUM_CATEGORIES) + 1;
+    const djClueIndex1 = weightedRandom(distribution);
+
+    let djCategoryIndex2;
+    do {
+        djCategoryIndex2 = Math.floor(Math.random() * NUM_CATEGORIES) + 1;
+    } while (djCategoryIndex1 === djCategoryIndex2);
+    const djClueIndex2 = weightedRandom(distribution);
+
+    return [categoryIndex, clueIndex, djCategoryIndex1, djClueIndex1, djCategoryIndex2, djClueIndex2];
+};
 
 const getRandomCategory = (cb) => {
     const categoryId = Math.floor(Math.random() * MAX_CATEGORY_ID) + 1;
@@ -46,7 +78,8 @@ const approveCategory = (category) => {
             return false;
         }
 
-        category.clues[i].completed = false;
+        clue.completed = false;
+        clue.dailyDouble = false;
     }
 
     category.completed = false;
@@ -74,6 +107,11 @@ exports.getRandomCategories = (cb) => {
                 usedCategoryIds.push(category.id);
 
                 if (doubleJeopartyCategories.length === NUM_CATEGORIES) {
+                    const [categoryIndex, clueIndex, djCategoryIndex1, djClueIndex1, djCategoryIndex2, djClueIndex2] = getDailyDoubleIndices();
+                    categories[categoryIndex].clues[clueIndex].dailyDouble = true;
+                    doubleJeopartyCategories[djCategoryIndex1].clues[djClueIndex1].dailyDouble = true;
+                    doubleJeopartyCategories[djCategoryIndex2].clues[djClueIndex2].dailyDouble = true;
+
                     cb(categories, doubleJeopartyCategories);
                 } else {
                     recursiveGetRandomCategory();
