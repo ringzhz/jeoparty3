@@ -102,7 +102,7 @@ const GlobalStyle = createGlobalStyle`
     }
 `;
 const Game = () => {
-    const [gameState, setGameState] = useState(GameState.WAGER);
+    const [gameState, setGameState] = useState(GameState.LOBBY);
     const [gameStateAck, setGameStateAck] = useState(() => () => {});
 
     useEffect(() => {

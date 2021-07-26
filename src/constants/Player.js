@@ -4,6 +4,7 @@ function Player() {
     this.name = '';
     this.signature = '';
     this.score = 0;
+    this.wager = 0;
     this.answer = '';
     this.streak = 0;
     this.heat = 0;

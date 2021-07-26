@@ -84,9 +84,9 @@ const BrowserClue = () => {
             setClueIndex(clueIndex);
         });
 
-        socket.on('say_clue_text', (clueText) => {
+        socket.on('say_clue_text', (clueText, dailyDouble) => {
             say(clueText, () => {
-                socket.emit('start_timer');
+                socket.emit(dailyDouble ? 'buzz_in' : 'start_timer');
             });
         });
 
