@@ -7,13 +7,14 @@ import InputGroup from 'react-bootstrap/InputGroup';
 import Button from 'react-bootstrap/Button';
 import FormControl from 'react-bootstrap/FormControl';
 
+import { DebugContext } from '../../context/debug';
 import { SocketContext } from '../../context/socket';
 import mixins from '../../helpers/mixins';
 import MobileWait from '../../helpers/components/MobileWait';
 import Sketchpad from '../../helpers/components/Sketchpad';
 
 // DEBUG
-import {samplePlayers} from '../../constants/samplePlayers';
+import { samplePlayers } from '../../constants/samplePlayers';
 
 const MobileLobbyRow = styled.div`
     ${mixins.flexAlignCenter}
@@ -35,16 +36,12 @@ const MobileLobby = () => {
         WAITING: 'waiting'
     };
 
-    // DEBUG
-    // const [sessionName, setSessionName] = useState('');
-    // const [playerName, setPlayerName] = useState('');
-    // const [mobileLobbyState, setMobileLobbyState] = useState(MobileLobbyState.SIGNATURE);
-    // const [player, setPlayer] = useState(samplePlayers['zsS3DKSSIUOegOQuAAAA']);
+    const debug = useContext(DebugContext);
 
     const [sessionName, setSessionName] = useState('');
     const [playerName, setPlayerName] = useState('');
-    const [mobileLobbyState, setMobileLobbyState] = useState(MobileLobbyState.SESSION_NAME);
-    const [player, setPlayer] = useState({});
+    const [mobileLobbyState, setMobileLobbyState] = useState(debug ? MobileLobbyState.SIGNATURE : MobileLobbyState.SESSION_NAME);
+    const [player, setPlayer] = useState(debug ? samplePlayers['zsS3DKSSIUOegOQuAAAA'] : {});
 
     const socket = useContext(SocketContext);
 

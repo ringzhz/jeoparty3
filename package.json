@@ -28,9 +28,9 @@
     "words-to-numbers": "^1.5.1"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "dev": "node ./src/server/index.js",
     "build": "react-scripts build",
+    "dev": "npm run build && node ./src/server/index.js",
+    "debug": "react-scripts start",
     "test": "mocha",
     "eject": "react-scripts eject"
   },

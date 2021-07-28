@@ -7,6 +7,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import FitText from '@kennethormandy/react-fittext';
 
+import { DebugContext } from '../../context/debug';
 import { SocketContext } from '../../context/socket';
 import mixins from '../../helpers/mixins';
 import DollarValueText from '../../helpers/components/DollarValueText';
@@ -81,22 +82,15 @@ const MobileBoard = () => {
     const NUM_CATEGORIES = 6;
     const NUM_CLUES = 5;
 
-    // DEBUG
-    // const [categories, setCategories] = useState(sampleCategories);
-    // const [doubleJeoparty, setDoubleJeoparty] = useState(false);
-    // const [isBoardController, setIsBoardController] = useState(true);
-    // const [boardRevealed, setBoardRevealed] = useState(true);
-    // const [categoryIndex, setCategoryIndex] = useState(null);
-    // const [clueRequested, setClueRequested] = useState(false);
-    // const [player, setPlayer] = useState(samplePlayers['zsS3DKSSIUOegOQuAAAA']);
+    const debug = useContext(DebugContext);
 
-    const [categories, setCategories] = useState([]);
+    const [categories, setCategories] = useState(debug ? sampleCategories : []);
     const [doubleJeoparty, setDoubleJeoparty] = useState(false);
-    const [isBoardController, setIsBoardController] = useState(false);
-    const [boardRevealed, setBoardRevealed] = useState(false);
+    const [isBoardController, setIsBoardController] = useState(debug ? true : false);
+    const [boardRevealed, setBoardRevealed] = useState(debug ? true : false);
     const [categoryIndex, setCategoryIndex] = useState(null);
     const [clueRequested, setClueRequested] = useState(false);
-    const [player, setPlayer] = useState({});
+    const [player, setPlayer] = useState(debug ? samplePlayers['zsS3DKSSIUOegOQuAAAA'] : {});
 
     const socket = useContext(SocketContext);
 

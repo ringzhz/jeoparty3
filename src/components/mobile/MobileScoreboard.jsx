@@ -2,6 +2,7 @@ import React, { useState, useContext, useEffect } from 'react';
 
 import Container from 'react-bootstrap/Container';
 
+import { DebugContext } from "../../context/debug";
 import { SocketContext } from '../../context/socket';
 import MobileWait from '../../helpers/components/MobileWait';
 
@@ -9,10 +10,9 @@ import MobileWait from '../../helpers/components/MobileWait';
 import { samplePlayers } from '../../constants/samplePlayers';
 
 const MobileScoreboard = () => {
-    // DEBUG
-    // const [player, setPlayer] = useState(samplePlayers['zsS3DKSSIUOegOQuAAAA']);
+    const debug = useContext(DebugContext);
 
-    const [player, setPlayer] = useState({});
+    const [player, setPlayer] = useState(debug ? samplePlayers['zsS3DKSSIUOegOQuAAAA'] : {});
 
     const socket = useContext(SocketContext);
 

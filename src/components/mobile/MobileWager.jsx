@@ -7,6 +7,7 @@ import InputGroup from 'react-bootstrap/InputGroup';
 import FormControl from 'react-bootstrap/FormControl';
 import Button from 'react-bootstrap/Button';
 
+import { DebugContext } from '../../context/debug';
 import { SocketContext } from '../../context/socket';
 import mixins from '../../helpers/mixins';
 import MobilePlayerCard from '../../helpers/components/MobilePlayerCard';
@@ -34,14 +35,11 @@ const LogoText = styled.h1`
 `;
 
 const MobileWager = () => {
-    // DEBUG
-    // const [wager, setWager] = useState('');
-    // const [isWagering, setIsWagering] = useState(true);
-    // const [player, setPlayer] = useState(samplePlayers['zsS3DKSSIUOegOQuAAAA']);
+    const debug = useContext(DebugContext);
 
     const [wager, setWager] = useState('5');
-    const [isWagering, setIsWagering] = useState(false);
-    const [player, setPlayer] = useState({});
+    const [isWagering, setIsWagering] = useState(debug ? true : false);
+    const [player, setPlayer] = useState(debug ? samplePlayers['zsS3DKSSIUOegOQuAAAA'] : {});
 
     const socket = useContext(SocketContext);
 

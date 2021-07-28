@@ -7,6 +7,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import FitText from '@kennethormandy/react-fittext';
 
+import { DebugContext } from '../../context/debug';
 import { SocketContext } from '../../context/socket';
 import mixins from '../../helpers/mixins';
 import { formatDisplay } from '../../helpers/format';
@@ -62,18 +63,9 @@ const DollarValueText = styled.span`
 `;
 
 const BrowserDecision = () => {
-    // DEBUG
-    // const [showAnswer, setShowAnswer] = useState(true);
-    // const [showDecision, setShowDecision] = useState(false);
-    // const [showCorrectAnswer, setShowCorrectAnswer] = useState(false);
-    // const [showDollarValue, setShowDollarValue] = useState(false);
-    //
-    // const [answer, setAnswer] = useState('');
-    // const [correctAnswer, setCorrectAnswer] = useState('');
-    // const [isCorrect, setIsCorrect] = useState(false);
-    // const [dollarValue, setDollarValue] = useState(200);
+    const debug = useContext(DebugContext);
 
-    const [showAnswer, setShowAnswer] = useState(false);
+    const [showAnswer, setShowAnswer] = useState(debug ? true : false);
     const [showDecision, setShowDecision] = useState(false);
     const [showCorrectAnswer, setShowCorrectAnswer] = useState(false);
     const [showDollarValue, setShowDollarValue] = useState(false);
@@ -81,7 +73,7 @@ const BrowserDecision = () => {
     const [answer, setAnswer] = useState('');
     const [correctAnswer, setCorrectAnswer] = useState('');
     const [isCorrect, setIsCorrect] = useState(false);
-    const [dollarValue, setDollarValue] = useState(0);
+    const [dollarValue, setDollarValue] = useState(debug ? 200 : 0);
 
     const socket = useContext(SocketContext);
 
@@ -141,15 +133,16 @@ const BrowserDecision = () => {
         };
     }, []);
 
-    // DEBUG
-    // document.body.onkeyup = (e) => {
-    //     if (e.keyCode === 32) {
-    //         const correctSound = new Audio(correct);
-    //         correctSound.volume = 0.5;
-    //         correctSound.play();
-    //         sayDollarValueFiller(200);
-    //     }
-    // };
+    if (debug) {
+        document.body.onkeyup = (e) => {
+            if (e.keyCode === 32) {
+                const correctSound = new Audio(correctSound);
+                correctSound.volume = 0.5;
+                correctSound.play();
+                sayDollarValueFiller(200);
+            }
+        };
+    }
 
     let text = null;
 

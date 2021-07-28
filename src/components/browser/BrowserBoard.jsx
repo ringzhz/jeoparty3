@@ -7,6 +7,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import FitText from '@kennethormandy/react-fittext';
 
+import { DebugContext } from '../../context/debug';
 import { SocketContext } from '../../context/socket';
 import mixins from '../../helpers/mixins';
 import DollarValueText from '../../helpers/components/DollarValueText';
@@ -212,44 +213,32 @@ const BrowserBoard = () => {
     const NUM_CATEGORIES = 6;
     const NUM_CLUES = 5;
 
-    // DEBUG
-    // const [categories, setCategories] = useState(sampleCategories);
-    // const [doubleJeoparty, setDoubleJeoparty] = useState(false);
-    // const [categoryIndex, setCategoryIndex] = useState(0);
-    // const [clueIndex, setClueIndex] = useState(1);
-    // const [dailyDouble, setDailyDouble] = useState(true);
-    // const [animateClue, setAnimateClue] = useState(false);
-    // const [boardRevealed, setBoardRevealed] = useState(true);
-    // const [boardRevealMatrix, setBoardRevealMatrix] = useState([
-    //     [false, false, false, false, false],
-    //     [false, false, false, false, false],
-    //     [false, false, false, false, false],
-    //     [false, false, false, false, false],
-    //     [false, false, false, false, false],
-    //     [false, false, false, false, false]
-    // ]);
-    // const [showCategoryReveal, setShowCategoryReveal] = useState(false);
-    // const [categoryRevealIndex, setCategoryRevealIndex] = useState(0);
-    // const [categoryPanelIndex, setCategoryPanelIndex] = useState(0);
+    const debug = useContext(DebugContext);
 
-    const [categories, setCategories] = useState([]);
+    const [categories, setCategories] = useState(debug ? sampleCategories : []);
     const [doubleJeoparty, setDoubleJeoparty] = useState(false);
-    const [categoryIndex, setCategoryIndex] = useState(null);
-    const [clueIndex, setClueIndex] = useState(null);
-    const [dailyDouble, setDailyDouble] = useState(false);
+    const [categoryIndex, setCategoryIndex] = useState(debug ? 0 : null);
+    const [clueIndex, setClueIndex] = useState(debug ? 1 : null);
+    const [dailyDouble, setDailyDouble] = useState(debug ? true : false);
     const [animateClue, setAnimateClue] = useState(false);
-    const [boardRevealed, setBoardRevealed] = useState(false);
-    const [boardRevealMatrix, setBoardRevealMatrix] = useState([
+    const [boardRevealed, setBoardRevealed] = useState(debug ? true : false);
+    const [boardRevealMatrix, setBoardRevealMatrix] = useState(debug ?
+        [[true, true, true, true, true],
+        [true, true, true, true, true],
+        [true, true, true, true, true],
+        [true, true, true, true, true],
+        [true, true, true, true, true],
+        [true, true, true, true, true]] :
+
+        [[false, false, false, false, false],
         [false, false, false, false, false],
         [false, false, false, false, false],
         [false, false, false, false, false],
         [false, false, false, false, false],
-        [false, false, false, false, false],
-        [false, false, false, false, false]
-    ]);
+        [false, false, false, false, false]]);
     const [showCategoryReveal, setShowCategoryReveal] = useState(false);
     const [categoryRevealIndex, setCategoryRevealIndex] = useState(0);
-    const [categoryPanelIndex, setCategoryPanelIndex] = useState(-1);
+    const [categoryPanelIndex, setCategoryPanelIndex] = useState(debug ? 0 : -1);
 
     const socket = useContext(SocketContext);
 
@@ -329,26 +318,27 @@ const BrowserBoard = () => {
         }
     }, []);
 
-    // DEBUG
-    // document.body.onkeyup = (e) => {
-    //     if (e.keyCode === 32) {
-    //         setTimeout(() => {
-    //             setAnimateClue(true);
-    //
-    //             if (dailyDouble) {
-    //                 const dailyDoubleAudio = new Audio(dailyDoubleSound);
-    //                 dailyDoubleAudio.volume = 0.25;
-    //
-    //                 const applauseAudio = new Audio(applauseSound);
-    //                 applauseAudio.volume = 0.5;
-    //
-    //                 dailyDoubleAudio.play();
-    //                 applauseAudio.play();
-    //                 sayDailyDoubleFiller();
-    //             }
-    //         }, 100);
-    //     }
-    // };
+    if (debug) {
+        document.body.onkeyup = (e) => {
+            if (e.keyCode === 32) {
+                setTimeout(() => {
+                    setAnimateClue(true);
+
+                    if (dailyDouble) {
+                        const dailyDoubleAudio = new Audio(dailyDoubleSound);
+                        dailyDoubleAudio.volume = 0.25;
+
+                        const applauseAudio = new Audio(applauseSound);
+                        applauseAudio.volume = 0.5;
+
+                        dailyDoubleAudio.play();
+                        applauseAudio.play();
+                        sayDailyDoubleFiller();
+                    }
+                }, 100);
+            }
+        };
+    }
 
     const categoryRevealPanels = _.get(categories, `[0].title`) && Array.from(Array(NUM_CATEGORIES).keys()).map((i) => {
         const category = categories[i];

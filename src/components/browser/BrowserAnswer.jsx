@@ -7,6 +7,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import FitText from '@kennethormandy/react-fittext';
 
+import { DebugContext } from '../../context/debug';
 import { SocketContext } from '../../context/socket';
 import { timers } from '../../constants/timers';
 import mixins from '../../helpers/mixins';
@@ -139,21 +140,14 @@ const LivefeedPanel = styled.div`
 `;
 
 const BrowserAnswer = () => {
-    // DEBUG
-    // const [categories, setCategories] = useState(sampleCategories);
-    // const [categoryIndex, setCategoryIndex] = useState(0);
-    // const [clueIndex, setClueIndex] = useState(0);
-    // const [dollarValue, setDollarValue] = useState(0);
-    // const [playerName, setPlayerName] = useState('luffy');
-    // const [answerLivefeed, setAnswerLivefeed] = useState('led ze');
-    // const [startTimer, setStartTimer] = useState(false);
+    const debug = useContext(DebugContext);
 
-    const [categories, setCategories] = useState([]);
-    const [categoryIndex, setCategoryIndex] = useState(null);
+    const [categories, setCategories] = useState(debug ? sampleCategories : []);
+    const [categoryIndex, setCategoryIndex] = useState(debug ? 0 : null);
     const [clueIndex, setClueIndex] = useState(0);
     const [dollarValue, setDollarValue] = useState(0);
-    const [playerName, setPlayerName] = useState('');
-    const [answerLivefeed, setAnswerLivefeed] = useState('');
+    const [playerName, setPlayerName] = useState(debug ? 'luffy' : '');
+    const [answerLivefeed, setAnswerLivefeed] = useState(debug ? 'led ze' : '');
     const [startTimer, setStartTimer] = useState(false);
 
     const socket = useContext(SocketContext);

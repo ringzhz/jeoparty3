@@ -1,3 +1,4 @@
+const _ = require('lodash');
 const removeAccents = require('remove-accents');
 
 exports.formatRaw = (original) => {
@@ -39,6 +40,13 @@ exports.formatUtterance = (original) => {
      */
 
     let rawOriginal = original.toLowerCase();
+
+    // Remove accents
+    rawOriginal = removeAccents(rawOriginal);
+
+    // HTML tags
+    rawOriginal = rawOriginal.replace(/<i>/g, "");
+    rawOriginal = rawOriginal.replace("</i>", "");
 
     // Replace '______' with 'blank'
     rawOriginal = rawOriginal.replace(/_+/g, 'blank');
@@ -85,4 +93,20 @@ exports.formatCategory = (category) => {
     }
 
     return category;
+};
+
+exports.formatWager = (rawWager, min, max) => {
+    let wager = parseInt(rawWager);
+
+    if (_.isNaN(wager)) {
+        return min;
+    } else {
+        if (wager < min) {
+            return min;
+        } else if (wager > max) {
+            return max;
+        } else {
+            return wager;
+        }
+    }
 };

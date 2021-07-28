@@ -7,6 +7,7 @@ import Col from 'react-bootstrap/Col';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Button from 'react-bootstrap/Button';
 
+import { DebugContext } from '../../context/debug';
 import { SocketContext } from '../../context/socket';
 import mixins from '../../helpers/mixins';
 import HypeText from '../../helpers/components/HypeText';
@@ -128,15 +129,11 @@ const LeaderboardScores = styled(Col)`
 `;
 
 const BrowserLobby = () => {
-    // DEBUG
-    // const [playerNames, setPlayerNames] = useState(['Luffy', 'Nami', 'Zoro']);
-    // const [sessionName, setSessionName] = useState('TEST');
-    // const [leaderboard, setLeaderboard] = useState(sampleLeaderboard);
-    // const [mute, setMute] = useState(true);
+    const debug = useContext(DebugContext);
 
-    const [playerNames, setPlayerNames] = useState([]);
-    const [sessionName, setSessionName] = useState('');
-    const [leaderboard, setLeaderboard] = useState([]);
+    const [playerNames, setPlayerNames] = useState(debug ? ['Luffy', 'Nami', 'Zoro'] : []);
+    const [sessionName, setSessionName] = useState(debug ? 'TEST' : '');
+    const [leaderboard, setLeaderboard] = useState(debug ? sampleLeaderboard : []);
     const [mute, setMute] = useState(true);
 
     const socket = useContext(SocketContext);
@@ -169,12 +166,6 @@ const BrowserLobby = () => {
         socket.on('leaderboard', (leaderboard) => {
             setLeaderboard(leaderboard);
         });
-
-        // DEBUG
-        // document.body.onkeyup = (e) => {
-        //     if (e.keyCode === 32) {
-        //     }
-        // }
     }, []);
 
     const handleUnmute = useCallback(() => {

@@ -7,6 +7,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import FitText from '@kennethormandy/react-fittext';
 
+import { DebugContext } from '../../context/debug';
 import { SocketContext } from '../../context/socket';
 import mixins from '../../helpers/mixins';
 import dailyDoubleBackgroundImage from '../../assets/images/dailyDoubleBackground.jpeg';
@@ -76,15 +77,10 @@ const TimerRow = styled(Row)`
 `;
 
 const BrowserWager = () => {
-    // DEBUG
-    // const [doubleJeoparty, setDoubleJeoparty] = useState(false);
-    // const [boardController, setBoardController] = useState(samplePlayers['zsS3DKSSIUOegOQuAAAA']);
-    // const [wagerLivefeed, setWagerLivefeed] = useState('');
-    // const [showTimer, setShowTimer] = useState(false);
-    // const [startTimer, setStartTimer] = useState(false);
+    const debug = useContext(DebugContext);
 
     const [doubleJeoparty, setDoubleJeoparty] = useState(false);
-    const [boardController, setBoardController] = useState({});
+    const [boardController, setBoardController] = useState(debug ? samplePlayers['zsS3DKSSIUOegOQuAAAA'] : {});
     const [wagerLivefeed, setWagerLivefeed] = useState('5');
     const [showTimer, setShowTimer] = useState(false);
     const [startTimer, setStartTimer] = useState(false);

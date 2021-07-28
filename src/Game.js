@@ -24,6 +24,7 @@ import MobileScoreboard from './components/mobile/MobileScoreboard';
 
 import { GameState } from './constants/GameState';
 import { SocketContext, socket } from './context/socket';
+import { DebugContext } from './context/debug';
 
 import backgroundImage from './assets/images/background.png';
 import logoFont from './assets/fonts/logo.ttf';
@@ -103,16 +104,13 @@ const GlobalStyle = createGlobalStyle`
 `;
 
 const Game = () => {
-    const [gameState, setGameState] = useState(GameState.LOBBY);
+    const debug = false;
+
+    const [gameState, setGameState] = useState(debug ? GameState.BOARD : GameState.LOBBY);
     const [gameStateAck, setGameStateAck] = useState(() => () => {});
 
     useEffect(() => {
         window.speechSynthesis.getVoices();
-
-        socket.onAny((eventName, ...args) => {
-            // DEBUG
-            // console.log(`Heard ${eventName} with args ${args}`);
-        });
 
         socket.on('set_game_state', (newGameState, ack) => {
             setGameState(newGameState);
@@ -174,20 +172,22 @@ const Game = () => {
     }
 
     return (
-        <SocketContext.Provider value={socket}>
-            <GlobalStyle />
-            <BrowserView>
-                <BrowserWrapper>
-                    {browserView}
-                </BrowserWrapper>
-            </BrowserView>
+        <DebugContext.Provider value={debug}>
+            <SocketContext.Provider value={socket}>
+                <GlobalStyle />
+                <BrowserView>
+                    <BrowserWrapper>
+                        {browserView}
+                    </BrowserWrapper>
+                </BrowserView>
 
-            <MobileView>
-                <MobileWrapper>
-                    {mobileView}
-                </MobileWrapper>
-            </MobileView>
-        </SocketContext.Provider>
+                <MobileView>
+                    <MobileWrapper>
+                        {mobileView}
+                    </MobileWrapper>
+                </MobileView>
+            </SocketContext.Provider>
+        </DebugContext.Provider>
     );
 };
 

@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 
+import { DebugContext } from '../../context/debug';
 import { SocketContext } from '../../context/socket';
 import mixins from '../../helpers/mixins';
 import MobileWait from '../../helpers/components/MobileWait';
@@ -71,13 +72,10 @@ const Buzzer = styled.div`
 `;
 
 const MobileClue = () => {
-    // DEBUG
-    // const [hasAnswered, setHasAnswered] = useState(false);
-    // const [player, setPlayer] = useState(samplePlayers['zsS3DKSSIUOegOQuAAAA']);
-    // const [startTimer, setStartTimer] = useState(false);
+    const debug = useContext(DebugContext);
 
     const [hasAnswered, setHasAnswered] = useState(false);
-    const [player, setPlayer] = useState({});
+    const [player, setPlayer] = useState(debug ? samplePlayers['zsS3DKSSIUOegOQuAAAA'] : {});
     const [startTimer, setStartTimer] = useState(false);
 
     const socket = useContext(SocketContext);

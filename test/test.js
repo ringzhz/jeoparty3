@@ -1,6 +1,6 @@
 const assert = require('assert');
 
-const checkAnswer = require('../src/helpers/checkAnswer').checkAnswer;
+const checkAnswer = require('../src/helpers/check').checkAnswer;
 
 describe('checkAnswer', () => {
     describe('answer containment', () => {

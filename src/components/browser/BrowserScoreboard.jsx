@@ -7,6 +7,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import FitText from '@kennethormandy/react-fittext';
 
+import { DebugContext } from '../../context/debug';
 import { SocketContext } from '../../context/socket';
 import mixins from '../../helpers/mixins';
 import DollarValueText from '../../helpers/components/DollarValueText';
@@ -119,12 +120,10 @@ const PlayerCard = (props) => {
 };
 
 const BrowserScoreboard = () => {
-    // DEBUG
-    // const [players, setPlayers] = useState(sortByScore(samplePlayers));
-    // const [updatedPlayers, setUpdatedPlayers] = useState(sortByScore(sampleUpdatedPlayers));
+    const debug = useContext(DebugContext);
 
-    const [players, setPlayers] = useState([]);
-    const [updatedPlayers, setUpdatedPlayers] = useState([]);
+    const [players, setPlayers] = useState(debug ? sortByScore(samplePlayers) : []);
+    const [updatedPlayers, setUpdatedPlayers] = useState(debug ? sortByScore(sampleUpdatedPlayers) : []);
 
     const [showUpdate, setShowUpdate] = useState(false);
     const socket = useContext(SocketContext);
@@ -158,17 +157,18 @@ const BrowserScoreboard = () => {
         };
     }, []);
 
-    // DEBUG
-    // document.body.onkeyup = (e) => {
-    //     if (e.keyCode === 32) {
-    //         setShowUpdate(true);
-    //
-    //         const bestStreakPlayer = sortByStreak(updatedPlayers)[0];
-    //         if (_.get(bestStreakPlayer, 'streak') && _.get(bestStreakPlayer, 'streak') >= 2) {
-    //             sayBestStreakFiller(bestStreakPlayer.name, bestStreakPlayer.streak, bestStreakPlayer.title);
-    //         }
-    //     }
-    // }
+    if (debug) {
+        document.body.onkeyup = (e) => {
+            if (e.keyCode === 32) {
+                setShowUpdate(true);
+
+                const bestStreakPlayer = sortByStreak(updatedPlayers)[0];
+                if (_.get(bestStreakPlayer, 'streak') && _.get(bestStreakPlayer, 'streak') >= 2) {
+                    sayBestStreakFiller(bestStreakPlayer.name, bestStreakPlayer.streak, bestStreakPlayer.title);
+                }
+            }
+        }
+    }
 
     return (
         <Container fluid>

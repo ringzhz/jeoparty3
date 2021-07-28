@@ -7,6 +7,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import FitText from '@kennethormandy/react-fittext';
 
+import { DebugContext } from '../../context/debug';
 import { SocketContext } from '../../context/socket';
 import { timers } from '../../constants/timers';
 import mixins from '../../helpers/mixins';
@@ -57,18 +58,11 @@ const TimerRow = styled(Row)`
 `;
 
 const BrowserClue = () => {
-    // DEBUG
-    // const [categories, setCategories] = useState(sampleCategories);
-    // const [categoryIndex, setCategoryIndex] = useState(0);
-    // const [clueIndex, setClueIndex] = useState(0);
-    //
-    // const [showTimer, setShowTimer] = useState(false);
-    // const [startTimer, setStartTimer] = useState(false);
+    const debug = useContext(DebugContext);
 
-    const [categories, setCategories] = useState([]);
-    const [categoryIndex, setCategoryIndex] = useState(null);
-    const [clueIndex, setClueIndex] = useState(null);
-
+    const [categories, setCategories] = useState(debug ? sampleCategories : []);
+    const [categoryIndex, setCategoryIndex] = useState(debug ? 0 : null);
+    const [clueIndex, setClueIndex] = useState(debug ? 0 : null);
     const [showTimer, setShowTimer] = useState(false);
     const [startTimer, setStartTimer] = useState(false);
 
@@ -84,10 +78,12 @@ const BrowserClue = () => {
             setClueIndex(clueIndex);
         });
 
-        socket.on('say_clue_text', (clueText, dailyDouble) => {
-            say(clueText, () => {
-                socket.emit(dailyDouble ? 'show_daily_double_clue' : 'start_timer');
-            });
+        socket.on('say_clue_text', (clueText, dailyDouble, sayClueText) => {
+            if (sayClueText) {
+                say(clueText, () => {
+                    socket.emit(dailyDouble ? 'show_daily_double_clue' : 'start_timer');
+                });
+            }
         });
 
         socket.on('start_timer', () => {
