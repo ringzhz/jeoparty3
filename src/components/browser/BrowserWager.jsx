@@ -85,7 +85,7 @@ const BrowserWager = () => {
 
     const [doubleJeoparty, setDoubleJeoparty] = useState(false);
     const [boardController, setBoardController] = useState({});
-    const [wagerLivefeed, setWagerLivefeed] = useState('');
+    const [wagerLivefeed, setWagerLivefeed] = useState('5');
     const [showTimer, setShowTimer] = useState(false);
     const [startTimer, setStartTimer] = useState(false);
 
@@ -97,20 +97,28 @@ const BrowserWager = () => {
             setDoubleJeoparty(doubleJeoparty);
 
             const score = _.get(boardController, 'score');
-            sayWagerFiller(5, Math.max(score, doubleJeoparty ? 2000 : 1000));
+            sayWagerFiller(5, Math.max(score, doubleJeoparty ? 2000 : 1000), () => {
+                socket.emit('start_wager_timer');
+            });
+        });
+
+        socket.on('start_wager_timer', () => {
+            setTimeout(() => {
+                setShowTimer(true);
+
+                setTimeout(() => {
+                    setStartTimer(true);
+                }, 100);
+            }, 100);
         });
 
         socket.on('wager_livefeed', (wagerLivefeed) => {
             setWagerLivefeed(wagerLivefeed);
         });
 
-        setTimeout(() => {
-            setShowTimer(true);
-
-            setTimeout(() => {
-                setStartTimer(true);
-            }, 100);
-        }, 100);
+        return () => {
+            socket.off('board_controller');
+        }
     });
 
     // DEBUG
@@ -154,7 +162,7 @@ const BrowserWager = () => {
 
                         <WagerInfoPanel>
                             <FitText compressor={1}>
-                                <WagerInfoPanelText>{wagerLivefeed}</WagerInfoPanelText>
+                                <WagerInfoPanelText>{`${_.isEmpty(wagerLivefeed) ? '' : '$'}${wagerLivefeed}`}</WagerInfoPanelText>
                             </FitText>
                         </WagerInfoPanel>
                     </WagerInfoCol>

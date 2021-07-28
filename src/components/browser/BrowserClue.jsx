@@ -86,7 +86,7 @@ const BrowserClue = () => {
 
         socket.on('say_clue_text', (clueText, dailyDouble) => {
             say(clueText, () => {
-                socket.emit(dailyDouble ? 'buzz_in' : 'start_timer');
+                socket.emit(dailyDouble ? 'show_daily_double_clue' : 'start_timer');
             });
         });
 

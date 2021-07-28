@@ -290,6 +290,12 @@ const BrowserBoard = () => {
                     [true, true, true, true, true]
                 ]);
                 sayBoardControllerNameFiller(boardControllerName);
+
+                // DEBUG
+                // Use this to simulate the full reveal animation finishing and being sent back to the server
+                // setTimeout(() => {
+                //     socket.emit('board_revealed');
+                // }, 1000);
             } else {
                 reveal(categories, doubleJeoparty, boardControllerName);
             }
@@ -319,6 +325,7 @@ const BrowserBoard = () => {
 
         return () => {
             socket.off('board_controller_name');
+            socket.off('request_clue');
         }
     }, []);
 

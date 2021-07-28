@@ -36,9 +36,9 @@ export const sayDailyDoubleFiller = () => {
     say(text);
 };
 
-export const sayWagerFiller = (min, max) => {
+export const sayWagerFiller = (min, max, onComplete) => {
     const text = `Enter a wager between ${min} and ${max} dollars`;
-    say(text);
+    say(text, onComplete);
 };
 
 export const sayDollarValueFiller = (dollarValue) => {

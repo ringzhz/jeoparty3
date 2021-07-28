@@ -141,17 +141,17 @@ const LivefeedPanel = styled.div`
 const BrowserAnswer = () => {
     // DEBUG
     // const [categories, setCategories] = useState(sampleCategories);
-    // const [doubleJeoparty, setDoubleJeoparty] = useState(false);
     // const [categoryIndex, setCategoryIndex] = useState(0);
     // const [clueIndex, setClueIndex] = useState(0);
+    // const [dollarValue, setDollarValue] = useState(0);
     // const [playerName, setPlayerName] = useState('luffy');
     // const [answerLivefeed, setAnswerLivefeed] = useState('led ze');
     // const [startTimer, setStartTimer] = useState(false);
 
     const [categories, setCategories] = useState([]);
-    const [doubleJeoparty, setDoubleJeoparty] = useState(false);
     const [categoryIndex, setCategoryIndex] = useState(null);
     const [clueIndex, setClueIndex] = useState(0);
+    const [dollarValue, setDollarValue] = useState(0);
     const [playerName, setPlayerName] = useState('');
     const [answerLivefeed, setAnswerLivefeed] = useState('');
     const [startTimer, setStartTimer] = useState(false);
@@ -159,19 +159,21 @@ const BrowserAnswer = () => {
     const socket = useContext(SocketContext);
 
     useEffect(() => {
-        socket.on('categories', (categories, doubleJeoparty) => {
+        socket.on('categories', (categories) => {
             setCategories(categories);
-            setDoubleJeoparty(doubleJeoparty);
         });
 
-        socket.on('request_clue', (categoryIndex, clueIndex) => {
+        socket.on('request_clue', (categoryIndex, clueIndex, dollarValue) => {
             setCategoryIndex(categoryIndex);
             setClueIndex(clueIndex);
+            setDollarValue(dollarValue);
         });
 
-        socket.on('buzz_in', () => {
-            const buzzInAudio = new Audio(buzzInSound);
-            buzzInAudio.play();
+        socket.on('buzz_in', (dailyDouble) => {
+            if (!dailyDouble) {
+                const buzzInAudio = new Audio(buzzInSound);
+                buzzInAudio.play();
+            }
         });
 
         socket.on('player_name', (playerName) => {
@@ -212,7 +214,7 @@ const BrowserAnswer = () => {
 
                         <DollarValueTextPanel>
                             <DollarValueTextWrapper>
-                                <DollarValueText dollarValue={(doubleJeoparty ? 400 : 200) * (clueIndex + 1)} />
+                                <DollarValueText dollarValue={dollarValue} />
                             </DollarValueTextWrapper>
                         </DollarValueTextPanel>
                     </CategoryPanel>

@@ -15,7 +15,7 @@ import MobileWait from '../../helpers/components/MobileWait';
 // DEBUG
 import {samplePlayers} from '../../constants/samplePlayers';
 
-const MobileAnswerRow = styled.div`
+const MobileWagerRow = styled.div`
     ${mixins.flexAlignCenter}
     height: 60vh;
     height: calc(var(--vh, 1vh) * 60);
@@ -39,7 +39,7 @@ const MobileWager = () => {
     // const [isWagering, setIsWagering] = useState(true);
     // const [player, setPlayer] = useState(samplePlayers['zsS3DKSSIUOegOQuAAAA']);
 
-    const [wager, setWager] = useState('');
+    const [wager, setWager] = useState('5');
     const [isWagering, setIsWagering] = useState(false);
     const [player, setPlayer] = useState({});
 
@@ -64,8 +64,8 @@ const MobileWager = () => {
         socket.emit('wager_livefeed', e.target.value);
     }, []);
 
-    const handleSubmitAnswer = useCallback((answer) => {
-        socket.emit('submit_wager', answer);
+    const handleSubmitWager = useCallback((wager) => {
+        socket.emit('submit_wager', wager);
     }, []);
 
     return (
@@ -75,18 +75,18 @@ const MobileWager = () => {
                     <div>
                         <MobilePlayerCard player={player} />
 
-                        <MobileAnswerRow>
+                        <MobileWagerRow>
                             <Col lg={'12'}>
                                 <LogoText>JEOPARTY!</LogoText>
 
                                 <InputGroup className={'mb-3'}>
-                                    <FormControl type={'number'} placeholder={'Enter your wager...'} value={wager} onChange={e => handleWagerLivefeed(e)} />
+                                    <FormControl type={'tel'} placeholder={'Enter your wager...'} value={wager} onChange={e => handleWagerLivefeed(e)} />
                                     <InputGroup.Prepend>
-                                        <Button onClick={() => handleSubmitAnswer(wager)} variant={'outline-light'}>SUBMIT</Button>
+                                        <Button onClick={() => handleSubmitWager(wager)} variant={'outline-light'}>SUBMIT</Button>
                                     </InputGroup.Prepend>
                                 </InputGroup>
                             </Col>
-                        </MobileAnswerRow>
+                        </MobileWagerRow>
 
                         <BottomRow />
                     </div>

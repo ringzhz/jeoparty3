@@ -101,6 +101,7 @@ const GlobalStyle = createGlobalStyle`
         100% { bottom: 0; opacity: 1; }
     }
 `;
+
 const Game = () => {
     const [gameState, setGameState] = useState(GameState.LOBBY);
     const [gameStateAck, setGameStateAck] = useState(() => () => {});

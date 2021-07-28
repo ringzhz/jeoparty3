@@ -87,6 +87,7 @@ const MobileBoard = () => {
     // const [isBoardController, setIsBoardController] = useState(true);
     // const [boardRevealed, setBoardRevealed] = useState(true);
     // const [categoryIndex, setCategoryIndex] = useState(null);
+    // const [clueRequested, setClueRequested] = useState(false);
     // const [player, setPlayer] = useState(samplePlayers['zsS3DKSSIUOegOQuAAAA']);
 
     const [categories, setCategories] = useState([]);
@@ -94,6 +95,7 @@ const MobileBoard = () => {
     const [isBoardController, setIsBoardController] = useState(false);
     const [boardRevealed, setBoardRevealed] = useState(false);
     const [categoryIndex, setCategoryIndex] = useState(null);
+    const [clueRequested, setClueRequested] = useState(false);
     const [player, setPlayer] = useState({});
 
     const socket = useContext(SocketContext);
@@ -124,6 +126,7 @@ const MobileBoard = () => {
 
     const handleRequestClue = useCallback((categoryIndex, clueIndex) => {
         socket.emit('request_clue', categoryIndex, clueIndex);
+        setClueRequested(true);
     }, []);
 
     let categoryRows = _.get(categories, `[0].title`) && Array.from(Array(NUM_CATEGORIES).keys()).map((i) => {
@@ -176,23 +179,25 @@ const MobileBoard = () => {
         rows = dollarValueRows;
     }
 
+    let content = null;
+
+    if (isBoardController && boardRevealed && !clueRequested) {
+        content = (
+            <div>
+                {rows}
+            </div>
+        );
+    } else {
+        content = (
+            <div>
+                <MobileWait player={player} />
+            </div>
+        );
+    }
+
     return (
         <MobileBoardContainer fluid>
-            {
-                (isBoardController && boardRevealed) && (
-                    <div>
-                        {rows}
-                    </div>
-                )
-            }
-
-            {
-                (isBoardController && !boardRevealed) || !isBoardController && (
-                    <div>
-                        <MobileWait player={player} />
-                    </div>
-                )
-            }
+            {content}
         </MobileBoardContainer>
     );
 };

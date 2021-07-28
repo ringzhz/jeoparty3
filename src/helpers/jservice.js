@@ -24,15 +24,15 @@ const getDailyDoubleIndices = () => {
 
     const distribution = {0: 0.05, 1: 0.2, 2: 0.4, 3: 0.2, 4: 0.15};
 
-    const categoryIndex = Math.floor(Math.random() * NUM_CATEGORIES) + 1;
+    const categoryIndex = Math.floor(Math.random() * NUM_CATEGORIES);
     const clueIndex = weightedRandom(distribution);
 
-    const djCategoryIndex1 = Math.floor(Math.random() * NUM_CATEGORIES) + 1;
+    const djCategoryIndex1 = Math.floor(Math.random() * NUM_CATEGORIES);
     const djClueIndex1 = weightedRandom(distribution);
 
     let djCategoryIndex2;
     do {
-        djCategoryIndex2 = Math.floor(Math.random() * NUM_CATEGORIES) + 1;
+        djCategoryIndex2 = Math.floor(Math.random() * NUM_CATEGORIES);
     } while (djCategoryIndex1 === djCategoryIndex2);
     const djClueIndex2 = weightedRandom(distribution);
 

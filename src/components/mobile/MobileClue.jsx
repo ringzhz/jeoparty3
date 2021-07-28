@@ -83,8 +83,8 @@ const MobileClue = () => {
     const socket = useContext(SocketContext);
 
     useEffect(() => {
-        socket.on('players_answered', (playersAnswered) => {
-            setHasAnswered(playersAnswered.includes(socket.id));
+        socket.on('has_answered', (hasAnswered) => {
+            setHasAnswered(hasAnswered);
         });
 
         socket.on('player', (player) => {
