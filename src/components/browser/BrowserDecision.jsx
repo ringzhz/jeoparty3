@@ -112,18 +112,20 @@ const BrowserDecision = () => {
             setCorrectAnswer(correctAnswer);
 
             if (sayCorrectAnswer) {
-                const buzzInTimeoutAudio = new Audio(buzzInTimeoutSound);
-                buzzInTimeoutAudio.onended = () => {
-                    sayCorrectAnswerFiller(correctAnswer, () => setTimeout(() => {
-                        if (skipScoreboard) {
+                if (skipScoreboard) {
+                    const buzzInTimeoutAudio = new Audio(buzzInTimeoutSound);
+                    buzzInTimeoutAudio.onended = () => {
+                        sayCorrectAnswerFiller(correctAnswer, () => {
                             socket.emit('show_board');
-                        } else {
-                            socket.emit('show_scoreboard');
-                        }
-                    }, 500));
-                };
+                        });
+                    };
 
-                buzzInTimeoutAudio.play();
+                    buzzInTimeoutAudio.play();
+                } else {
+                    sayCorrectAnswerFiller(correctAnswer, () => {
+                        socket.emit('show_scoreboard');
+                    });
+                }
             }
         });
 

@@ -6,7 +6,7 @@ exports.samplePlayers = {
         sessionName: 'think',
         name: 'Luffy',
         signature: signature,
-        score: 200,
+        score: -100000,
 
         heat: 2,
         streak: 1,

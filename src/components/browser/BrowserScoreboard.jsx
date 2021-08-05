@@ -102,7 +102,7 @@ const PlayerCard = (props) => {
 
                     <HypeCol lg={'3'}>
                         <FitText compressor={1}>
-                            <HypeText text={_.invoke(_.get(props, 'player.title'), 'toUpperCase')} rainbow={true} />
+                            {props.showUpdate && <HypeText text={_.invoke(_.get(props, 'player.title'), 'toUpperCase')} rainbow={true} />}
                         </FitText>
                     </HypeCol>
 
@@ -177,7 +177,7 @@ const BrowserScoreboard = () => {
                 const zIndex = numPlayers - (showUpdate ? updatedPosition : position);
                 const playerObject = showUpdate ? updatedPlayers[updatedPosition] : player;
 
-                return <PlayerCard numPlayers={numPlayers} zIndex={zIndex} player={playerObject} positionChange={positionChange} />;
+                return <PlayerCard numPlayers={numPlayers} zIndex={zIndex} player={playerObject} positionChange={positionChange} showUpdate={showUpdate} />;
             })}
         </Container>
     );

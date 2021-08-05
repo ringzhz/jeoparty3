@@ -32,12 +32,20 @@ app.get('/', (req, res, next) => res.sendFile(__dirname + './index.html'));
 // Session cache helpers
 
 const updateGameSession = (sessionName, key, value) => {
+    if (!sessionCache.get(sessionName)) {
+        return;
+    }
+
     let gameSession = sessionCache.get(sessionName);
     gameSession[key] = value;
     sessionCache.put(sessionName, gameSession);
 };
 
 const updateClients = (sessionName, socket) => {
+    if (!sessionCache.get(sessionName)) {
+        return;
+    }
+
     let gameSession = sessionCache.get(sessionName);
     let clients = gameSession.clients;
 
@@ -47,6 +55,10 @@ const updateClients = (sessionName, socket) => {
 };
 
 const updatePlayer = (sessionName, socketId, key, value) => {
+    if (!sessionCache.get(sessionName)) {
+        return;
+    }
+
     let gameSession = sessionCache.get(sessionName);
     let players = gameSession.players;
 
@@ -62,12 +74,20 @@ const updatePlayer = (sessionName, socketId, key, value) => {
 };
 
 const setUpdatedPlayers = (sessionName) => {
+    if (!sessionCache.get(sessionName)) {
+        return;
+    }
+
     let gameSession = sessionCache.get(sessionName);
     gameSession.updatedPlayers = _.cloneDeep(gameSession.players);
     sessionCache.put(sessionName, gameSession);
 };
 
 const updatePlayerScore = (socket, value, isCorrect) => {
+    if (!sessionCache.get(socket.sessionName)) {
+        return;
+    }
+
     let gameSession = sessionCache.get(socket.sessionName);
     let updatedPlayers = gameSession.updatedPlayers;
 
@@ -78,6 +98,10 @@ const updatePlayerScore = (socket, value, isCorrect) => {
 };
 
 const updatePlayerStreaks = (socket) => {
+    if (!sessionCache.get(socket.sessionName)) {
+        return;
+    }
+
     const gameSession = sessionCache.get(socket.sessionName);
 
     for (let socketId of Object.keys(gameSession.players)) {
@@ -95,6 +119,10 @@ const updatePlayerStreaks = (socket) => {
 };
 
 const setPlayers = (sessionName) => {
+    if (!sessionCache.get(sessionName)) {
+        return;
+    }
+
     let gameSession = sessionCache.get(sessionName);
 
     if (_.size(gameSession.updatedPlayers) > 0) {
@@ -106,6 +134,10 @@ const setPlayers = (sessionName) => {
 };
 
 const updatePlayersAnswered = (sessionName, socketId) => {
+    if (!sessionCache.get(sessionName)) {
+        return;
+    }
+
     let gameSession = sessionCache.get(sessionName);
 
     let playersAnswered = gameSession.playersAnswered;
@@ -116,6 +148,10 @@ const updatePlayersAnswered = (sessionName, socketId) => {
 };
 
 const updateCategories = (sessionName, categoryIndex, clueIndex) => {
+    if (!sessionCache.get(sessionName)) {
+        return;
+    }
+
     let gameSession = sessionCache.get(sessionName);
     let categories = gameSession.categories;
 
@@ -132,6 +168,10 @@ const updateCategories = (sessionName, categoryIndex, clueIndex) => {
 };
 
 const handleBrowserDisconnection = (socket) => {
+    if (!sessionCache.get(socket.sessionName)) {
+        return;
+    }
+
     sessionCache.get(socket.sessionName).clients.map((client) => {
         client.emit('reload');
     });
@@ -140,6 +180,10 @@ const handleBrowserDisconnection = (socket) => {
 };
 
 const handlePlayerDisconnection = (socket) => {
+    if (!sessionCache.get(socket.sessionName)) {
+        return;
+    }
+
     // Only 'remember' this player if they've submitted their signature
     if (sessionCache.get(socket.sessionName).players[socket.id].name.length > 0) {
         const RECONNECT_WINDOW = 15 * 60 * 1000;
@@ -327,6 +371,7 @@ const showCorrectAnswer = (socket, correctAnswer, timeout, sayCorrectAnswer) => 
     const gameSession = sessionCache.get(socket.sessionName);
 
     if (timeout) {
+        // TODO: Where else are there timeouts declared in the game session object and how are they used?
         if (gameSession.buzzInTimeout) {
             gameSession.clients.map((client) => {
                 client.emit('set_game_state', GameState.DECISION, () => {
@@ -365,7 +410,7 @@ const showScoreboard = (socket) => {
         client.emit('set_game_state', GameState.SCOREBOARD, () => {
             client.emit('players', gameSession.players);
             client.emit('updated_players', gameSession.updatedPlayers);
-            client.emit('player', _.get(gameSession, `players[${client.id}]`));
+            client.emit('player', _.get(gameSession, `updatedPlayers[${client.id}]`));
 
             if (!_.isEqual(gameSession.players, gameSession.updatedPlayers)) {
                 setTimeout(() => {
@@ -524,7 +569,9 @@ io.on('connection', (socket) => {
                 return;
             }
 
-            socket.emit('wager_timeout', sessionCache.get(socket.sessionName).players[socket.id].wager);
+            const gameSession = sessionCache.get(socket.sessionName);
+
+            gameSession.boardController.emit('wager_timeout', _.get(gameSession, `players[${gameSession.boardController.id}].wager`));
         }, timers.WAGER_TIMEOUT * 1000);
     });
 

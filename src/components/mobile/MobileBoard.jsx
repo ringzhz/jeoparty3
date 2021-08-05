@@ -86,7 +86,7 @@ const MobileBoard = () => {
 
     const [categories, setCategories] = useState(debug ? sampleCategories : []);
     const [doubleJeoparty, setDoubleJeoparty] = useState(false);
-    const [isBoardController, setIsBoardController] = useState(debug ? true : false);
+    const [isBoardController, setIsBoardController] = useState(debug ? false : false);
     const [boardRevealed, setBoardRevealed] = useState(debug ? true : false);
     const [categoryIndex, setCategoryIndex] = useState(null);
     const [clueRequested, setClueRequested] = useState(false);
