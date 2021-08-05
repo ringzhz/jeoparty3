@@ -73,7 +73,7 @@ const BrowserClue = () => {
             setCategories(categories);
         });
 
-        socket.on('request_clue', (categoryIndex, clueIndex, clueText) => {
+        socket.on('request_clue', (categoryIndex, clueIndex) => {
             setCategoryIndex(categoryIndex);
             setClueIndex(clueIndex);
         });

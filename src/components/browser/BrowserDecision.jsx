@@ -133,17 +133,6 @@ const BrowserDecision = () => {
         };
     }, []);
 
-    if (debug) {
-        document.body.onkeyup = (e) => {
-            if (e.keyCode === 32) {
-                const correctSound = new Audio(correctSound);
-                correctSound.volume = 0.5;
-                correctSound.play();
-                sayDollarValueFiller(200);
-            }
-        };
-    }
-
     let text = null;
 
     if (!showAnswer && !showDecision && !showCorrectAnswer && !showDollarValue) {

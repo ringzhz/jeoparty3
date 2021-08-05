@@ -267,29 +267,6 @@ const BrowserBoard = () => {
             setDoubleJeoparty(doubleJeoparty);
         });
 
-        socket.on('board_controller_name', (boardControllerName, boardRevealed, categories, doubleJeoparty) => {
-            if (boardRevealed) {
-                setBoardRevealed(true);
-                setBoardRevealMatrix([
-                    [true, true, true, true, true],
-                    [true, true, true, true, true],
-                    [true, true, true, true, true],
-                    [true, true, true, true, true],
-                    [true, true, true, true, true],
-                    [true, true, true, true, true]
-                ]);
-                sayBoardControllerNameFiller(boardControllerName);
-
-                // DEBUG
-                // Use this to simulate the full reveal animation finishing and being sent back to the server
-                // setTimeout(() => {
-                //     socket.emit('board_revealed');
-                // }, 1000);
-            } else {
-                reveal(categories, doubleJeoparty, boardControllerName);
-            }
-        });
-
         socket.on('request_clue', (categoryIndex, clueIndex, dailyDouble) => {
             setCategoryIndex(categoryIndex);
             setClueIndex(clueIndex);
@@ -312,33 +289,34 @@ const BrowserBoard = () => {
             }, 100);
         });
 
+        socket.on('say_board_introduction', (boardControllerName, boardRevealed, categories, doubleJeoparty) => {
+            if (boardRevealed) {
+                setBoardRevealed(true);
+                setBoardRevealMatrix([
+                    [true, true, true, true, true],
+                    [true, true, true, true, true],
+                    [true, true, true, true, true],
+                    [true, true, true, true, true],
+                    [true, true, true, true, true],
+                    [true, true, true, true, true]
+                ]);
+                sayBoardControllerNameFiller(boardControllerName);
+
+                // DEBUG
+                // Use this to simulate the full reveal animation finishing and being sent back to the server
+                // setTimeout(() => {
+                //     socket.emit('board_revealed');
+                // }, 1000);
+            } else {
+                reveal(categories, doubleJeoparty, boardControllerName);
+            }
+        });
+
         return () => {
-            socket.off('board_controller_name');
             socket.off('request_clue');
+            socket.off('say_board_introduction');
         }
     }, []);
-
-    if (debug) {
-        document.body.onkeyup = (e) => {
-            if (e.keyCode === 32) {
-                setTimeout(() => {
-                    setAnimateClue(true);
-
-                    if (dailyDouble) {
-                        const dailyDoubleAudio = new Audio(dailyDoubleSound);
-                        dailyDoubleAudio.volume = 0.25;
-
-                        const applauseAudio = new Audio(applauseSound);
-                        applauseAudio.volume = 0.5;
-
-                        dailyDoubleAudio.play();
-                        applauseAudio.play();
-                        sayDailyDoubleFiller();
-                    }
-                }, 100);
-            }
-        };
-    }
 
     const categoryRevealPanels = _.get(categories, `[0].title`) && Array.from(Array(NUM_CATEGORIES).keys()).map((i) => {
         const category = categories[i];

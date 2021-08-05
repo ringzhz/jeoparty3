@@ -161,11 +161,6 @@ const BrowserScoreboard = () => {
         document.body.onkeyup = (e) => {
             if (e.keyCode === 32) {
                 setShowUpdate(true);
-
-                const bestStreakPlayer = sortByStreak(updatedPlayers)[0];
-                if (_.get(bestStreakPlayer, 'streak') && _.get(bestStreakPlayer, 'streak') >= 2) {
-                    sayBestStreakFiller(bestStreakPlayer.name, bestStreakPlayer.streak, bestStreakPlayer.title);
-                }
             }
         }
     }

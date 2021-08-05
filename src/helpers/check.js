@@ -5,12 +5,11 @@ const formatRaw = require('./format').formatRaw;
 
 const MIN_ANSWER_LENGTH = 3;
 
-exports.checkAnswer = (expected, actual) => {
+exports.checkAnswer = (categoryName, clue, expected, actual) => {
+    const rawCategoryName = formatRaw(categoryName);
+    const rawClue = formatRaw(clue);
     const rawExpected = formatRaw(wordsToNumbers(expected).toString());
     const rawActual = formatRaw(wordsToNumbers(actual).toString());
-
-    // TODO: Consider what to do if the answer is included in the category and/or clue
-    //  (important to consider categories like 'Mexico, Canada, or the USA' etc)
 
     // If expected answer is short (< 3 characters) then the actual answer can be short too
     const lengthLimit = rawExpected.length >= MIN_ANSWER_LENGTH ? MIN_ANSWER_LENGTH : 0;
@@ -28,7 +27,9 @@ exports.checkAnswer = (expected, actual) => {
         }
     }
 
-    return validLength && containsAnswer;
+    const cheated = !rawCategoryName.includes(rawExpected) && rawCategoryName.includes(rawActual) || rawClue.includes(rawActual);
+
+    return validLength && containsAnswer && !cheated;
 };
 
 exports.checkSignature = (playerName) => {

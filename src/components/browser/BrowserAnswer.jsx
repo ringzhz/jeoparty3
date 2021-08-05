@@ -163,7 +163,7 @@ const BrowserAnswer = () => {
             setDollarValue(dollarValue);
         });
 
-        socket.on('buzz_in', (dailyDouble) => {
+        socket.on('play_buzz_in_sound', (dailyDouble) => {
             if (!dailyDouble) {
                 const buzzInAudio = new Audio(buzzInSound);
                 buzzInAudio.play();
