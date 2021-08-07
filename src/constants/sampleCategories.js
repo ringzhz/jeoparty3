@@ -1,7 +1,7 @@
 exports.sampleCategories = [
     {
         id: 12619,
-        title: 'Actors and their Oscar winning roles',
+        title: 'classic rock',
         clues_count: 5,
         clues: [
             {
@@ -12,7 +12,8 @@ exports.sampleCategories = [
                 airdate: '2010-07-13T12:00:00.000Z',
                 category_id: 12619,
                 game_id: null,
-                invalid_count: null
+                invalid_count: null,
+                categoryName: 'classic rock'
             },
             {
                 id: 94931,

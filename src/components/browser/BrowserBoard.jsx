@@ -11,6 +11,7 @@ import { DebugContext } from '../../context/debug';
 import { SocketContext } from '../../context/socket';
 import mixins from '../../helpers/mixins';
 import DollarValueText from '../../helpers/components/DollarValueText';
+import CategoryReveal from '../../helpers/components/CategoryReveal';
 import backgroundImage from '../../assets/images/background.png';
 import dailyDoubleBackgroundImage from '../../assets/images/dailyDoubleBackground.jpeg';
 import starBackgroundImage from '../../assets/images/starBackground.png';
@@ -24,15 +25,15 @@ import { sayRoundFiller, sayBoardControllerNameFiller, sayDailyDoubleFiller } fr
 // DEBUG
 import { sampleCategories } from '../../constants/sampleCategories';
 
-const getCategoryNameCompressor = (textLength, reveal) => {
+const getCategoryNameCompressor = (textLength) => {
     let compressor = null;
 
     if (textLength > 20) {
-        compressor = reveal ? 1 : 0.75;
+        compressor = 0.75;
     } else if (textLength > 10) {
-        compressor = reveal ? 0.75 : 0.6;
+        compressor = 0.6;
     } else {
-        compressor = reveal ? 0.5 : 0.5;
+        compressor = 0.5;
     }
 
     return compressor;
@@ -48,54 +49,6 @@ const CategoryRevealWrapper = styled.div`
     opacity: ${props => props.showCategoryReveal ? 1 : 0};
     
     transition: left 1s linear, opacity 1s;
-`;
-
-const CategoryRevealPanel = styled.div`
-    ${mixins.flexAlignCenter};
-    height: 100vh;
-    width: 100vw;
-    padding: 5%;
-    z-index: 2;
-    
-    background-image: url(${backgroundImage});
-    
-    color: black;
-    border-width: 2em;
-    border-style: solid;
-    
-    line-height: 1;
-`;
-
-const CategoryRevealLogoPanel = styled.div`
-    ${mixins.flexAlignCenter};
-    position: absolute;
-    height: 100vh;
-    width: 100vw;
-    z-index: 3;
-    
-    background-image: url(${starBackgroundImage});
-    background-size: cover;
-    opacity: ${props => props.reveal ? 0 : 1};
-    transition-property: opacity;
-    transition-duration: 0.5s;
-    transition-timing-function: linear;
-    
-    color: black;
-    border-width: 2em;
-    border-style: solid;
-`;
-
-const CategoryRevealLogoText = styled.span`
-    color: white;
-    font-family: logo, serif;
-    font-size: 36vh;
-    text-shadow: 0.05em 0.05em #000;
-`;
-
-const CategoryRevealText = styled.span`
-    font-family: board, serif;
-    color: white;
-    text-shadow: 0.075em 0.075em #000;
 `;
 
 const BrowserBoardContainer = styled(Container)`
@@ -221,7 +174,7 @@ const BrowserBoard = () => {
     const [clueIndex, setClueIndex] = useState(debug ? 1 : null);
     const [dailyDouble, setDailyDouble] = useState(debug ? true : false);
     const [animateClue, setAnimateClue] = useState(false);
-    const [boardRevealed, setBoardRevealed] = useState(debug ? true : false);
+    const [boardRevealed, setBoardRevealed] = useState(debug ? false : false);
     const [boardRevealMatrix, setBoardRevealMatrix] = useState(debug ?
         [[true, true, true, true, true],
         [true, true, true, true, true],
@@ -236,8 +189,8 @@ const BrowserBoard = () => {
         [false, false, false, false, false],
         [false, false, false, false, false],
         [false, false, false, false, false]]);
-    const [showCategoryReveal, setShowCategoryReveal] = useState(false);
-    const [categoryRevealIndex, setCategoryRevealIndex] = useState(0);
+    const [showCategoryReveal, setShowCategoryReveal] = useState(debug ? true : false);
+    const [categoryRevealIndex, setCategoryRevealIndex] = useState(debug ? 0 : 0);
     const [categoryPanelIndex, setCategoryPanelIndex] = useState(debug ? 0 : -1);
 
     const socket = useContext(SocketContext);
@@ -321,33 +274,15 @@ const BrowserBoard = () => {
     const categoryRevealPanels = _.get(categories, `[0].title`) && Array.from(Array(NUM_CATEGORIES).keys()).map((i) => {
         const category = categories[i];
         const categoryName = _.get(category, 'title');
-        const categoryNameLength = _.size(categoryName) || 0;
-        const categoryNameCompressor = getCategoryNameCompressor(categoryNameLength, true);
 
-        return (
-            <div key={categoryName}>
-                <CategoryRevealLogoPanel reveal={categoryPanelIndex === i}>
-                    <CategoryRevealLogoText>
-                        JEOPARTY!
-                    </CategoryRevealLogoText>
-                </CategoryRevealLogoPanel>
-
-                <CategoryRevealPanel>
-                    <FitText compressor={categoryNameCompressor}>
-                        <CategoryRevealText>
-                            {_.invoke(categoryName, 'toUpperCase')}
-                        </CategoryRevealText>
-                    </FitText>
-                </CategoryRevealPanel>
-            </div>
-        );
+        return <CategoryReveal categoryName={categoryName} reveal={categoryPanelIndex === i} />;
     });
 
     const categoryTitleRow = _.get(categories, `[0].title`) && Array.from(Array(NUM_CATEGORIES).keys()).map((i) => {
         const category = categories[i];
         const categoryName = _.get(category, 'title');
         const categoryNameLength = _.size(categoryName) || 0;
-        const categoryNameCompressor = getCategoryNameCompressor(categoryNameLength, false);
+        const categoryNameCompressor = getCategoryNameCompressor(categoryNameLength);
 
         let categoryCol = null;
 
@@ -405,39 +340,43 @@ const BrowserBoard = () => {
         );
     });
 
-    return (
-        <div>
-            <CategoryRevealWrapper showCategoryReveal={showCategoryReveal} categoryRevealIndex={categoryRevealIndex}>
-                {categoryRevealPanels}
-            </CategoryRevealWrapper>
+    if (_.get(categories, '[0].title')) {
+        return (
+            <div>
+                <CategoryRevealWrapper showCategoryReveal={showCategoryReveal} categoryRevealIndex={categoryRevealIndex}>
+                    {categoryRevealPanels}
+                </CategoryRevealWrapper>
 
-            <BrowserBoardContainer fluid>
-                <CategoryRow>
-                    {categoryTitleRow}
-                </CategoryRow>
+                <BrowserBoardContainer fluid>
+                    <CategoryRow>
+                        {categoryTitleRow}
+                    </CategoryRow>
 
-                <ClueWrapper className={animateClue && 'animate'}
-                             categoryIndex={categoryIndex && categoryIndex}
-                             clueIndex={clueIndex && clueIndex}>
-                    {
-                        dailyDouble ? (
-                            <DailyDoubleBackground>
-                                <mixins.DailyDoubleText>
-                                    DAILY DOUBLE
-                                </mixins.DailyDoubleText>
-                            </DailyDoubleBackground>
-                        ) : (
-                            <BrowserClue />
-                        )
-                    }
-                </ClueWrapper>
+                    <ClueWrapper className={animateClue && 'animate'}
+                                 categoryIndex={categoryIndex && categoryIndex}
+                                 clueIndex={clueIndex && clueIndex}>
+                        {
+                            dailyDouble ? (
+                                <DailyDoubleBackground>
+                                    <mixins.DailyDoubleText>
+                                        DAILY DOUBLE
+                                    </mixins.DailyDoubleText>
+                                </DailyDoubleBackground>
+                            ) : (
+                                <BrowserClue />
+                            )
+                        }
+                    </ClueWrapper>
 
-                {!boardRevealed && <BoardRevealBackground>JEOPARTY!</BoardRevealBackground>}
+                    {!boardRevealed && <BoardRevealBackground>JEOPARTY!</BoardRevealBackground>}
 
-                {dollarValueRows}
-            </BrowserBoardContainer>
-        </div>
-    );
+                    {dollarValueRows}
+                </BrowserBoardContainer>
+            </div>
+        );
+    } else {
+        return <div />;
+    }
 };
 
 export default BrowserBoard;

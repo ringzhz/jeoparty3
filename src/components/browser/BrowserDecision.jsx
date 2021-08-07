@@ -116,14 +116,18 @@ const BrowserDecision = () => {
                     const buzzInTimeoutAudio = new Audio(buzzInTimeoutSound);
                     buzzInTimeoutAudio.onended = () => {
                         sayCorrectAnswerFiller(correctAnswer, () => {
-                            socket.emit('show_board');
+                            setTimeout(() => {
+                                socket.emit('show_board');
+                            }, 500);
                         });
                     };
 
                     buzzInTimeoutAudio.play();
                 } else {
                     sayCorrectAnswerFiller(correctAnswer, () => {
-                        socket.emit('show_scoreboard');
+                        setTimeout(() => {
+                            socket.emit('show_scoreboard');
+                        }, 500);
                     });
                 }
             }

@@ -6,13 +6,16 @@ function GameSession() {
 
     this.currentGameState = GameState.LOBBY;
     this.doubleJeoparty = false;
+    this.finalJeoparty = false;
     this.boardRevealed = false;
+
     this.categories = [];
     this.doubleJeopartyCategories = [];
+    this.finalJeopartyClue = {};
+
     this.players = {};
     this.updatedPlayers = {};
     this.playersAnswered = [];
-
     this.boardController = null;
 
     this.categoryIndex = null;

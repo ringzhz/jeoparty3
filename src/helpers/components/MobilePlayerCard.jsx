@@ -91,10 +91,6 @@ const PlayerNameText = styled.span`
     text-shadow: 0.1em 0.1em #000;
 `;
 
-const HypeCol = styled(Col)`
-    ${mixins.flexAlignCenter}
-`;
-
 const PlayerScoreCol = styled(Col)`
     ${mixins.flexAlignCenter}
 `;

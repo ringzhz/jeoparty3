@@ -37,7 +37,7 @@ const LogoText = styled.h1`
 const MobileWager = () => {
     const debug = useContext(DebugContext);
 
-    const [wager, setWager] = useState('5');
+    const [wager, setWager] = useState('');
     const [isWagering, setIsWagering] = useState(debug ? true : false);
     const [player, setPlayer] = useState(debug ? samplePlayers['zsS3DKSSIUOegOQuAAAA'] : {});
 

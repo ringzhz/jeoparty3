@@ -142,10 +142,12 @@ const LivefeedPanel = styled.div`
 const BrowserAnswer = () => {
     const debug = useContext(DebugContext);
 
-    const [categories, setCategories] = useState(debug ? sampleCategories : []);
-    const [categoryIndex, setCategoryIndex] = useState(debug ? 0 : null);
-    const [clueIndex, setClueIndex] = useState(0);
+    const [categoryName, setCategoryName] = useState(debug ? sampleCategories[0].title : '');
+    const [clueText, setClueText] = useState(debug ? sampleCategories[0].clues[0].question : '');
     const [dollarValue, setDollarValue] = useState(0);
+    const [finalJeoparty, setFinalJeoparty] = useState(debug ? true : false);
+    const [currentAnswersSubmitted, setCurrentAnswersSubmitted] = useState(0);
+    const [totalAnswers, setTotalAnswers] = useState(debug ? 4 : 0);
     const [playerName, setPlayerName] = useState(debug ? 'luffy' : '');
     const [answerLivefeed, setAnswerLivefeed] = useState(debug ? 'led ze' : '');
     const [startTimer, setStartTimer] = useState(false);
@@ -153,14 +155,11 @@ const BrowserAnswer = () => {
     const socket = useContext(SocketContext);
 
     useEffect(() => {
-        socket.on('categories', (categories) => {
-            setCategories(categories);
-        });
-
-        socket.on('request_clue', (categoryIndex, clueIndex, dollarValue) => {
-            setCategoryIndex(categoryIndex);
-            setClueIndex(clueIndex);
+        socket.on('request_clue', (categoryName, clueText, dollarValue, finalJeoparty) => {
+            setCategoryName(categoryName);
+            setClueText(clueText);
             setDollarValue(dollarValue);
+            setFinalJeoparty(finalJeoparty);
         });
 
         socket.on('play_buzz_in_sound', (dailyDouble) => {
@@ -178,16 +177,19 @@ const BrowserAnswer = () => {
             setAnswerLivefeed(answerLivefeed);
         });
 
+        socket.on('answers_submitted', (currentAnswersSubmitted, totalAnswers) => {
+            setCurrentAnswersSubmitted(currentAnswersSubmitted);
+            setTotalAnswers(totalAnswers);
+        });
+
         setTimeout(() => {
             setStartTimer(true);
         }, 100);
     }, []);
 
-    const categoryName = _.get(categories, `[${categoryIndex}].title`);
     const categoryNameLength = _.size(categoryName) || 0;
     const categoryNameCompressor = getCategoryNameCompressor(categoryNameLength);
 
-    const clueText = _.get(categories, `[${categoryIndex}].clues[${clueIndex}].question`);
     const clueTextLength = _.size(clueText) || 0;
     const clueTextCompressor = getClueTextCompressor(clueTextLength);
 
@@ -197,7 +199,7 @@ const BrowserAnswer = () => {
                 <PanelCol lg={'6'}>
                     <CategoryPanel>
                         <CategoryTextPanel>
-                            {_.get(categories, `[0].title`) && (
+                            {!_.isEmpty(categoryName) && (
                                 <FitText compressor={categoryNameCompressor}>
                                     <CategoryText>
                                         {_.invoke(categoryName, 'toUpperCase')}
@@ -208,7 +210,7 @@ const BrowserAnswer = () => {
 
                         <DollarValueTextPanel>
                             <DollarValueTextWrapper>
-                                <DollarValueText dollarValue={dollarValue} />
+                                {!finalJeoparty && <DollarValueText dollarValue={dollarValue} />}
                             </DollarValueTextWrapper>
                         </DollarValueTextPanel>
                     </CategoryPanel>
@@ -216,7 +218,7 @@ const BrowserAnswer = () => {
 
                 <PanelCol lg={'6'}>
                     <CluePanel>
-                        {_.get(categories, `[0].title`) && (
+                        {!_.isEmpty(categoryName) && (
                             <FitText compressor={clueTextCompressor}>
                                 {_.invoke(clueText, 'toUpperCase')}
                             </FitText>
@@ -229,10 +231,10 @@ const BrowserAnswer = () => {
 
             <LivefeedRow>
                 <PanelCol lg={'12'}>
-                    <PlayerNameText>{_.invoke(playerName, 'toUpperCase')}</PlayerNameText>
+                    <PlayerNameText>{finalJeoparty ? 'WAITING FOR ANSWERS' : _.invoke(playerName, 'toUpperCase')}</PlayerNameText>
                     <LivefeedPanel>
                         <FitText compressor={1.5}>
-                            {_.isEmpty(answerLivefeed) ? <span>&nbsp;</span> : _.invoke(answerLivefeed, 'toUpperCase')}
+                            {finalJeoparty ? `${currentAnswersSubmitted}/${totalAnswers} SUBMITTED` : _.isEmpty(answerLivefeed) ? <span>&nbsp;</span> : _.invoke(answerLivefeed, 'toUpperCase')}
                         </FitText>
                     </LivefeedPanel>
                 </PanelCol>

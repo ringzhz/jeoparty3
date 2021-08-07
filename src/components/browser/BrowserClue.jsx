@@ -60,28 +60,21 @@ const TimerRow = styled(Row)`
 const BrowserClue = () => {
     const debug = useContext(DebugContext);
 
-    const [categories, setCategories] = useState(debug ? sampleCategories : []);
-    const [categoryIndex, setCategoryIndex] = useState(debug ? 0 : null);
-    const [clueIndex, setClueIndex] = useState(debug ? 0 : null);
+    const [clueText, setClueText] = useState(debug ? sampleCategories[0].clues[0].question : '')
     const [showTimer, setShowTimer] = useState(false);
     const [startTimer, setStartTimer] = useState(false);
 
     const socket = useContext(SocketContext);
 
     useEffect(() => {
-        socket.on('categories', (categories) => {
-            setCategories(categories);
+        socket.on('request_clue', (clueText) => {
+            setClueText(clueText);
         });
 
-        socket.on('request_clue', (categoryIndex, clueIndex) => {
-            setCategoryIndex(categoryIndex);
-            setClueIndex(clueIndex);
-        });
-
-        socket.on('say_clue_text', (clueText, dailyDouble, sayClueText) => {
+        socket.on('say_clue_text', (clueText, isWager, sayClueText) => {
             if (sayClueText) {
                 say(clueText, () => {
-                    socket.emit(dailyDouble ? 'show_daily_double_clue' : 'start_timer');
+                    socket.emit(isWager ? 'wager_buzz_in' : 'start_timer');
                 });
             }
         });
@@ -101,7 +94,6 @@ const BrowserClue = () => {
         }
     }, []);
 
-    const clueText = _.get(categories, `[${categoryIndex}].clues[${clueIndex}].question`);
     const clueTextLength = _.size(clueText) || 0;
     const clueTextCompressor = getClueTextCompressor(clueTextLength);
 
@@ -109,7 +101,7 @@ const BrowserClue = () => {
         <BrowserClueContainer fluid>
             <ClueRow>
                 <ClueCol lg={'12'}>
-                    {_.get(categories, `[0].title`) && (
+                    {!_.isEmpty(clueText) && (
                         <FitText compressor={clueTextCompressor}>
                             {_.invoke(clueText, 'toUpperCase')}
                         </FitText>

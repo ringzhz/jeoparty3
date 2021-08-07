@@ -8,33 +8,33 @@ const MAX_CATEGORY_ID = 18418;
 const NUM_CATEGORIES = 6;
 const NUM_CLUES = 5;
 
-const getDailyDoubleIndices = () => {
-    const weightedRandom = (distribution) => {
-        let sum = 0;
-        let r = Math.random();
-
-        for (const i in distribution) {
-            sum += distribution[i];
-
-            if (r <= sum) {
-                return parseInt(i);
-            }
-        }
-    };
+const weightedRandomClueIndex = () => {
+    let sum = 0;
+    let r = Math.random();
 
     const distribution = {0: 0.05, 1: 0.2, 2: 0.4, 3: 0.2, 4: 0.15};
 
+    for (const i in distribution) {
+        sum += distribution[i];
+
+        if (r <= sum) {
+            return parseInt(i);
+        }
+    }
+};
+
+const getDailyDoubleIndices = () => {
     const categoryIndex = Math.floor(Math.random() * NUM_CATEGORIES);
-    const clueIndex = weightedRandom(distribution);
+    const clueIndex = weightedRandomClueIndex();
 
     const djCategoryIndex1 = Math.floor(Math.random() * NUM_CATEGORIES);
-    const djClueIndex1 = weightedRandom(distribution);
+    const djClueIndex1 = weightedRandomClueIndex();
 
     let djCategoryIndex2;
     do {
         djCategoryIndex2 = Math.floor(Math.random() * NUM_CATEGORIES);
     } while (djCategoryIndex1 === djCategoryIndex2);
-    const djClueIndex2 = weightedRandom(distribution);
+    const djClueIndex2 = weightedRandomClueIndex();
 
     return [categoryIndex, clueIndex, djCategoryIndex1, djClueIndex1, djCategoryIndex2, djClueIndex2];
 };
@@ -91,6 +91,7 @@ const approveCategory = (category) => {
 exports.getRandomCategories = (cb) => {
     let categories = [];
     let doubleJeopartyCategories = [];
+    let finalJeopartyClue = {};
     let usedCategoryIds = [];
 
     const recursiveGetRandomCategory = () => {
@@ -100,13 +101,16 @@ exports.getRandomCategories = (cb) => {
             } else {
                 if (categories.length < NUM_CATEGORIES) {
                     categories.push(category);
-                } else {
+                } else if (doubleJeopartyCategories < NUM_CATEGORIES) {
                     doubleJeopartyCategories.push(category);
+                } else {
+                    finalJeopartyClue = category.clues[weightedRandomClueIndex()];
+                    finalJeopartyClue.categoryName = category.title;
                 }
 
                 usedCategoryIds.push(category.id);
 
-                if (doubleJeopartyCategories.length === NUM_CATEGORIES) {
+                if (_.get(finalJeopartyClue, 'categoryName')) {
                     const [categoryIndex, clueIndex, djCategoryIndex1, djClueIndex1, djCategoryIndex2, djClueIndex2] = getDailyDoubleIndices();
                     categories[categoryIndex].clues[clueIndex].dailyDouble = true;
                     doubleJeopartyCategories[djCategoryIndex1].clues[djClueIndex1].dailyDouble = true;
@@ -114,7 +118,7 @@ exports.getRandomCategories = (cb) => {
 
                     console.log(`Daily double is at category: ${categoryIndex} and clue: ${clueIndex}`);
 
-                    cb(categories, doubleJeopartyCategories);
+                    cb(categories, doubleJeopartyCategories, finalJeopartyClue);
                 } else {
                     recursiveGetRandomCategory();
                 }

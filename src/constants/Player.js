@@ -5,6 +5,8 @@ function Player() {
     this.signature = '';
     this.score = 0;
     this.wager = 0;
+    this.finalJeopartyWagerSubmitted = false;
+    this.finalJeopartyAnswerSubmitted = false;
     this.answer = '';
     this.streak = 0;
     this.heat = 0;

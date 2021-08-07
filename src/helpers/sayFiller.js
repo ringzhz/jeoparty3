@@ -55,3 +55,13 @@ export const sayBestStreakFiller = (playerName, streak, title, onComplete) => {
     const text = `${playerName} is on a ${streak} answer streak. You're a ${title}`;
     say(text, onComplete);
 };
+
+export const sayFinalJeopartyCategoryRevealFiller = (onComplete) => {
+    const text = `The final Je-party category is...`;
+    say(text, onComplete);
+};
+
+export const sayFinalJeopartyWagerFiller = (onComplete) => {
+    const text = `Enter a wager between 0 and your current net worth`;
+    say(text, onComplete);
+};
