@@ -8,6 +8,7 @@ function GameSession() {
     this.doubleJeoparty = false;
     this.finalJeoparty = false;
     this.boardRevealed = false;
+    this.finalJeopartyDecisionIndex = 0;
 
     this.categories = [];
     this.doubleJeopartyCategories = [];

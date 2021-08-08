@@ -49,7 +49,7 @@ const MobileAnswer = () => {
         });
 
         socket.on('answer_timeout', (answer) => {
-            socket.emit('submit_answer', answer);
+            socket.emit('submit_answer', answer, true);
         });
 
         socket.on('player', (player) => {
@@ -63,7 +63,7 @@ const MobileAnswer = () => {
     }, []);
 
     const handleSubmitAnswer = useCallback((answer) => {
-        socket.emit('submit_answer', answer);
+        socket.emit('submit_answer', answer, false);
     }, []);
 
     return (

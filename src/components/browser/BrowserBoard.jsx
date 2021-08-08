@@ -13,7 +13,7 @@ import mixins from '../../helpers/mixins';
 import DollarValueText from '../../helpers/components/DollarValueText';
 import CategoryReveal from '../../helpers/components/CategoryReveal';
 import backgroundImage from '../../assets/images/background.png';
-import dailyDoubleBackgroundImage from '../../assets/images/dailyDoubleBackground.jpeg';
+import dailyDoubleBackgroundImage from '../../assets/images/dailyDoubleBackground.png';
 import starBackgroundImage from '../../assets/images/starBackground.png';
 import dailyDoubleSound from '../../assets/audio/dailyDouble.mp3';
 import applauseSound from '../../assets/audio/correct.mp3';

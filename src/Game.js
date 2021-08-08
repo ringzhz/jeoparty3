@@ -31,6 +31,8 @@ import logoFont from './assets/fonts/logo.ttf';
 import clueFont from './assets/fonts/clue.otf';
 import boardFont from './assets/fonts/board.otf';
 import dailyDoubleFont from './assets/fonts/dailyDouble.ttf';
+import BrowserPodium from "./components/browser/BrowserPodium";
+import MobilePodium from "./components/mobile/MobilePodium";
 
 const GlobalStyle = createGlobalStyle`
     body {
@@ -106,7 +108,7 @@ const GlobalStyle = createGlobalStyle`
 const Game = () => {
     const debug = true;
 
-    const [gameState, setGameState] = useState(debug ? GameState.ANSWER : GameState.LOBBY);
+    const [gameState, setGameState] = useState(debug ? GameState.PODIUM : GameState.LOBBY);
     const [gameStateAck, setGameStateAck] = useState(() => () => {});
 
     useEffect(() => {
@@ -164,6 +166,10 @@ const Game = () => {
         case GameState.SCOREBOARD:
             browserView = <BrowserScoreboard />;
             mobileView = <MobileScoreboard />;
+            break;
+        case GameState.PODIUM:
+            browserView = <BrowserPodium />;
+            mobileView = <MobilePodium />;
             break;
         default:
             browserView = <BrowserLobby />;

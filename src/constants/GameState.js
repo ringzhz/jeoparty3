@@ -6,5 +6,6 @@ exports.GameState = {
     CLUE: 'clue',
     ANSWER: 'answer',
     DECISION: 'decision',
-    SCOREBOARD: 'scoreboard'
+    SCOREBOARD: 'scoreboard',
+    PODIUM: 'podium'
 };

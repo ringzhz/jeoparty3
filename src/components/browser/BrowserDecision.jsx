@@ -80,6 +80,7 @@ const BrowserDecision = () => {
     useEffect(() => {
         socket.on('show_answer', (answer) => {
             setShowAnswer(true);
+            setShowCorrectAnswer(false);
             setAnswer(answer);
         });
 
@@ -97,9 +98,20 @@ const BrowserDecision = () => {
                     correctAudio.volume = 0.5;
                     correctAudio.play();
 
-                    sayDollarValueFiller(dollarValue);
+                    sayDollarValueFiller(dollarValue, () => {
+                        setTimeout(() => {
+                            socket.emit('show_decision', isCorrect);
+                        }, 500);
+                    });
                 } else {
                     const incorrectAudio = new Audio(incorrectSound);
+
+                    incorrectAudio.onended = () => {
+                        setTimeout(() => {
+                            socket.emit('show_decision', isCorrect);
+                        }, 500);
+                    };
+
                     incorrectAudio.play();
                 }
             }, 100);

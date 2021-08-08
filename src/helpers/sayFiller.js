@@ -41,9 +41,9 @@ export const sayWagerFiller = (min, max, onComplete) => {
     say(text, onComplete);
 };
 
-export const sayDollarValueFiller = (dollarValue) => {
+export const sayDollarValueFiller = (dollarValue, onComplete) => {
     const text = `Correct for ${dollarValue}`;
-    say(text);
+    say(text, onComplete);
 };
 
 export const sayCorrectAnswerFiller = (correctAnswer, onComplete) => {
@@ -63,5 +63,10 @@ export const sayFinalJeopartyCategoryRevealFiller = (onComplete) => {
 
 export const sayFinalJeopartyWagerFiller = (onComplete) => {
     const text = `Enter a wager between 0 and your current net worth`;
+    say(text, onComplete);
+};
+
+export const sayChampionIntroductionFiller = (onComplete) => {
+    const text = `And today's Je-party champion is...`;
     say(text, onComplete);
 };

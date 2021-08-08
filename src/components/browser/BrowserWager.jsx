@@ -11,7 +11,7 @@ import { DebugContext } from '../../context/debug';
 import { SocketContext } from '../../context/socket';
 import mixins from '../../helpers/mixins';
 import starBackgroundImage from '../../assets/images/starBackground.png';
-import dailyDoubleBackgroundImage from '../../assets/images/dailyDoubleBackground.jpeg';
+import dailyDoubleBackgroundImage from '../../assets/images/dailyDoubleBackground.png';
 import Timer from '../../helpers/components/Timer';
 import CategoryReveal from '../../helpers/components/CategoryReveal';
 import HypeText from '../../helpers/components/HypeText';
@@ -211,19 +211,6 @@ const BrowserWager = () => {
             socket.off('final_jeoparty_clue');
         }
     });
-
-    // DEBUG
-    // document.body.onkeyup = (e) => {
-    //     if (e.keyCode === 32) {
-    //         setTimeout(() => {
-    //             setShowTimer(true);
-    //
-    //             setTimeout(() => {
-    //                 setStartTimer(true);
-    //             }, 100);
-    //         }, 100);
-    //     }
-    // };
 
     const WagerInfoPlayerCard = () => {
         return (

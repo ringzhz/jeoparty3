@@ -1,10 +1,11 @@
-import FitText from "@kennethormandy/react-fittext";
-import _ from "lodash";
-import React from "react";
-import styled from "styled-components";
-import mixins from "../mixins";
-import starBackgroundImage from "../../assets/images/starBackground.png";
-import backgroundImage from "../../assets/images/background.png";
+import React from 'react';
+import _ from 'lodash';
+import FitText from '@kennethormandy/react-fittext';
+import styled from 'styled-components';
+
+import starBackgroundImage from '../../assets/images/starBackground.png';
+import backgroundImage from '../../assets/images/background.png';
+import mixins from '../mixins';
 
 const getCategoryNameCompressor = (textLength) => {
     let compressor = null;
