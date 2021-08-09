@@ -9,6 +9,7 @@
     "@testing-library/user-event": "^12.1.10",
     "bootstrap": "^4.6.0",
     "express": "^4.17.1",
+    "fireworks": "^2.2.7",
     "jservice-node": "^0.2.3",
     "lodash": "^4.17.21",
     "memory-cache": "^0.2.0",

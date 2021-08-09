@@ -101,7 +101,7 @@ exports.getRandomCategories = (cb) => {
             } else {
                 if (categories.length < NUM_CATEGORIES) {
                     categories.push(category);
-                } else if (doubleJeopartyCategories < NUM_CATEGORIES) {
+                } else if (doubleJeopartyCategories.length < NUM_CATEGORIES) {
                     doubleJeopartyCategories.push(category);
                 } else {
                     finalJeopartyClue = category.clues[weightedRandomClueIndex()];
@@ -115,8 +115,6 @@ exports.getRandomCategories = (cb) => {
                     categories[categoryIndex].clues[clueIndex].dailyDouble = true;
                     doubleJeopartyCategories[djCategoryIndex1].clues[djClueIndex1].dailyDouble = true;
                     doubleJeopartyCategories[djCategoryIndex2].clues[djClueIndex2].dailyDouble = true;
-
-                    console.log(`Daily double is at category: ${categoryIndex} and clue: ${clueIndex}`);
 
                     cb(categories, doubleJeopartyCategories, finalJeopartyClue);
                 } else {

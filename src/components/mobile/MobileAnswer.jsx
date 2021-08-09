@@ -64,6 +64,7 @@ const MobileAnswer = () => {
 
     const handleSubmitAnswer = useCallback((answer) => {
         socket.emit('submit_answer', answer, false);
+        setIsAnswering(false);
     }, []);
 
     return (

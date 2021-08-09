@@ -13,6 +13,7 @@ import { timers } from '../../constants/timers';
 import mixins from '../../helpers/mixins';
 import Timer from '../../helpers/components/Timer';
 
+import finalJeopartyPingSound from '../../assets/audio/finalJeopartyPing.mp3';
 import say from '../../helpers/say';
 
 // DEBUG
@@ -60,7 +61,8 @@ const TimerRow = styled(Row)`
 const BrowserClue = () => {
     const debug = useContext(DebugContext);
 
-    const [clueText, setClueText] = useState(debug ? sampleCategories[0].clues[0].question : '')
+    const [clueText, setClueText] = useState(debug ? sampleCategories[0].clues[0].question : '');
+    const [revealClue, setRevealClue] = useState(false);
     const [showTimer, setShowTimer] = useState(false);
     const [startTimer, setStartTimer] = useState(false);
 
@@ -71,11 +73,29 @@ const BrowserClue = () => {
             setClueText(clueText);
         });
 
-        socket.on('say_clue_text', (clueText, isWager, sayClueText) => {
+        socket.on('say_clue_text', (clueText, dailyDouble, finalJeoparty, sayClueText) => {
             if (sayClueText) {
-                say(clueText, () => {
-                    socket.emit(isWager ? 'wager_buzz_in' : 'start_timer');
-                });
+                if (finalJeoparty) {
+                    setRevealClue(false);
+
+                    const finalJeopartyPingAudio = new Audio(finalJeopartyPingSound);
+
+                    finalJeopartyPingAudio.onended = () => {
+                        setRevealClue(true);
+
+                        say(clueText, () => {
+                            socket.emit('wager_buzz_in');
+                        });
+                    };
+
+                    finalJeopartyPingAudio.play();
+                } else {
+                    setRevealClue(true);
+
+                    say(clueText, () => {
+                        socket.emit(dailyDouble ? 'wager_buzz_in' : 'start_timer');
+                    });
+                }
             }
         });
 

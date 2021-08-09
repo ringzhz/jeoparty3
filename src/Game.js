@@ -106,9 +106,9 @@ const GlobalStyle = createGlobalStyle`
 `;
 
 const Game = () => {
-    const debug = true;
+    const debug = false;
 
-    const [gameState, setGameState] = useState(debug ? GameState.PODIUM : GameState.LOBBY);
+    const [gameState, setGameState] = useState(debug ? GameState.WAGER : GameState.LOBBY);
     const [gameStateAck, setGameStateAck] = useState(() => () => {});
 
     useEffect(() => {

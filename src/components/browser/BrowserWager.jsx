@@ -14,11 +14,9 @@ import starBackgroundImage from '../../assets/images/starBackground.png';
 import dailyDoubleBackgroundImage from '../../assets/images/dailyDoubleBackground.png';
 import Timer from '../../helpers/components/Timer';
 import CategoryReveal from '../../helpers/components/CategoryReveal';
-import HypeText from '../../helpers/components/HypeText';
 import { timers } from '../../constants/timers';
 
 import finalJeopartyPingSound from '../../assets/audio/finalJeopartyPing.mp3';
-import finalJeopartyMusicSound from '../../assets/audio/finalJeopartyMusic.mp3';
 import say from '../../helpers/say';
 import {
     sayWagerFiller,
@@ -43,9 +41,6 @@ const FinalJeopartyCategoryRevealWrapper = styled.div`
 const DailyDoubleBanner = styled.div`
     ${mixins.flexAlignCenter};
     height: 10vh;
-
-    background-image: url(${dailyDoubleBackgroundImage});
-    background-size: cover;
   
     padding-bottom: 0.5em;
 `;
@@ -53,9 +48,6 @@ const DailyDoubleBanner = styled.div`
 const FinalJeopartyBanner = styled.div`
     ${mixins.flexAlignCenter};
     height: 10vh;
-
-    background-image: url(${starBackgroundImage});
-    background-size: cover;
 `;
 
 const FinalJeopartyLogoText = styled.span`
@@ -138,10 +130,10 @@ const TimerRow = styled(Row)`
 const BrowserWager = () => {
     const debug = useContext(DebugContext);
 
-    const [doubleJeoparty, setDoubleJeoparty] = useState(false);
+    const [maxWager, setMaxWager] = useState(debug ? 1000 : 0);
     const [boardController, setBoardController] = useState(debug ? samplePlayers['zsS3DKSSIUOegOQuAAAA'] : {});
 
-    const [finalJeopartyClue, setFinalJeopartyClue] = useState(debug ? sampleCategories[0].clues[0] : {});
+    const [finalJeopartyClue, setFinalJeopartyClue] = useState(!debug ? sampleCategories[0].clues[0] : {});
     const [showFinalJeopartyCategoryReveal, setShowFinalJeopartyCategoryReveal] = useState(debug ? false : true);
     const [revealFinalJeopartyCategory, setRevealFinalJeopartyCategory] = useState(false);
     const [currentWagersSubmitted, setCurrentWagersSubmitted] = useState(0);
@@ -154,13 +146,11 @@ const BrowserWager = () => {
     const socket = useContext(SocketContext);
 
     useEffect(() => {
-        socket.on('board_controller', (boardController, doubleJeoparty) => {
+        socket.on('board_controller', (boardController, maxWager) => {
             setBoardController(boardController);
-            setDoubleJeoparty(doubleJeoparty);
+            setMaxWager(maxWager);
 
-            const score = _.get(boardController, 'score');
-            // TODO: This calculation should be done on server side I think?
-            sayWagerFiller(5, Math.max(score, doubleJeoparty ? 2000 : 1000), () => {
+            sayWagerFiller(5, maxWager, () => {
                 socket.emit('start_wager_timer');
             });
         });
@@ -233,7 +223,7 @@ const BrowserWager = () => {
 
                         <WagerInfoPanel>
                             <FitText compressor={1}>
-                                <WagerInfoPanelText>${Math.max(_.get(boardController, 'score'), doubleJeoparty ? 2000 : 1000)}</WagerInfoPanelText>
+                                <WagerInfoPanelText>${maxWager}</WagerInfoPanelText>
                             </FitText>
                         </WagerInfoPanel>
                     </WagerInfoCol>

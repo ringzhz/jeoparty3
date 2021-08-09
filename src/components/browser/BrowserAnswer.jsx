@@ -16,6 +16,7 @@ import starBackgroundImage from '../../assets/images/starBackground.png';
 import Timer from '../../helpers/components/Timer';
 
 import buzzInSound from '../../assets/audio/buzzIn.mp3';
+import finalJeopartyMusicSound from '../../assets/audio/finalJeopartyMusic.mp3';
 
 // DEBUG
 import { sampleCategories } from '../../constants/sampleCategories';
@@ -162,10 +163,15 @@ const BrowserAnswer = () => {
             setFinalJeoparty(finalJeoparty);
         });
 
-        socket.on('play_buzz_in_sound', (dailyDouble) => {
-            if (!dailyDouble) {
+        socket.on('play_buzz_in_sound', (dailyDouble, finalJeoparty) => {
+            if (!dailyDouble && !finalJeoparty) {
                 const buzzInAudio = new Audio(buzzInSound);
                 buzzInAudio.play();
+            }
+
+            if (finalJeoparty) {
+                const finalJeopartyMusicAudio = new Audio(finalJeopartyMusicSound);
+                finalJeopartyMusicAudio.play();
             }
         });
 
@@ -225,7 +231,7 @@ const BrowserAnswer = () => {
                         )}
                     </CluePanel>
 
-                    <Timer override={{ position: 'absolute', left: '25%', bottom: '0' }} height={'5%'} width={'50%'} start={startTimer} time={timers.ANSWER_TIMEOUT} slideUp={false} />
+                    <Timer override={{ position: 'absolute', left: '25%', bottom: '0' }} height={'5%'} width={'50%'} start={startTimer} time={finalJeoparty ? timers.FINAL_JEOPARTY_ANSWER_TIMEOUT : timers.ANSWER_TIMEOUT} slideUp={false} />
                 </PanelCol>
             </ClueRow>
 

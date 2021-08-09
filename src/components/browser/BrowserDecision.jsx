@@ -27,6 +27,19 @@ const AnswerCol = styled(Col)`
     ${mixins.flexAlignCenter}
 `;
 
+const PlayerNameText = styled.span`
+    position: absolute;
+    left: 50%;
+    -webkit-transform: translateX(-50%);
+    transform: translateX(-50%);
+  
+    font-size: 5vh;
+    font-family: clue, serif;
+    text-shadow: 0.1em 0.1em #000;
+  
+    top: -7vh;
+`;
+
 const AnswerPanel = styled.div`
     margin-left: 5%;
     height: 25%;
@@ -70,6 +83,7 @@ const BrowserDecision = () => {
     const [showCorrectAnswer, setShowCorrectAnswer] = useState(false);
     const [showDollarValue, setShowDollarValue] = useState(false);
 
+    const [playerName, setPlayerName] = useState(debug ? 'Isaac' : '');
     const [answer, setAnswer] = useState('');
     const [correctAnswer, setCorrectAnswer] = useState('');
     const [isCorrect, setIsCorrect] = useState(false);
@@ -78,10 +92,11 @@ const BrowserDecision = () => {
     const socket = useContext(SocketContext);
 
     useEffect(() => {
-        socket.on('show_answer', (answer) => {
+        socket.on('show_answer', (answer, playerName) => {
             setShowAnswer(true);
             setShowCorrectAnswer(false);
             setAnswer(answer);
+            setPlayerName(playerName);
         });
 
         socket.on('show_decision', (isCorrect, dollarValue) => {
@@ -122,6 +137,7 @@ const BrowserDecision = () => {
             setShowAnswer(false);
             setShowCorrectAnswer(true);
             setCorrectAnswer(correctAnswer);
+            setPlayerName('');
 
             if (sayCorrectAnswer) {
                 if (skipScoreboard) {
@@ -165,6 +181,7 @@ const BrowserDecision = () => {
         <Container fluid>
             <AnswerRow>
                 <AnswerCol lg={'12'}>
+                    <PlayerNameText>{_.invoke(playerName, 'toUpperCase')}</PlayerNameText>
                     <AnswerPanel>
                         <FitText compressor={2}>
                             {text}

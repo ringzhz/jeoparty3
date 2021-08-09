@@ -256,6 +256,7 @@ const checkBoardCompletion = (socket) => {
 
     if (gameSession.doubleJeoparty) {
         // All double jeoparty clues are completed, kick off final jeoparty
+        updateGameSession(socket.sessionName, 'finalJeoparty', true);
         return true;
     } else {
         // All clues are completed, reset for double jeoparty
@@ -270,15 +271,24 @@ const checkBoardCompletion = (socket) => {
 };
 
 const showBoard = (socket) => {
+    const gameSession = sessionCache.get(socket.sessionName);
     const finalJeoparty = checkBoardCompletion(socket);
 
     if (finalJeoparty) {
-        updateGameSession(socket.sessionName, 'finalJeoparty', true);
-        showWager(socket);
+        const numFinalJeopartyPlayers = _.keys(_.values(gameSession.players).filter((player) => {
+            return player.score > 0;
+        })).length;
+
+        if (numFinalJeopartyPlayers > 1) {
+            showWager(socket);
+        } else if (numFinalJeopartyPlayers === 1) {
+            showPodium(socket);
+        } else {
+            showPodium(socket, { name: 'the friends we made along the way' });
+        }
+
         return;
     }
-
-    const gameSession = sessionCache.get(socket.sessionName);
 
     gameSession.clients.map((client) => {
         client.emit('set_game_state', GameState.BOARD, () => {
@@ -296,13 +306,20 @@ const showBoard = (socket) => {
 const showWager = (socket) => {
     const gameSession = sessionCache.get(socket.sessionName);
 
+    const totalWagers = _.keys(_.values(gameSession.players).filter((player) => {
+        return player.score > 0;
+    })).length;
+
     gameSession.clients.map((client) => {
         client.emit('set_game_state', GameState.WAGER, () => {
             if (gameSession.finalJeoparty) {
                 client.emit('final_jeoparty_clue', gameSession.finalJeopartyClue);
+                client.emit('wagers_submitted', 0, totalWagers);
                 client.emit('player', _.get(gameSession, `updatedPlayers[${client.id}]`));
             } else {
-                client.emit('board_controller', _.get(gameSession, `players[${gameSession.boardController.id}]`), gameSession.doubleJeoparty);
+                const boardController = _.get(gameSession, `players[${gameSession.boardController.id}]`);
+
+                client.emit('board_controller', boardController, Math.max(_.get(boardController, 'score'), gameSession.doubleJeoparty ? 2000 : 1000));
                 client.emit('player', _.get(gameSession, `updatedPlayers[${client.id}]`));
             }
         });
@@ -316,7 +333,7 @@ const updatePlayerWager = (socket, wager) => {
 
     const score = _.get(gameSession, `players[${socket.id}].score`);
     const min = gameSession.finalJeoparty ? 0 : 5;
-    const max = Math.max(score, gameSession.doubleJeoparty ? 2000 : 1000);
+    const max = gameSession.finalJeoparty ? score : Math.max(score, gameSession.doubleJeoparty ? 2000 : 1000);
     updatePlayer(socket.sessionName, socket.id, 'wager', formatWager(wager, min, max));
 };
 
@@ -327,7 +344,7 @@ const showClue = (socket, sayClueText) => {
     gameSession.clients.map((client) => {
         client.emit('set_game_state', GameState.CLUE, () => {
             client.emit('request_clue', clue.question);
-            client.emit('say_clue_text', clue.question, clue.dailyDouble || gameSession.finalJeoparty, sayClueText);
+            client.emit('say_clue_text', clue.question, clue.dailyDouble, gameSession.finalJeoparty, sayClueText);
             client.emit('has_answered', clue.dailyDouble || gameSession.finalJeoparty || gameSession.playersAnswered.includes(client.id));
             client.emit('player', _.get(gameSession, `updatedPlayers[${client.id}]`));
         });
@@ -344,11 +361,11 @@ const buzzIn = (socket) => {
     const categoryName = gameSession.finalJeoparty ? gameSession.finalJeopartyClue.categoryName : gameSession.categories[gameSession.categoryIndex].title;
     const dollarValue = gameSession.dailyDouble ? _.get(gameSession, `players[${socket.id}].wager`) : (gameSession.doubleJeoparty ? 400 : 200) * (gameSession.clueIndex + 1);
 
-    const currentAnswersSubmitted = Object.keys(gameSession.players.filter((player) => {
+    const currentAnswersSubmitted = _.keys(_.values(gameSession.players).filter((player) => {
         return player.score > 0 && player.finalJeopartyAnswerSubmitted;
     })).length;
 
-    const totalAnswers = Object.keys(gameSession.players.filter((player) => {
+    const totalAnswers = _.keys(_.values(gameSession.players).filter((player) => {
         return player.score > 0;
     })).length;
 
@@ -357,7 +374,7 @@ const buzzIn = (socket) => {
             const score = _.get(gameSession, `players[${client.id}].score`) || 0;
 
             client.emit('request_clue', categoryName, clue.question, dollarValue, gameSession.finalJeoparty);
-            client.emit('play_buzz_in_sound', clue.dailyDouble);
+            client.emit('play_buzz_in_sound', clue.dailyDouble, gameSession.finalJeoparty);
             client.emit('player_name', _.get(gameSession, `players[${socket.id}].name`));
             client.emit('answers_submitted', currentAnswersSubmitted, totalAnswers);
             client.emit('is_answering', gameSession.finalJeoparty ? score > 0 : client.id === socket.id);
@@ -376,16 +393,16 @@ const buzzIn = (socket) => {
 
         if (gameSession.finalJeoparty) {
             gameSession.clients.map((client) => {
-                const score = _.get(gameSession, `players[${client.id}].score`) || 0;
+                const score = _.get(gameSession, `updatedPlayers[${client.id}].score`) || 0;
 
-                if (score > 0 && !_.get(gameSession, `players[${client.id}].finalJeopartyAnswerSubmitted`)) {
+                if (score > 0) {
                     client.emit('answer_timeout', _.get(gameSession, `players[${client.id}].answer`));
                 }
             });
         } else {
             socket.emit('answer_timeout', _.get(gameSession, `players[${socket.id}].answer`));
         }
-    }, timers.ANSWER_TIMEOUT * 1000);
+    }, (gameSession.finalJeoparty ? timers.FINAL_JEOPARTY_ANSWER_TIMEOUT : timers.ANSWER_TIMEOUT) * 1000);
 };
 
 const startTimer = (socket) => {
@@ -406,11 +423,11 @@ const startTimer = (socket) => {
 const showFinalJeopartyDecision = (socket) => {
     const gameSession = sessionCache.get(socket.sessionName);
 
-    const totalAnswers = Object.keys(gameSession.updatedPlayers.filter((player) => {
+    const totalAnswers = _.keys(_.values(gameSession.players).filter((player) => {
         return player.score > 0;
     })).length;
 
-    const sortedPlayers = _.cloneDeep(gameSession.updatedPlayers.filter((player) => {
+    const sortedPlayers = _.cloneDeep(_.values(gameSession.players).filter((player) => {
         return player.score > 0;
     }).sort((a, b) => {
         return a.name.localeCompare(b.name);
@@ -422,12 +439,13 @@ const showFinalJeopartyDecision = (socket) => {
         if (gameSession.finalJeopartyDecisionIndex === 0) {
             gameSession.clients.map((client) => {
                 client.emit('set_game_state', GameState.DECISION, () => {
-                    client.emit('show_answer', player.answer);
+                    client.emit('show_answer', player.answer, player.name);
+                    client.emit('player', _.get(gameSession, `updatedPlayers[${client.id}]`));
                     client.emit('player', _.get(gameSession, `updatedPlayers[${client.id}]`));
                 });
             });
         } else {
-            gameSession.browserClient.emit('show_answer', player.answer);
+            gameSession.browserClient.emit('show_answer', player.answer, player.name);
         }
 
         updateGameSession(socket.sessionName, 'finalJeopartyDecisionIndex', gameSession.finalJeopartyDecisionIndex + 1);
@@ -508,13 +526,13 @@ const showScoreboard = (socket) => {
     updateGameSession(socket.sessionName, 'buzzInTimeout', true);
 };
 
-const showPodium = (socket) => {
+const showPodium = (socket, championOverride) => {
     const gameSession = sessionCache.get(socket.sessionName);
     const champion = Object.values(gameSession.updatedPlayers).sort((a, b) => b.score - a.score)[0];
 
     gameSession.clients.map((client) => {
         client.emit('set_game_state', GameState.PODIUM, () => {
-            client.emit('champion', champion);
+            client.emit('champion', championOverride || champion);
             client.emit('player', _.get(gameSession, `updatedPlayers[${client.id}]`));
         });
     });
@@ -659,18 +677,13 @@ io.on('connection', (socket) => {
         gameSession.browserClient.emit('start_wager_timer');
 
         if (gameSession.finalJeoparty) {
-            let totalWagers = 0;
-
             gameSession.clients.map((client) => {
                 const score = _.get(gameSession, `players[${client.id}].score`) || 0;
 
                 if (score > 0) {
                     client.emit('is_wagering', score > 0);
-                    totalWagers++;
                 }
             });
-
-            gameSession.browserClient('wagers_submitted', 0, totalWagers);
         } else {
             // Daily double
             gameSession.boardController.emit('is_wagering', true);
@@ -719,11 +732,11 @@ io.on('connection', (socket) => {
         if (gameSession.finalJeoparty) {
             updatePlayer(socket.sessionName, socket.id, 'finalJeopartyWagerSubmitted', true);
 
-            const currentWagersSubmitted = Object.keys(gameSession.players.filter((player) => {
+            const currentWagersSubmitted = _.keys(_.values(gameSession.players).filter((player) => {
                 return player.score > 0 && player.finalJeopartyWagerSubmitted;
             })).length;
 
-            const totalWagers = Object.keys(gameSession.players.filter((player) => {
+            const totalWagers = _.keys(_.values(gameSession.players).filter((player) => {
                 return player.score > 0;
             })).length;
 
@@ -771,24 +784,26 @@ io.on('connection', (socket) => {
 
         const gameSession = sessionCache.get(socket.sessionName);
 
-        const categoryName = gameSession.categories[gameSession.categoryIndex].title;
-        const clue = gameSession.categories[gameSession.categoryIndex].clues[gameSession.clueIndex];
+        const categoryName = gameSession.finalJeoparty ? gameSession.finalJeopartyClue.categoryName : gameSession.categories[gameSession.categoryIndex].title;
+        const clue = gameSession.finalJeoparty ? gameSession.finalJeopartyClue : gameSession.categories[gameSession.categoryIndex].clues[gameSession.clueIndex];
 
         const isCorrect = checkAnswer(categoryName, clue.question, clue.answer, answer);
         const dollarValue = clue.dailyDouble || gameSession.finalJeoparty ? _.get(gameSession, `players[${socket.id}].wager`) : (gameSession.doubleJeoparty ? 400 : 200) * (gameSession.clueIndex + 1);
 
-        updatePlayersAnswered(socket.sessionName, socket.id);
-        updatePlayerScore(socket, dollarValue, isCorrect);
+        if (!gameSession.finalJeoparty || (gameSession.finalJeoparty && !_.get(gameSession, `players[${socket.id}].finalJeopartyAnswerSubmitted`))) {
+            updatePlayersAnswered(socket.sessionName, socket.id);
+            updatePlayerScore(socket, dollarValue, isCorrect);
+        }
 
         if (gameSession.finalJeoparty) {
             updatePlayer(socket.sessionName, socket.id, 'finalJeopartyAnswerSubmitted', true);
             updatePlayer(socket.sessionName, socket.id, 'answer', answer);
 
-            const currentAnswersSubmitted = Object.keys(gameSession.players.filter((player) => {
+            const currentAnswersSubmitted = _.keys(_.values(gameSession.players).filter((player) => {
                 return player.score > 0 && player.finalJeopartyAnswerSubmitted;
             })).length;
 
-            const totalAnswers = Object.keys(gameSession.players.filter((player) => {
+            const totalAnswers = _.keys(_.values(gameSession.players).filter((player) => {
                 return player.score > 0;
             })).length;
 
@@ -817,7 +832,7 @@ io.on('connection', (socket) => {
 
         gameSession.clients.map((client) => {
             client.emit('set_game_state', GameState.DECISION, () => {
-                client.emit('show_answer', answer);
+                client.emit('show_answer', answer, _.get(gameSession, `updatedPlayers[${client.id}].name`));
                 client.emit('player', _.get(gameSession, `updatedPlayers[${client.id}]`));
             });
         });
