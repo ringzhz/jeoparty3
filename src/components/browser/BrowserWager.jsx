@@ -133,7 +133,7 @@ const BrowserWager = () => {
     const [maxWager, setMaxWager] = useState(debug ? 1000 : 0);
     const [boardController, setBoardController] = useState(debug ? samplePlayers['zsS3DKSSIUOegOQuAAAA'] : {});
 
-    const [finalJeopartyClue, setFinalJeopartyClue] = useState(!debug ? sampleCategories[0].clues[0] : {});
+    const [finalJeopartyClue, setFinalJeopartyClue] = useState(debug ? sampleCategories[0].clues[0] : {});
     const [showFinalJeopartyCategoryReveal, setShowFinalJeopartyCategoryReveal] = useState(debug ? false : true);
     const [revealFinalJeopartyCategory, setRevealFinalJeopartyCategory] = useState(false);
     const [currentWagersSubmitted, setCurrentWagersSubmitted] = useState(0);

@@ -162,7 +162,6 @@ const BrowserLobby = () => {
             setPlayerNames(playerNames.concat([playerName]));
         });
 
-        // TODO: Add leaderboard
         socket.on('leaderboard', (leaderboard) => {
             setLeaderboard(leaderboard);
         });
