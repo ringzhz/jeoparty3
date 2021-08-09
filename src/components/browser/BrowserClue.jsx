@@ -62,27 +62,22 @@ const BrowserClue = () => {
     const debug = useContext(DebugContext);
 
     const [clueText, setClueText] = useState(debug ? sampleCategories[0].clues[0].question : '');
-    const [revealClue, setRevealClue] = useState(false);
     const [showTimer, setShowTimer] = useState(false);
     const [startTimer, setStartTimer] = useState(false);
 
     const socket = useContext(SocketContext);
 
     useEffect(() => {
-        socket.on('request_clue', (clueText) => {
+        socket.on('clue_text', (clueText) => {
             setClueText(clueText);
         });
 
         socket.on('say_clue_text', (clueText, dailyDouble, finalJeoparty, sayClueText) => {
             if (sayClueText) {
                 if (finalJeoparty) {
-                    setRevealClue(false);
-
                     const finalJeopartyPingAudio = new Audio(finalJeopartyPingSound);
 
                     finalJeopartyPingAudio.onended = () => {
-                        setRevealClue(true);
-
                         say(clueText, () => {
                             socket.emit('wager_buzz_in');
                         });
@@ -90,8 +85,6 @@ const BrowserClue = () => {
 
                     finalJeopartyPingAudio.play();
                 } else {
-                    setRevealClue(true);
-
                     say(clueText, () => {
                         socket.emit(dailyDouble ? 'wager_buzz_in' : 'start_timer');
                     });

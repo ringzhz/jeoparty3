@@ -149,6 +149,7 @@ const BrowserWager = () => {
         socket.on('board_controller', (boardController, maxWager) => {
             setBoardController(boardController);
             setMaxWager(maxWager);
+            setShowFinalJeopartyCategoryReveal(false);
 
             sayWagerFiller(5, maxWager, () => {
                 socket.emit('start_wager_timer');
