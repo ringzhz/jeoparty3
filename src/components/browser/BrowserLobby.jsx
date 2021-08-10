@@ -16,7 +16,8 @@ import { SocketContext } from '../../context/socket';
 import mixins from '../../helpers/mixins';
 import HypeText from '../../helpers/components/HypeText';
 
-import lobbyMusic from '../../assets/audio/lobbyMusic.mp3';
+import lobbyMusicSound from '../../assets/audio/lobbyMusic.mp3';
+import trebekIntroSound from '../../assets/audio/trebekIntro.mp3';
 
 // DEBUG
 import { sampleLeaderboard } from '../../constants/sampleLeaderboard';
@@ -184,7 +185,7 @@ const BrowserLobby = () => {
 
     const socket = useContext(SocketContext);
 
-    const lobbyMusicAudio = new Audio(lobbyMusic);
+    const lobbyMusicAudio = new Audio(lobbyMusicSound);
 
     useEffect(() => {
         socket.on('session_name', (sessionName) => {
@@ -201,7 +202,16 @@ const BrowserLobby = () => {
 
         socket.on('unmute', () => {
             lobbyMusicAudio.loop = true;
+            lobbyMusicAudio.volume = 0.5;
             lobbyMusicAudio.play();
+
+            const trebekIntroAudio = new Audio(trebekIntroSound);
+
+            trebekIntroAudio.onended = () => {
+                lobbyMusicAudio.volume = 1;
+            };
+
+            trebekIntroAudio.play();
         });
 
         socket.on('start_game_success', () => {
