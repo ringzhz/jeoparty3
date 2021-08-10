@@ -13,6 +13,7 @@
     "jservice-node": "^0.2.3",
     "lodash": "^4.17.21",
     "memory-cache": "^0.2.0",
+    "mongodb": "^4.1.0",
     "number-to-words": "^1.2.4",
     "random-words": "^1.1.1",
     "react": "^17.0.1",

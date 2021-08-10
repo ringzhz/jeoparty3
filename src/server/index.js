@@ -22,9 +22,13 @@ const checkSignature = require('../helpers/check').checkSignature;
 const checkAnswer = require('../helpers/check').checkAnswer;
 const formatRaw = require('../helpers/format').formatRaw;
 const formatWager = require('../helpers/format').formatWager;
+const getLeaderboard = require('../helpers/db').getLeaderboard;
+const updateLeaderboard = require('../helpers/db').updateLeaderboard;
 
 const NUM_CATEGORIES = 6;
 const NUM_CLUES = 5;
+
+let activePlayers = 0;
 
 app.use(express.static(path.join(__dirname, '../../build')));
 app.get('/', (req, res, next) => res.sendFile(__dirname + './index.html'));
@@ -122,7 +126,7 @@ const updatePlayerStreaks = (socket) => {
 
     const gameSession = sessionCache.get(socket.sessionName);
 
-    for (let socketId of Object.keys(gameSession.players)) {
+    for (let socketId of _.keys(gameSession.players)) {
         const heat = gameSession.players[socketId];
 
         if (!gameSession.playersAnswered.includes(socketId)) {
@@ -190,7 +194,12 @@ const handleBrowserDisconnection = (socket) => {
         return;
     }
 
-    sessionCache.get(socket.sessionName).clients.map((client) => {
+    const gameSession = sessionCache.get(socket.sessionName);
+
+    activePlayers -= _.keys(gameSession.players).length;
+    io.emit('active_players', activePlayers);
+
+    gameSession.clients.map((client) => {
         client.emit('reload');
     });
 
@@ -219,6 +228,9 @@ const handlePlayerDisconnection = (socket) => {
 
         gameSession.players = players;
         sessionCache.put(socket.sessionName, gameSession);
+
+        activePlayers --;
+        io.emit('active_players', activePlayers);
     }
 };
 
@@ -254,6 +266,9 @@ const handlePlayerReconnection = (socket) => {
         socket.emit('set_game_state', sessionCache.get(socket.sessionName).currentGameState, () => {
             socket.emit('reconnect');
         });
+
+        activePlayers++;
+        io.emit('active_players', activePlayers);
     }
 };
 
@@ -261,6 +276,11 @@ const handlePlayerReconnection = (socket) => {
 
 const checkBoardCompletion = (socket) => {
     const gameSession = sessionCache.get(socket.sessionName);
+
+    // TODO
+    setUpdatedPlayers(socket.sessionName);
+    updateGameSession(socket.sessionName, 'finalJeoparty', true);
+    return true;
 
     for (let i = 0; i < NUM_CATEGORIES; i++) {
         for (let j = 0; j < NUM_CLUES; j++) {
@@ -288,7 +308,7 @@ const checkBoardCompletion = (socket) => {
         updateGameSession(socket.sessionName, 'doubleJeoparty', true);
         updateGameSession(socket.sessionName, 'boardRevealed', false);
 
-        const sortedPlayers = _.cloneDeep(Object.values(gameSession.players).sort((a, b) => b.score - a.score));
+        const sortedPlayers = _.cloneDeep(_.values(gameSession.players).sort((a, b) => b.score - a.score));
         updateGameSession(socket.sessionName, 'boardController', getClient(socket.sessionName, sortedPlayers[sortedPlayers.length - 1].socketId));
     }
 };
@@ -545,7 +565,7 @@ const showScoreboard = (socket) => {
 
 const showPodium = (socket, championOverride) => {
     const gameSession = sessionCache.get(socket.sessionName);
-    const champion = Object.values(gameSession.updatedPlayers).sort((a, b) => b.score - a.score)[0];
+    const champion = _.values(gameSession.updatedPlayers).sort((a, b) => b.score - a.score)[0];
 
     gameSession.clients.map((client) => {
         client.emit('set_game_state', GameState.PODIUM, () => {
@@ -553,12 +573,16 @@ const showPodium = (socket, championOverride) => {
             client.emit('player', _.get(gameSession, `updatedPlayers[${client.id}]`));
         });
     });
+
+    _.values(gameSession.updatedPlayers).forEach(async (player) => {
+        await updateLeaderboard(player);
+    });
 };
 
 io.on('connection', (socket) => {
     socket.emit('connect_device');
 
-    socket.on('connect_device', (isMobile) => {
+    socket.on('connect_device', async (isMobile) => {
         socket.isMobile = isMobile;
 
         if (isMobile) {
@@ -575,6 +599,11 @@ io.on('connection', (socket) => {
             updateClients(sessionName, socket);
 
             socket.emit('session_name', sessionName);
+            socket.emit('active_players', activePlayers);
+
+            getLeaderboard().then((leaderboard) => {
+                socket.emit('leaderboard', leaderboard);
+            });
 
             getRandomCategories((categories, doubleJeopartyCategories, finalJeopartyClue) => {
                 updateGameSession(socket.sessionName, 'categories', categories);
@@ -613,12 +642,20 @@ io.on('connection', (socket) => {
             return;
         }
 
+        const gameSession = sessionCache.get(socket.sessionName);
+
         if (checkSignature(playerName)) {
             updatePlayer(socket.sessionName, socket.id, 'name', playerName);
             updatePlayer(socket.sessionName, socket.id, 'signature', signature);
 
+            // TODO
+            updatePlayer(socket.sessionName, socket.id, 'score', 3000);
+
             socket.emit('submit_signature_success', _.get(sessionCache.get(socket.sessionName), `players[${socket.id}]`));
-            sessionCache.get(socket.sessionName).browserClient.emit('new_player_name', playerName);
+            gameSession.browserClient.emit('new_player_name', playerName);
+
+            activePlayers++;
+            io.emit('active_players', activePlayers);
         } else {
             socket.emit('submit_signature_failure');
         }

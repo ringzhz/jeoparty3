@@ -1,4 +1,5 @@
 import React, { useContext, useState, useEffect, useCallback } from 'react';
+import _ from 'lodash';
 
 import styled from 'styled-components';
 import Container from 'react-bootstrap/Container';
@@ -58,7 +59,7 @@ const LogoText = styled.h1`
 const InfoText = styled.h5`
     font-family: clue, serif;
     font-size: 3vh;
-    text-shadow: 0.15em 0.15em #000;
+    text-shadow: 0.1em 0.1em #000;
 `;
 
 const JoinText = styled(InfoText)`
@@ -128,12 +129,24 @@ const LeaderboardScores = styled(Col)`
     text-align: left;
 `;
 
+const ActivePlayersText = styled.span`
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    margin-right: 0.5em;
+
+    font-family: clue, serif;
+    font-size: 2vh;
+    text-shadow: 0.1em 0.1em #000;
+`;
+
 const BrowserLobby = () => {
     const debug = useContext(DebugContext);
 
     const [playerNames, setPlayerNames] = useState(debug ? ['Luffy', 'Nami', 'Zoro'] : []);
     const [sessionName, setSessionName] = useState(debug ? 'TEST' : '');
     const [leaderboard, setLeaderboard] = useState(debug ? sampleLeaderboard : []);
+    const [activePlayers, setActivePlayers] = useState(debug ? 10 : 0);
     const [mute, setMute] = useState(true);
 
     const socket = useContext(SocketContext);
@@ -143,6 +156,14 @@ const BrowserLobby = () => {
     useEffect(() => {
         socket.on('session_name', (sessionName) => {
             setSessionName(sessionName);
+        });
+
+        socket.on('active_players', (activePlayers) => {
+            setActivePlayers(activePlayers);
+        });
+
+        socket.on('leaderboard', (leaderboard) => {
+            setLeaderboard(leaderboard);
         });
 
         socket.on('unmute', () => {
@@ -160,10 +181,6 @@ const BrowserLobby = () => {
 
         socket.on('new_player_name', (playerName) => {
             setPlayerNames(playerNames.concat([playerName]));
-        });
-
-        socket.on('leaderboard', (leaderboard) => {
-            setLeaderboard(leaderboard);
         });
     }, []);
 
@@ -214,19 +231,19 @@ const BrowserLobby = () => {
                         <Row>
                             <LeaderboardPlayerNames lg={'6'}>
                                 <InfoList>
-                                    {leaderboard.map((player) => {
-                                        return <li><InfoText>{player.name.toUpperCase()}</InfoText></li>
+                                    {leaderboard.map((leader) => {
+                                        return <li><InfoText>{leader.name.toUpperCase()}</InfoText></li>
                                     })}
                                 </InfoList>
                             </LeaderboardPlayerNames>
 
                             <LeaderboardScores lg={'6'}>
                                 <InfoList>
-                                    {leaderboard.map((player) => {
+                                    {leaderboard.map((leader) => {
                                         return (
                                             <li>
                                                 <InfoText>
-                                                    <DollarValueText dollarValue={player.score} />
+                                                    ${leader.score}
                                                 </InfoText>
                                             </li>
                                         );
@@ -240,6 +257,10 @@ const BrowserLobby = () => {
                 <StartGameInputGroup className={'mb-3 justify-content-center'}>
                     {!mute && <StartGameButton onClick={() => handleStartGame()} variant={'outline-light'}>START GAME</StartGameButton>}
                 </StartGameInputGroup>
+
+                <ActivePlayersText>
+                    {activePlayers} active players
+                </ActivePlayersText>
             </Container>
         </div>
     );
