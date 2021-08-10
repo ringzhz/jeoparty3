@@ -70,6 +70,13 @@ const CategoryRevealText = styled.span`
     text-shadow: 0.075em 0.075em #000;
 `;
 
+const CategoryYearText = styled.span`
+    font-size: 12vh;
+    font-family: board, serif;
+    color: #d69f4c;
+    text-shadow: 0.08em 0.08em #000;
+`;
+
 const CategoryReveal = (props) => {
     const categoryNameLength = _.size(props.categoryName) || 0;
     const categoryNameCompressor = getCategoryNameCompressor(categoryNameLength);
@@ -88,6 +95,10 @@ const CategoryReveal = (props) => {
                         {_.invoke(props.categoryName, 'toUpperCase')}
                     </CategoryRevealText>
                 </FitText>
+
+                <CategoryYearText>
+                    {_.get(props, 'categoryYear')}
+                </CategoryYearText>
             </CategoryRevealPanel>
         </div>
     );

@@ -274,8 +274,9 @@ const BrowserBoard = () => {
     const categoryRevealPanels = _.get(categories, `[0].title`) && Array.from(Array(NUM_CATEGORIES).keys()).map((i) => {
         const category = categories[i];
         const categoryName = _.get(category, 'title');
+        const categoryYear = category.clues[0].airdate.slice(0, 4);
 
-        return <CategoryReveal categoryName={categoryName} reveal={categoryPanelIndex === i} />;
+        return <CategoryReveal categoryName={categoryName} categoryYear={categoryYear} reveal={categoryPanelIndex === i} />;
     });
 
     const categoryTitleRow = _.get(categories, `[0].title`) && Array.from(Array(NUM_CATEGORIES).keys()).map((i) => {

@@ -10,18 +10,16 @@ import FitText from '@kennethormandy/react-fittext';
 import { DebugContext } from '../../context/debug';
 import { SocketContext } from '../../context/socket';
 import mixins from '../../helpers/mixins';
-import starBackgroundImage from '../../assets/images/starBackground.png';
-import dailyDoubleBackgroundImage from '../../assets/images/dailyDoubleBackground.png';
 import Timer from '../../helpers/components/Timer';
 import CategoryReveal from '../../helpers/components/CategoryReveal';
 import { timers } from '../../constants/timers';
 
 import finalJeopartyPingSound from '../../assets/audio/finalJeopartyPing.mp3';
-import say from '../../helpers/say';
 import {
     sayWagerFiller,
-    sayFinalJeopartyCategoryRevealFiller,
-    sayFinalJeopartyWagerFiller
+    sayFinalJeopartyCategoryRevealIntroductionFiller,
+    sayFinalJeopartyWagerFiller,
+    sayCategoryRevealFiller
 } from '../../helpers/sayFiller';
 
 // DEBUG
@@ -159,12 +157,12 @@ const BrowserWager = () => {
         socket.on('final_jeoparty_clue', (finalJeopartyClue) => {
             setFinalJeopartyClue(finalJeopartyClue);
 
-            sayFinalJeopartyCategoryRevealFiller(() => {
+            sayFinalJeopartyCategoryRevealIntroductionFiller(() => {
                 const finalJeopartyPingAudio = new Audio(finalJeopartyPingSound);
 
                 finalJeopartyPingAudio.onended = () => {
                     setRevealFinalJeopartyCategory(true);
-                    say(finalJeopartyClue.categoryName, () => {
+                    sayCategoryRevealFiller(finalJeopartyClue.categoryName, () => {
                         setTimeout(() => {
                             setShowFinalJeopartyCategoryReveal(false);
                             sayFinalJeopartyWagerFiller(() => {
@@ -249,7 +247,7 @@ const BrowserWager = () => {
         return (
             <div>
                 <FinalJeopartyCategoryRevealWrapper showFinalJeopartyCategoryReveal={showFinalJeopartyCategoryReveal}>
-                    <CategoryReveal categoryName={finalJeopartyClue.categoryName} reveal={revealFinalJeopartyCategory} finalJeoparty={true} />
+                    <CategoryReveal categoryName={finalJeopartyClue.categoryName} categoryYear={finalJeopartyClue.airdate.slice(0, 4)} reveal={revealFinalJeopartyCategory} finalJeoparty={true} />
                 </FinalJeopartyCategoryRevealWrapper>
 
                 <FinalJeopartyBanner>

@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect, useCallback } from 'react';
-import _ from 'lodash';
+import emailjs from 'emailjs-com';
 
 import styled from 'styled-components';
 import Container from 'react-bootstrap/Container';
@@ -7,12 +7,14 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Button from 'react-bootstrap/Button';
+import Form from 'react-bootstrap/Form';
+import { AiOutlineMail } from 'react-icons/ai';
+import { ImCancelCircle } from 'react-icons/im';
 
 import { DebugContext } from '../../context/debug';
 import { SocketContext } from '../../context/socket';
 import mixins from '../../helpers/mixins';
 import HypeText from '../../helpers/components/HypeText';
-import DollarValueText from '../../helpers/components/DollarValueText';
 
 import lobbyMusic from '../../assets/audio/lobbyMusic.mp3';
 
@@ -20,6 +22,7 @@ import lobbyMusic from '../../assets/audio/lobbyMusic.mp3';
 import { sampleLeaderboard } from '../../constants/sampleLeaderboard';
 
 const MuteScreen = styled.div`
+    ${mixins.flexAlignCenter};
     position: absolute;
     z-index: 3;
     
@@ -42,6 +45,24 @@ const MuteScreenText = styled.div`
 const MuteScreenButton = styled(Button)`
     font-family: clue, serif;
     font-size: 10vh;
+`;
+
+const EmailPanel = styled.div`
+    position: relative;
+    width: 500px;
+    margin: 0 auto;
+    padding: 1em;
+
+    border-radius: 1em;
+    border: 0.2em solid #fff;
+`;
+
+const EmailPanelCancelButton = styled.div`
+    cursor: pointer;
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin-left: 0.25em;
 `;
 
 const LogoRow = styled(Row)`
@@ -140,6 +161,14 @@ const ActivePlayersText = styled.span`
     text-shadow: 0.1em 0.1em #000;
 `;
 
+const EmailButtonWrapper = styled.div`
+    cursor: pointer;
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin-right: 0.5em;
+`;
+
 const BrowserLobby = () => {
     const debug = useContext(DebugContext);
 
@@ -148,6 +177,10 @@ const BrowserLobby = () => {
     const [leaderboard, setLeaderboard] = useState(debug ? sampleLeaderboard : []);
     const [activePlayers, setActivePlayers] = useState(debug ? 10 : 0);
     const [mute, setMute] = useState(true);
+
+    const [showEmailPanel, setShowEmailPanel] = useState(false);
+    const [emailAddress, setEmailAddress] = useState('');
+    const [message, setMessage] = useState('');
 
     const socket = useContext(SocketContext);
 
@@ -193,6 +226,23 @@ const BrowserLobby = () => {
         socket.emit('start_game');
     }, []);
 
+    const handleEmail = useCallback((e) => {
+        e.preventDefault();
+
+        emailjs.sendForm(
+            'service_ukf1tzq',
+            'template_aewkijo',
+            e.target,
+            'user_Y0EyYUhU4F4OA6pWPcs4N'
+        ).then((result) => {
+            console.log(result.text);
+        }, (error) => {
+            console.log(error.text);
+        });
+
+        setShowEmailPanel(false);
+    }, []);
+
     return (
         <div>
             {mute &&
@@ -200,6 +250,32 @@ const BrowserLobby = () => {
                     <MuteScreenText onClick={() => handleUnmute()}>
                         <MuteScreenButton onClick={() => handleUnmute()} variant={'outline-light'}>CLICK TO UNMUTE</MuteScreenButton>
                     </MuteScreenText>
+                </MuteScreen>
+            }
+
+            {showEmailPanel &&
+                <MuteScreen>
+                    <EmailPanel>
+                        <EmailPanelCancelButton onClick={() => setShowEmailPanel(false)}>
+                            <ImCancelCircle size={'20px'} />
+                        </EmailPanelCancelButton>
+
+                        <Form onSubmit={handleEmail}>
+                            <Form.Group className={'mb-3'} controlId={'exampleForm.ControlTextarea1'}>
+                                <Form.Label>Message</Form.Label>
+                                <Form.Control as={'textarea'} rows={8} name={'message'} placeholder={'Enter your questions, comments, concerns, or feedback...'} />
+                            </Form.Group>
+
+                            <Form.Group className={'mb-3'} controlId={'exampleForm.ControlInput1'}>
+                                <Form.Label>Email address (optional)</Form.Label>
+                                <Form.Control type={'email'} name={'emailAddress'} placeholder={`Only include if you'd like to hear back from me`} />
+                            </Form.Group>
+
+                            <Button variant={'outline-light'} type={'submit'}>
+                                Submit
+                            </Button>
+                        </Form>
+                    </EmailPanel>
                 </MuteScreen>
             }
 
@@ -257,6 +333,10 @@ const BrowserLobby = () => {
                 <StartGameInputGroup className={'mb-3 justify-content-center'}>
                     {!mute && <StartGameButton onClick={() => handleStartGame()} variant={'outline-light'}>START GAME</StartGameButton>}
                 </StartGameInputGroup>
+
+                <EmailButtonWrapper onClick={() => setShowEmailPanel(true)}>
+                    <AiOutlineMail size={'50px'} />
+                </EmailButtonWrapper>
 
                 <ActivePlayersText>
                     {activePlayers} active players
