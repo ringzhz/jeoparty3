@@ -3,6 +3,7 @@ function Player() {
     this.sessionName = '';
     this.name = '';
     this.signature = '';
+    this.oldScore = 0;
     this.score = 0;
     this.wager = 0;
     this.finalJeopartyWagerSubmitted = false;

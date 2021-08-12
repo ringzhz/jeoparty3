@@ -15,7 +15,6 @@ function GameSession() {
     this.finalJeopartyClue = {};
 
     this.players = {};
-    this.updatedPlayers = {};
     this.playersAnswered = [];
     this.boardController = null;
 

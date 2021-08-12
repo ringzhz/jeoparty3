@@ -191,6 +191,10 @@ const BrowserAnswer = () => {
         setTimeout(() => {
             setStartTimer(true);
         }, 100);
+
+        return () => {
+            socket.off('play_buzz_in_sound');
+        }
     }, []);
 
     const categoryNameLength = _.size(categoryName) || 0;

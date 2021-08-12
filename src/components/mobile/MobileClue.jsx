@@ -74,7 +74,7 @@ const Buzzer = styled.div`
 const MobileClue = () => {
     const debug = useContext(DebugContext);
 
-    const [hasAnswered, setHasAnswered] = useState(false);
+    const [hasAnswered, setHasAnswered] = useState(true);
     const [player, setPlayer] = useState(debug ? samplePlayers['zsS3DKSSIUOegOQuAAAA'] : {});
     const [startTimer, setStartTimer] = useState(false);
 

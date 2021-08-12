@@ -48,10 +48,6 @@ const MobileWager = () => {
             setIsWagering(isWagering);
         });
 
-        socket.on('wager_timeout', (wager) => {
-            socket.emit('submit_wager', wager);
-        });
-
         socket.on('player', (player) => {
             setPlayer(player);
         });

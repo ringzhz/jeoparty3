@@ -48,10 +48,6 @@ const MobileAnswer = () => {
             setIsAnswering(isAnswering);
         });
 
-        socket.on('answer_timeout', (answer) => {
-            socket.emit('submit_answer', answer, true);
-        });
-
         socket.on('player', (player) => {
             setPlayer(player);
         });

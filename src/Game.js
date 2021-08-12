@@ -108,7 +108,7 @@ const GlobalStyle = createGlobalStyle`
 const Game = () => {
     const debug = false;
 
-    const [gameState, setGameState] = useState(debug ? GameState.LOBBY : GameState.LOBBY);
+    const [gameState, setGameState] = useState(debug ? GameState.SCOREBOARD : GameState.LOBBY);
     const [gameStateAck, setGameStateAck] = useState(() => () => {});
 
     useEffect(() => {

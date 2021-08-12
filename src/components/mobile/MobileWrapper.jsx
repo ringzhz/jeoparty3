@@ -20,7 +20,7 @@ const MobileWrapper = (props) => {
         });
 
         socket.on('disconnect', () => {
-            // TODO: Make this a react-bootstrap alert
+            // TODO: Make this a clickable reload button using the same screen blur as BrowserLobby
             console.log(`You've been disconnected!`);
         });
     });

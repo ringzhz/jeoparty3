@@ -4,59 +4,10 @@ exports.samplePlayers = {
     zsS3DKSSIUOegOQuAAAA: {
         socketId: 'zsS3DKSSIUOegOQuAAAA',
         sessionName: 'think',
-        name: 'matt morningstar',
-        signature: signature,
-        score: -100000,
-
-        heat: 2,
-        streak: 1,
-        title: ''
-    },
-
-    zsS3DKSSIUOegOQuAAAB: {
-        socketId: 'zsS3DKSSIUOegOQuAAAB',
-        sessionName: 'think',
-        name: 'Zoro',
-        signature: signature,
-        score: 1000,
-
-        heat: 0,
-        streak: 0,
-        title: ''
-    },
-
-    zsS3DKSSIUOegOQuAAAC: {
-        socketId: 'zsS3DKSSIUOegOQuAAAC',
-        sessionName: 'think',
-        name: 'Nami',
-        signature: signature,
-        score: 2000,
-
-        heat: 2,
-        streak: 4,
-        title: 'senior professor'
-    },
-
-    zsS3DKSSIUOegOQuAAAD: {
-        socketId: 'zsS3DKSSIUOegOQuAAAD',
-        sessionName: 'think',
-        name: 'Usopp',
-        signature: signature,
-        score: 300,
-
-        heat: 0,
-        streak: 0,
-        title: ''
-    }
-};
-
-exports.sampleUpdatedPlayers = {
-    zsS3DKSSIUOegOQuAAAA: {
-        socketId: 'zsS3DKSSIUOegOQuAAAA',
-        sessionName: 'think',
         name: 'Luffy',
         signature: signature,
-        score: 500,
+        oldScore: 0,
+        score: 1000,
 
         heat: 2,
         streak: 2,
@@ -68,7 +19,8 @@ exports.sampleUpdatedPlayers = {
         sessionName: 'think',
         name: 'Zoro',
         signature: signature,
-        score: 2000,
+        oldScore: 200,
+        score: 0,
 
         heat: 0,
         streak: 0,
@@ -80,11 +32,12 @@ exports.sampleUpdatedPlayers = {
         sessionName: 'think',
         name: 'Nami',
         signature: signature,
-        score: 3000,
+        oldScore: 400,
+        score: 800,
 
-        heat: 2,
-        streak: 5,
-        title: 'phd candidate'
+        heat: 0,
+        streak: 0,
+        title: ''
     },
 
     zsS3DKSSIUOegOQuAAAD: {
@@ -92,7 +45,8 @@ exports.sampleUpdatedPlayers = {
         sessionName: 'think',
         name: 'Usopp',
         signature: signature,
-        score: 300,
+        oldScore: 600,
+        score: 600,
 
         heat: 0,
         streak: 0,

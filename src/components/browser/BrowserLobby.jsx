@@ -225,6 +225,11 @@ const BrowserLobby = () => {
         socket.on('new_player_name', (playerName) => {
             setPlayerNames(playerNames.concat([playerName]));
         });
+
+        return () => {
+            socket.off('unmute');
+            socket.off('start_game_success');
+        }
     }, []);
 
     const handleUnmute = useCallback(() => {

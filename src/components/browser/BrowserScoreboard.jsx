@@ -14,10 +14,13 @@ import DollarValueText from '../../helpers/components/DollarValueText';
 import HypeText from '../../helpers/components/HypeText';
 import { timers } from '../../constants/timers';
 
-import { sayBestStreakFiller } from '../../helpers/sayFiller';
+import {sayBestStreakFiller, sayChampionIntroductionFiller} from '../../helpers/sayFiller';
 
 // DEBUG
-import { samplePlayers, sampleUpdatedPlayers } from '../../constants/samplePlayers';
+import { samplePlayers } from '../../constants/samplePlayers';
+import drumrollSound from "../../assets/audio/drumroll.mp3";
+import say from "../../helpers/say";
+import victorySound from "../../assets/audio/victory.mp3";
 
 const PlayerCardRow = styled(Row)`
     height: ${props => `calc(100vh / ${props.numPlayers})`};
@@ -82,8 +85,8 @@ const PlayerScoreText = styled.span`
 `;
 
 const sortByScore = (players) => Object.values(players).sort((a, b) => b.score - a.score);
+const sortByOldScore = (players) => Object.values(players).sort((a, b) => b.oldScore - a.oldScore);
 const sortByStreak = (players) => Object.values(players).sort((a, b) => b.streak - a.streak);
-const hasPlayerName = (player, playerName) => player.name === playerName;
 
 const PlayerCard = (props) => {
     return (
@@ -109,7 +112,7 @@ const PlayerCard = (props) => {
                     <PlayerScoreCol lg={'3'}>
                         <FitText compressor={0.5}>
                             <PlayerScoreText>
-                                <DollarValueText dollarValue={_.get(props, 'player.score')} />
+                                <DollarValueText dollarValue={props.showUpdate ? _.get(props, 'player.score') : _.get(props, 'player.oldScore')} />
                             </PlayerScoreText>
                         </FitText>
                     </PlayerScoreCol>
@@ -122,25 +125,20 @@ const PlayerCard = (props) => {
 const BrowserScoreboard = () => {
     const debug = useContext(DebugContext);
 
-    const [players, setPlayers] = useState(debug ? sortByScore(samplePlayers) : []);
-    const [updatedPlayers, setUpdatedPlayers] = useState(debug ? sortByScore(sampleUpdatedPlayers) : []);
+    const [players, setPlayers] = useState(debug ? sortByOldScore(samplePlayers) : []);
 
     const [showUpdate, setShowUpdate] = useState(false);
     const socket = useContext(SocketContext);
 
     useEffect(() => {
         socket.on('players', (players) => {
-            setPlayers(sortByScore(players));
-        });
-
-        socket.on('updated_players', (updatedPlayers) => {
-            setUpdatedPlayers(sortByScore(updatedPlayers));
+            setPlayers(sortByOldScore(players));
         });
 
         socket.on('show_update', () => {
             setShowUpdate(true);
 
-            const bestStreakPlayer = sortByStreak(updatedPlayers)[0];
+            const bestStreakPlayer = sortByStreak(players)[0];
             if (_.get(bestStreakPlayer, 'streak') && _.get(bestStreakPlayer, 'streak') >= 2) {
                 sayBestStreakFiller(bestStreakPlayer.name, bestStreakPlayer.streak, bestStreakPlayer.title, () => setTimeout(() => {
                     socket.emit('show_board');
@@ -157,19 +155,37 @@ const BrowserScoreboard = () => {
         };
     }, []);
 
+    if (debug) {
+        document.body.onkeyup = (e) => {
+            if (e.keyCode === 32) {
+                setShowUpdate(true);
+
+                const bestStreakPlayer = sortByStreak(players)[0];
+                if (_.get(bestStreakPlayer, 'streak') && _.get(bestStreakPlayer, 'streak') >= 2) {
+                    sayBestStreakFiller(bestStreakPlayer.name, bestStreakPlayer.streak, bestStreakPlayer.title, () => setTimeout(() => {
+                        socket.emit('show_board');
+                    }, 500));
+                } else {
+                    setTimeout(() => {
+                        socket.emit('show_board');
+                    }, timers.SHOW_SCOREBOARD_UPDATE_TIME * 1000);
+                }
+            }
+        }
+    }
+
     return (
         <Container fluid>
             {players.map((player) => {
                 const numPlayers = Math.min(Math.max(3, Object.keys(players).length), 5);
 
-                const position = players.findIndex((el) => hasPlayerName(el, player.name));
-                const updatedPosition = updatedPlayers.findIndex((el) => hasPlayerName(el, player.name));
+                const position = sortByOldScore(players).findIndex((p) => p.socketId === player.socketId);
+                const updatedPosition = sortByScore(players).findIndex((p) => p.socketId === player.socketId);
                 const positionChange = showUpdate ? (updatedPosition - position) : 0;
 
                 const zIndex = numPlayers - (showUpdate ? updatedPosition : position);
-                const playerObject = showUpdate ? updatedPlayers[updatedPosition] : player;
 
-                return <PlayerCard numPlayers={numPlayers} zIndex={zIndex} player={playerObject} positionChange={positionChange} showUpdate={showUpdate} />;
+                return <PlayerCard numPlayers={numPlayers} zIndex={zIndex} player={player} positionChange={positionChange} showUpdate={showUpdate} />;
             })}
         </Container>
     );
