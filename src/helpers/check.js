@@ -1,11 +1,12 @@
+const Filter = require('bad-words');
 const wordsToNumbers = require('words-to-numbers').wordsToNumbers;
 
 const ACRONYMS = require('../constants/acronyms').ACRONYMS;
 const formatRaw = require('./format').formatRaw;
 
-const MIN_ANSWER_LENGTH = 3;
-
 exports.checkAnswer = (categoryName, clue, expected, actual) => {
+    const MIN_ANSWER_LENGTH = 3;
+
     const rawCategoryName = formatRaw(categoryName);
     const rawClue = formatRaw(clue);
     const rawExpected = formatRaw(wordsToNumbers(expected).toString());
@@ -32,6 +33,16 @@ exports.checkAnswer = (categoryName, clue, expected, actual) => {
     return validLength && containsAnswer && !cheated;
 };
 
-exports.checkSignature = (playerName) => {
-    return playerName.length > 0 && playerName.length < 20;
+exports.checkPlayerName = (playerName) => {
+    const filter = new Filter();
+
+    if (playerName.length === 0) {
+        return 'Your name is too short, please try again!';
+    } else if (playerName.length > 20) {
+        return 'Your name is too long, please try again!';
+    } else if (filter.clean(playerName) !== playerName) {
+        return 'Do you kiss your mother with that mouth? Please try again!';
+    }
+
+    return '';
 };

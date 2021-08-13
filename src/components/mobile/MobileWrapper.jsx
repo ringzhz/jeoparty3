@@ -38,9 +38,8 @@ const DisconnectedScreenText = styled.div`
 `;
 
 const DisconnectedScreenButton = styled(Button)`
-    font-family: clue, serif;
-    font-size: 4vh;
-    font-size: calc(var(--vh, 1vh) * 4);
+    font-size: 5vh;
+    font-size: calc(var(--vh, 1vh) * 5);
 `;
 
 const MobileWrapper = (props) => {
@@ -68,7 +67,7 @@ const MobileWrapper = (props) => {
             {disconnected &&
                 <DisconnectedScreen>
                     <DisconnectedScreenText onClick={() => window.location.reload()}>
-                        <DisconnectedScreenButton variant={'danger'}>CLICK TO RECONNECT</DisconnectedScreenButton>
+                        <DisconnectedScreenButton variant={'danger'}>RECONNECT</DisconnectedScreenButton>
                     </DisconnectedScreenText>
                 </DisconnectedScreen>
             }

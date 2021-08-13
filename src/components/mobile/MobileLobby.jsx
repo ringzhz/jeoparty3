@@ -46,9 +46,7 @@ const MobileLobby = () => {
     const socket = useContext(SocketContext);
 
     useEffect(() => {
-        socket.on('join_session_success', (sessionName) => {
-            alert(`You joined session (${sessionName})`);
-
+        socket.on('join_session_success', () => {
             setSessionName('');
             setMobileLobbyState(MobileLobbyState.SIGNATURE);
         });
@@ -64,8 +62,8 @@ const MobileLobby = () => {
             setPlayer(player);
         });
 
-        socket.on('submit_signature_failure', () => {
-            alert(`That signature was illegal, please try again!`);
+        socket.on('submit_signature_failure', (message) => {
+            alert(message);
 
             setPlayerName('');
         });
@@ -88,7 +86,17 @@ const MobileLobby = () => {
     }, []);
 
     const handleSubmitSignature = useCallback((playerName) => {
-        socket.emit('submit_signature', playerName, document.getElementById('signature-canvas').toDataURL());
+        const isCanvasBlank = (canvas) => {
+            return !canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height).data.some(channel => channel !== 0);
+        }
+
+        const signatureCanvas = document.getElementById('signature-canvas');
+
+        if (!isCanvasBlank(signatureCanvas)) {
+            socket.emit('submit_signature', playerName, signatureCanvas.toDataURL());
+        } else {
+            alert('Try being a little more creative, please try again!');
+        }
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);

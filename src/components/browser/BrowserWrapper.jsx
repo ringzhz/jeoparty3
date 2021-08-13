@@ -13,12 +13,6 @@ const BrowserWrapper = (props) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    document.onkeyup = (e) => {
-        if (e.keyCode === 32) {
-            socket.emit('debug_disconnect');
-        }
-    };
-
     return (
         <div>
             {props.children}

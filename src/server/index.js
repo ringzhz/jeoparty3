@@ -18,7 +18,7 @@ const GameState = require('../constants/GameState').GameState;
 const timers = require('../constants/timers').timers;
 const titles = require('../constants/titles').titles;
 const getRandomCategories = require('../helpers/jservice').getRandomCategories;
-const checkSignature = require('../helpers/check').checkSignature;
+const checkPlayerName = require('../helpers/check').checkPlayerName;
 const checkAnswer = require('../helpers/check').checkAnswer;
 const formatRaw = require('../helpers/format').formatRaw;
 const formatWager = require('../helpers/format').formatWager;
@@ -823,7 +823,7 @@ io.on('connection', (socket) => {
                 updateGameSession(socket.sessionName, 'boardController', socket);
             }
 
-            socket.emit('join_session_success', sessionName);
+            socket.emit('join_session_success');
         } else {
             socket.emit('join_session_failure', sessionName);
         }
@@ -836,7 +836,9 @@ io.on('connection', (socket) => {
 
         const gameSession = sessionCache.get(socket.sessionName);
 
-        if (checkSignature(playerName)) {
+        const checkPlayerMessage = checkPlayerName(playerName, signature);
+
+        if (_.isEmpty(checkPlayerMessage)) {
             updatePlayer(socket.sessionName, socket.id, 'name', playerName);
             updatePlayer(socket.sessionName, socket.id, 'signature', signature);
 
@@ -846,7 +848,7 @@ io.on('connection', (socket) => {
             activePlayers++;
             io.emit('active_players', activePlayers);
         } else {
-            socket.emit('submit_signature_failure');
+            socket.emit('submit_signature_failure', checkPlayerMessage);
         }
     });
 
