@@ -76,7 +76,6 @@ const MobileClue = () => {
 
     const [hasAnswered, setHasAnswered] = useState(true);
     const [player, setPlayer] = useState(debug ? samplePlayers['zsS3DKSSIUOegOQuAAAA'] : {});
-    const [startTimer, setStartTimer] = useState(false);
 
     const socket = useContext(SocketContext);
 
@@ -89,17 +88,11 @@ const MobileClue = () => {
             setPlayer(player);
         });
 
-        socket.on('start_timer', () => {
-            setStartTimer(true);
-        });
-
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    const handleBuzzIn = useCallback((startTimer) => {
-        if (startTimer) {
-            socket.emit('buzz_in');
-        }
+    const handleBuzzIn = useCallback(() => {
+        socket.emit('buzz_in');
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
@@ -109,7 +102,7 @@ const MobileClue = () => {
             {
                 !hasAnswered && (
                     <BuzzerRow>
-                        <Buzzer onClick={() => handleBuzzIn(startTimer)} />
+                        <Buzzer onClick={() => handleBuzzIn()} />
                     </BuzzerRow>
                 )
             }

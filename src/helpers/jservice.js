@@ -71,6 +71,7 @@ const approveCategory = (category) => {
         const isValid = rawQuestion.length > 0 && clue.invalid_count === null;
         const isMediaQuestion =
             rawQuestion.includes('seenhere') ||
+            rawQuestion.includes('picturedhere') ||
             rawQuestion.includes('heardhere') ||
             rawQuestion.includes('video');
 
@@ -117,9 +118,9 @@ exports.getRandomCategories = (cb) => {
                     doubleJeopartyCategories[djCategoryIndex2].clues[djClueIndex2].dailyDouble = true;
 
                     // DEBUG
-                    const categoryName = categories[categoryIndex].title;
-                    const dollarValue = 200 * (clueIndex + 1);
-                    console.log(`Daily double is '${categoryName} for $${dollarValue}'`);
+                    // const categoryName = categories[categoryIndex].title;
+                    // const dollarValue = 200 * (clueIndex + 1);
+                    // console.log(`Daily double is '${categoryName} for $${dollarValue}'`);
 
                     cb(categories, doubleJeopartyCategories, finalJeopartyClue);
                 } else {

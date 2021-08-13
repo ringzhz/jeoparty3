@@ -171,7 +171,7 @@ const EmailButtonWrapper = styled.div`
     margin-right: 0.5em;
 `;
 
-const sortByJoinIndex = (players) => Object.values(players).sort((a, b) => b.joinIndex - a.joinIndex);
+const sortByJoinIndex = (players) => Object.values(players).sort((a, b) => a.joinIndex - b.joinIndex);
 
 const BrowserLobby = () => {
     const debug = useContext(DebugContext);
@@ -272,7 +272,7 @@ const BrowserLobby = () => {
             {mute &&
                 <MuteScreen>
                     <MuteScreenText onClick={() => handleUnmute()}>
-                        <MuteScreenButton onClick={() => handleUnmute()} variant={'outline-light'}>CLICK TO UNMUTE</MuteScreenButton>
+                        <MuteScreenButton variant={'outline-light'}>CLICK TO UNMUTE</MuteScreenButton>
                     </MuteScreenText>
                 </MuteScreen>
             }

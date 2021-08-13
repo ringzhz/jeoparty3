@@ -74,6 +74,10 @@ const MobileLobby = () => {
             setMobileLobbyState(MobileLobbyState.WAITING);
         });
 
+        socket.on('player', (player) => {
+            setPlayer(player);
+        });
+
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 

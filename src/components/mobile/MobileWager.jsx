@@ -64,6 +64,7 @@ const MobileWager = () => {
 
     const handleSubmitWager = useCallback((wager) => {
         socket.emit('submit_wager', wager);
+        setIsWagering(false);
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);

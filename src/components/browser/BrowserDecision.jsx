@@ -95,6 +95,7 @@ const BrowserDecision = () => {
         socket.on('show_answer', (answer, playerName) => {
             setShowAnswer(true);
             setShowCorrectAnswer(false);
+            setShowDollarValue(false);
             setAnswer(answer);
             setPlayerName(playerName);
         });
@@ -132,10 +133,11 @@ const BrowserDecision = () => {
             }, 100);
         });
 
-        socket.on('show_correct_answer', (correctAnswer, sayCorrectAnswer, skipScoreboard) => {
+        socket.on('show_correct_answer', (correctAnswer, sayCorrectAnswer, skipScoreboard, timeout) => {
             setShowDecision(false);
             setShowAnswer(false);
             setShowCorrectAnswer(true);
+            setShowDollarValue(false);
             setCorrectAnswer(correctAnswer);
             setPlayerName('');
 
@@ -146,6 +148,17 @@ const BrowserDecision = () => {
                         sayCorrectAnswerFiller(correctAnswer, () => {
                             setTimeout(() => {
                                 socket.emit('show_board');
+                            }, 500);
+                        });
+                    };
+
+                    buzzInTimeoutAudio.play();
+                } else if (timeout) {
+                    const buzzInTimeoutAudio = new Audio(buzzInTimeoutSound);
+                    buzzInTimeoutAudio.onended = () => {
+                        sayCorrectAnswerFiller(correctAnswer, () => {
+                            setTimeout(() => {
+                                socket.emit('show_scoreboard');
                             }, 500);
                         });
                     };
@@ -191,7 +204,7 @@ const BrowserDecision = () => {
                     </AnswerPanel>
 
                     <DollarValueText isCorrect={isCorrect} showDollarValue={showDollarValue}>
-                        {!showCorrectAnswer && `${isCorrect ? '+' : '-'}$${dollarValue}`}
+                        {showDollarValue && `${isCorrect ? '+' : '-'}$${dollarValue}`}
                     </DollarValueText>
                 </AnswerCol>
             </AnswerRow>
