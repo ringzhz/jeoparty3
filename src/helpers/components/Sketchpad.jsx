@@ -230,6 +230,8 @@ const Sketchpad = (props) => {
         canvas.addEventListener('touchstart', touchStartEvent);
         canvas.addEventListener('touchmove', touchMoveEvent);
         canvas.addEventListener('touchend', touchEndEvent);
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [color, undo]);
 
     return (

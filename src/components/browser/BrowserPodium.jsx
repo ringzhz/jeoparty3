@@ -104,36 +104,9 @@ const BrowserPodium = (props) => {
         return () => {
             socket.off('champion');
         };
-    });
 
-    if (debug) {
-        document.body.onkeyup = (e) => {
-            if (e.keyCode === 32) {
-                sayChampionIntroductionFiller(() => {
-                    const drumrollAudio = new Audio(drumrollSound);
-
-                    drumrollAudio.onended = () => {
-                        say(champion.name, () => {
-                            const victoryAudio = new Audio(victorySound);
-
-                            victoryAudio.onended = () => {
-                                setPlayAgain(true);
-                            };
-
-                            victoryAudio.play();
-
-                            setChampionRevealed(true);
-                            setTimeout(() => {
-                                setStartFireworks(true);
-                            }, 500);
-                        });
-                    };
-
-                    drumrollAudio.play();
-                });
-            }
-        }
-    }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const fireworks = [...new Array(15)].map(() => {
         const fxProps = {

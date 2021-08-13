@@ -269,6 +269,8 @@ const BrowserBoard = () => {
             socket.off('request_clue');
             socket.off('say_board_introduction');
         }
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const categoryRevealPanels = _.get(categories, `[0].title`) && Array.from(Array(NUM_CATEGORIES).keys()).map((i) => {

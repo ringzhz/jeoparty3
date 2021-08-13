@@ -199,7 +199,9 @@ const BrowserWager = () => {
             socket.off('board_controller');
             socket.off('final_jeoparty_clue');
         }
-    });
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const WagerInfoPlayerCard = () => {
         return (

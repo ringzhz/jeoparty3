@@ -12,7 +12,7 @@ exports.formatRaw = (original) => {
     rawOriginal = rawOriginal.replace("</i>", "");
 
     // Punctuation
-    rawOriginal = rawOriginal.replace(/[.,\/#!$%\^&\*;:"'{}=\-_`~()]/g, "");
+    rawOriginal = rawOriginal.replace(/[.,/#!$%^&*;:"'{}=\-_`~()]/g, "");
     rawOriginal = rawOriginal.replace(/\s{2,}/g, "");
     rawOriginal = rawOriginal.replace(String.fromCharCode(92), "");
 

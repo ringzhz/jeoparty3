@@ -92,12 +92,16 @@ const MobileClue = () => {
         socket.on('start_timer', () => {
             setStartTimer(true);
         });
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const handleBuzzIn = useCallback((startTimer) => {
         if (startTimer) {
             socket.emit('buzz_in');
         }
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return (

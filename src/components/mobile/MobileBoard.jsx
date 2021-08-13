@@ -112,15 +112,21 @@ const MobileBoard = () => {
         socket.on('player', (player) => {
             setPlayer(player);
         });
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const handleSelectCategory = useCallback((categoryIndex) => {
         setCategoryIndex(categoryIndex);
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const handleRequestClue = useCallback((categoryIndex, clueIndex) => {
         socket.emit('request_clue', categoryIndex, clueIndex);
         setClueRequested(true);
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     let categoryRows = _.get(categories, `[0].title`) && Array.from(Array(NUM_CATEGORIES).keys()).map((i) => {

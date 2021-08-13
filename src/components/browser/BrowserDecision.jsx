@@ -165,6 +165,8 @@ const BrowserDecision = () => {
             socket.off('show_decision');
             socket.off('show_correct_answer');
         };
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     let text = null;

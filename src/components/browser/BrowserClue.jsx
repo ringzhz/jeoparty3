@@ -105,6 +105,8 @@ const BrowserClue = () => {
         return () => {
             socket.off('say_clue_text');
         }
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const clueTextLength = _.size(clueText) || 0;

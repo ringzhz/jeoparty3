@@ -1,6 +1,7 @@
 function Player() {
     this.socketId = '';
     this.sessionName = '';
+    this.joinIndex = 0;
     this.name = '';
     this.signature = '';
     this.oldScore = 0;

@@ -116,6 +116,11 @@ exports.getRandomCategories = (cb) => {
                     doubleJeopartyCategories[djCategoryIndex1].clues[djClueIndex1].dailyDouble = true;
                     doubleJeopartyCategories[djCategoryIndex2].clues[djClueIndex2].dailyDouble = true;
 
+                    // DEBUG
+                    const categoryName = categories[categoryIndex].title;
+                    const dollarValue = 200 * (clueIndex + 1);
+                    console.log(`Daily double is '${categoryName} for $${dollarValue}'`);
+
                     cb(categories, doubleJeopartyCategories, finalJeopartyClue);
                 } else {
                     recursiveGetRandomCategory();

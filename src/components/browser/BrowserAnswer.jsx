@@ -195,6 +195,8 @@ const BrowserAnswer = () => {
         return () => {
             socket.off('play_buzz_in_sound');
         }
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const categoryNameLength = _.size(categoryName) || 0;

@@ -51,15 +51,21 @@ const MobileWager = () => {
         socket.on('player', (player) => {
             setPlayer(player);
         });
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const handleWagerLivefeed = useCallback((e) => {
         setWager(e.target.value);
         socket.emit('wager_livefeed', e.target.value);
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const handleSubmitWager = useCallback((wager) => {
         socket.emit('submit_wager', wager);
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return (

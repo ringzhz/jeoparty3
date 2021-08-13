@@ -73,14 +73,20 @@ const MobileLobby = () => {
         socket.on('reconnect', () => {
             setMobileLobbyState(MobileLobbyState.WAITING);
         });
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const handleJoinSession = useCallback((sessionName) => {
         socket.emit('join_session', sessionName);
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const handleSubmitSignature = useCallback((playerName) => {
         socket.emit('submit_signature', playerName, document.getElementById('signature-canvas').toDataURL());
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return (

@@ -14,13 +14,10 @@ import DollarValueText from '../../helpers/components/DollarValueText';
 import HypeText from '../../helpers/components/HypeText';
 import { timers } from '../../constants/timers';
 
-import {sayBestStreakFiller, sayChampionIntroductionFiller} from '../../helpers/sayFiller';
+import { sayBestStreakFiller } from '../../helpers/sayFiller';
 
 // DEBUG
 import { samplePlayers } from '../../constants/samplePlayers';
-import drumrollSound from "../../assets/audio/drumroll.mp3";
-import say from "../../helpers/say";
-import victorySound from "../../assets/audio/victory.mp3";
 
 const PlayerCardRow = styled(Row)`
     height: ${props => `calc(100vh / ${props.numPlayers})`};
@@ -153,26 +150,9 @@ const BrowserScoreboard = () => {
         return () => {
             socket.off('show_update');
         };
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
-
-    if (debug) {
-        document.body.onkeyup = (e) => {
-            if (e.keyCode === 32) {
-                setShowUpdate(true);
-
-                const bestStreakPlayer = sortByStreak(players)[0];
-                if (_.get(bestStreakPlayer, 'streak') && _.get(bestStreakPlayer, 'streak') >= 2) {
-                    sayBestStreakFiller(bestStreakPlayer.name, bestStreakPlayer.streak, bestStreakPlayer.title, () => setTimeout(() => {
-                        socket.emit('show_board');
-                    }, 500));
-                } else {
-                    setTimeout(() => {
-                        socket.emit('show_board');
-                    }, timers.SHOW_SCOREBOARD_UPDATE_TIME * 1000);
-                }
-            }
-        }
-    }
 
     return (
         <Container fluid>

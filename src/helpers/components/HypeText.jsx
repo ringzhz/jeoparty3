@@ -26,7 +26,7 @@ const HypeText = (props) => {
                     const c = props.text[i];
 
                     return (
-                        <HypeTextLetter index={i} rainbow={props.rainbow}>{c}</HypeTextLetter>
+                        <HypeTextLetter key={i} index={i} rainbow={props.rainbow}>{c}</HypeTextLetter>
                     );
                 })
             }

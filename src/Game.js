@@ -108,7 +108,7 @@ const GlobalStyle = createGlobalStyle`
 const Game = () => {
     const debug = false;
 
-    const [gameState, setGameState] = useState(debug ? GameState.SCOREBOARD : GameState.LOBBY);
+    const [gameState, setGameState] = useState(debug ? GameState.LOBBY : GameState.LOBBY);
     const [gameStateAck, setGameStateAck] = useState(() => () => {});
 
     useEffect(() => {
@@ -118,11 +118,15 @@ const Game = () => {
             setGameState(newGameState);
             setGameStateAck(() => ack());
         });
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
         gameStateAck && gameStateAck();
         setGameStateAck(() => () => {});
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [gameState]);
 
     useEffect(() => {
@@ -133,6 +137,8 @@ const Game = () => {
         //     const vh = window.innerHeight * 0.01;
         //     document.documentElement.style.setProperty('--vh', `${vh}px`);
         // });
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     let browserView = null;

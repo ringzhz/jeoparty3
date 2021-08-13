@@ -23,7 +23,9 @@ const MobileWrapper = (props) => {
             // TODO: Make this a clickable reload button using the same screen blur as BrowserLobby
             console.log(`You've been disconnected!`);
         });
-    });
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     return (
         <div>

@@ -51,16 +51,22 @@ const MobileAnswer = () => {
         socket.on('player', (player) => {
             setPlayer(player);
         });
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const handleAnswerLivefeed = useCallback((e) => {
         setAnswer(e.target.value);
         socket.emit('answer_livefeed', e.target.value);
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const handleSubmitAnswer = useCallback((answer) => {
         socket.emit('submit_answer', answer, false);
         setIsAnswering(false);
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return (

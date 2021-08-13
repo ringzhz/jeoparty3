@@ -21,6 +21,7 @@ import trebekIntroSound from '../../assets/audio/trebekIntro.mp3';
 
 // DEBUG
 import { sampleLeaderboard } from '../../constants/sampleLeaderboard';
+import { samplePlayers } from "../../constants/samplePlayers";
 
 const MuteScreen = styled.div`
     ${mixins.flexAlignCenter};
@@ -170,18 +171,18 @@ const EmailButtonWrapper = styled.div`
     margin-right: 0.5em;
 `;
 
+const sortByJoinIndex = (players) => Object.values(players).sort((a, b) => b.joinIndex - a.joinIndex);
+
 const BrowserLobby = () => {
     const debug = useContext(DebugContext);
 
-    const [playerNames, setPlayerNames] = useState(debug ? ['Luffy', 'Nami', 'Zoro'] : []);
+    const [players, setPlayers] = useState(debug ? sortByJoinIndex(samplePlayers) : []);
     const [sessionName, setSessionName] = useState(debug ? 'TEST' : '');
     const [leaderboard, setLeaderboard] = useState(debug ? sampleLeaderboard : []);
     const [activePlayers, setActivePlayers] = useState(debug ? 10 : 0);
     const [mute, setMute] = useState(true);
 
     const [showEmailPanel, setShowEmailPanel] = useState(false);
-    const [emailAddress, setEmailAddress] = useState('');
-    const [message, setMessage] = useState('');
 
     const socket = useContext(SocketContext);
 
@@ -222,23 +223,29 @@ const BrowserLobby = () => {
             alert(`There aren't any players in this session!`);
         });
 
-        socket.on('new_player_name', (playerName) => {
-            setPlayerNames(playerNames.concat([playerName]));
+        socket.on('players', (players) => {
+            setPlayers(sortByJoinIndex(players));
         });
 
         return () => {
             socket.off('unmute');
             socket.off('start_game_success');
         }
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const handleUnmute = useCallback(() => {
         setMute(false);
         socket.emit('unmute');
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const handleStartGame = useCallback(() => {
         socket.emit('start_game');
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const handleEmail = useCallback((e) => {
@@ -256,6 +263,8 @@ const BrowserLobby = () => {
         });
 
         setShowEmailPanel(false);
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return (
@@ -306,8 +315,8 @@ const BrowserLobby = () => {
                     <Col lg={'4'}>
                         <InfoHeading>PLAYERS</InfoHeading>
                         <InfoList>
-                            {playerNames.map((name) => {
-                                return <li><InfoText><HypeText text={name.toUpperCase()} /></InfoText></li>
+                            {players.map((player) => {
+                                return <li key={player.name}><InfoText><HypeText text={player.name.toUpperCase()} /></InfoText></li>
                             })}
                         </InfoList>
                     </Col>
@@ -323,7 +332,7 @@ const BrowserLobby = () => {
                             <LeaderboardPlayerNames lg={'6'}>
                                 <InfoList>
                                     {leaderboard.map((leader) => {
-                                        return <li><InfoText>{leader.name.toUpperCase()}</InfoText></li>
+                                        return <li key={leader.name}><InfoText>{leader.name.toUpperCase()}</InfoText></li>
                                     })}
                                 </InfoList>
                             </LeaderboardPlayerNames>
@@ -332,7 +341,7 @@ const BrowserLobby = () => {
                                 <InfoList>
                                     {leaderboard.map((leader) => {
                                         return (
-                                            <li>
+                                            <li key={leader.name}>
                                                 <InfoText>
                                                     ${leader.score}
                                                 </InfoText>

@@ -20,6 +20,8 @@ const MobileDecision = () => {
         socket.on('player', (player) => {
             setPlayer(player);
         });
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return (
