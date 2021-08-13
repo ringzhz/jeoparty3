@@ -8,11 +8,12 @@ import Col from 'react-bootstrap/Col';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-import { AiOutlineMail } from 'react-icons/ai';
+import { AiOutlineInfoCircle, AiOutlineMail } from 'react-icons/ai';
 import { ImCancelCircle } from 'react-icons/im';
 
 import { DebugContext } from '../../context/debug';
 import { SocketContext } from '../../context/socket';
+import { legalInfo } from '../../constants/info';
 import mixins from '../../helpers/mixins';
 import HypeText from '../../helpers/components/HypeText';
 
@@ -21,7 +22,7 @@ import trebekIntroSound from '../../assets/audio/trebekIntro.mp3';
 
 // DEBUG
 import { sampleLeaderboard } from '../../constants/sampleLeaderboard';
-import { samplePlayers } from "../../constants/samplePlayers";
+import { samplePlayers } from '../../constants/samplePlayers';
 
 const MuteScreen = styled.div`
     ${mixins.flexAlignCenter};
@@ -47,6 +48,18 @@ const MuteScreenText = styled.div`
 const MuteScreenButton = styled(Button)`
     font-family: clue, serif;
     font-size: 10vh;
+`;
+
+const ButtonWrapper = styled.div`
+      cursor: pointer;
+      position: absolute;
+      top: 0;
+      right: 0;
+`;
+
+const InfoButtonWrapper = styled.span`
+    margin-left: 0.5em;
+    margin-right: 0.5em;
 `;
 
 const EmailPanel = styled.div`
@@ -163,14 +176,6 @@ const ActivePlayersText = styled.span`
     text-shadow: 0.1em 0.1em #000;
 `;
 
-const EmailButtonWrapper = styled.div`
-    cursor: pointer;
-    position: absolute;
-    top: 0;
-    right: 0;
-    margin-right: 0.5em;
-`;
-
 const sortByJoinIndex = (players) => Object.values(players).sort((a, b) => a.joinIndex - b.joinIndex);
 
 const BrowserLobby = () => {
@@ -244,6 +249,12 @@ const BrowserLobby = () => {
 
     const handleStartGame = useCallback(() => {
         socket.emit('start_game');
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    const handleInfo = useCallback(() => {
+        alert(legalInfo);
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
@@ -358,9 +369,15 @@ const BrowserLobby = () => {
                     {!mute && <StartGameButton onClick={() => handleStartGame()} variant={'outline-light'}>START GAME</StartGameButton>}
                 </StartGameInputGroup>
 
-                <EmailButtonWrapper onClick={() => setShowEmailPanel(true)}>
-                    <AiOutlineMail size={'50px'} />
-                </EmailButtonWrapper>
+                <ButtonWrapper>
+                    <span onClick={() => setShowEmailPanel(true)}>
+                        <AiOutlineMail size={'50px'} />
+                    </span>
+
+                    <InfoButtonWrapper onClick={() => handleInfo()}>
+                        <AiOutlineInfoCircle size={'40px'} />
+                    </InfoButtonWrapper>
+                </ButtonWrapper>
 
                 <ActivePlayersText>
                     {activePlayers} active players

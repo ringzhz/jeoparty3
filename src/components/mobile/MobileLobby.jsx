@@ -6,9 +6,11 @@ import Col from 'react-bootstrap/Col';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Button from 'react-bootstrap/Button';
 import FormControl from 'react-bootstrap/FormControl';
+import {AiOutlineInfoCircle} from 'react-icons/ai';
 
 import { DebugContext } from '../../context/debug';
 import { SocketContext } from '../../context/socket';
+import { info } from '../../constants/info';
 import mixins from '../../helpers/mixins';
 import MobileWait from '../../helpers/components/MobileWait';
 import Sketchpad from '../../helpers/components/Sketchpad';
@@ -29,6 +31,17 @@ const LogoText = styled.h1`
     text-shadow: 0.075em 0.075em #000;
 `;
 
+const ButtonWrapper = styled.div`
+    cursor: pointer;
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 0.5em;
+`;
+
+const InfoButtonWrapper = styled.span`
+`;
+
 const MobileLobby = () => {
     const MobileLobbyState = {
         SESSION_NAME: 'sessionName',
@@ -40,7 +53,7 @@ const MobileLobby = () => {
 
     const [sessionName, setSessionName] = useState('');
     const [playerName, setPlayerName] = useState('');
-    const [mobileLobbyState, setMobileLobbyState] = useState(debug ? MobileLobbyState.SIGNATURE : MobileLobbyState.SESSION_NAME);
+    const [mobileLobbyState, setMobileLobbyState] = useState(debug ? MobileLobbyState.SESSION_NAME : MobileLobbyState.SESSION_NAME);
     const [player, setPlayer] = useState(debug ? samplePlayers['zsS3DKSSIUOegOQuAAAA'] : {});
 
     const socket = useContext(SocketContext);
@@ -79,6 +92,12 @@ const MobileLobby = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
+    const handleInfo = useCallback(() => {
+        alert(info);
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
     const handleJoinSession = useCallback((sessionName) => {
         socket.emit('join_session', sessionName);
 
@@ -105,18 +124,27 @@ const MobileLobby = () => {
         <Container fluid>
             {
                 mobileLobbyState === MobileLobbyState.SESSION_NAME &&
-                <MobileLobbyRow>
-                    <Col lg={'12'}>
-                        <LogoText>JEOPARTY!</LogoText>
+                <div>
+                    <ButtonWrapper>
+                        <InfoButtonWrapper onClick={() => handleInfo()}>
+                            <AiOutlineInfoCircle size={'30px'} />
+                        </InfoButtonWrapper>
+                    </ButtonWrapper>
 
-                        <InputGroup className={'mb-3'}>
-                            <FormControl placeholder={'Enter session name...'} value={sessionName.toUpperCase()} onChange={e => setSessionName(e.target.value)} />
-                            <InputGroup.Prepend>
-                                <Button onClick={() => handleJoinSession(sessionName)} variant={'outline-light'}>JOIN</Button>
-                            </InputGroup.Prepend>
-                        </InputGroup>
-                    </Col>
-                </MobileLobbyRow>
+                    <MobileLobbyRow>
+                        <Col lg={'12'}>
+                            <LogoText>JEOPARTY!</LogoText>
+
+                            <InputGroup className={'mb-3'}>
+                                <FormControl placeholder={'Enter session name...'} value={sessionName.toUpperCase()} onChange={e => setSessionName(e.target.value)} />
+                                <InputGroup.Prepend>
+                                    <Button onClick={() => handleJoinSession(sessionName)} variant={'outline-light'}>JOIN</Button>
+                                </InputGroup.Prepend>
+                            </InputGroup>
+                        </Col>
+                    </MobileLobbyRow>
+                </div>
+
             }
 
             {

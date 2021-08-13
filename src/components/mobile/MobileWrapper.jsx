@@ -46,7 +46,7 @@ const MobileWrapper = (props) => {
     const debug = useContext(DebugContext);
     const socket = useContext(SocketContext);
 
-    const [disconnected, setDisconnected] = useState(debug ? true : false);
+    const [disconnected, setDisconnected] = useState(debug ? false : false);
 
     useEffect(() => {
         socket.on('reload', () => {

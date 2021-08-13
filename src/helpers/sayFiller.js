@@ -52,11 +52,15 @@ export const sayCategoryRevealFiller = (categoryName, onComplete) => {
 
 export const sayRoundFiller = (boardControllerName, doubleJeoparty, onComplete) => {
     const doubleJeopartyOptions = [
-        `Let's get the double Je-party round started!`
+        `Let's get the double Je-party round started!`,
+        `Let's kick off the double Je-party round!`,
+        `Get ready for the double Je-party round!`
     ];
 
     const jeopartyOptions = [
-        `We'll begin with the Je-party round!`
+        `We'll begin with the Je-party round!`,
+        `We'll get started with the Je-party round!`,
+        `Let's kick it off with the Je-party round!`
     ];
 
     const text = doubleJeoparty ? choice(doubleJeopartyOptions) : choice(jeopartyOptions);
@@ -67,7 +71,9 @@ export const sayRoundFiller = (boardControllerName, doubleJeoparty, onComplete) 
 
 export const sayBoardControllerNameFiller = (boardControllerName, onComplete) => {
     const options = [
-        `Select a clue, ${boardControllerName}`
+        `Select a clue, ${boardControllerName}`,
+        `It's your choice, ${boardControllerName}`,
+        `You control the board, ${boardControllerName}`
     ];
 
     const text = choice(options);
@@ -76,7 +82,9 @@ export const sayBoardControllerNameFiller = (boardControllerName, onComplete) =>
 
 export const sayDailyDoubleFiller = () => {
     const options = [
-        `That's the daily double!`
+        `That's the daily double!`,
+        `You got the daily double!`,
+        `There's the daily double!`
     ];
 
     const text = choice(options);
@@ -103,7 +111,9 @@ export const sayDollarValueFiller = (dollarValue, onComplete) => {
 
 export const sayCorrectAnswerFiller = (correctAnswer, onComplete) => {
     const options = [
-        `The correct answer was ${correctAnswer}`
+        `The correct answer was ${correctAnswer}`,
+        `It was ${correctAnswer}`,
+        `How about ${correctAnswer}?`
     ];
 
     const text = choice(options);
@@ -112,7 +122,9 @@ export const sayCorrectAnswerFiller = (correctAnswer, onComplete) => {
 
 export const sayBestStreakFiller = (playerName, streak, title, onComplete) => {
     const options = [
-        `${playerName} is on a ${streak} answer streak. You're a ${title}`
+        `${playerName} is on a ${streak} answer streak. They're a ${title}`,
+        `${playerName} has gotten ${streak} in a row. They're a ${title}`,
+        `That's ${streak} in a row for ${playerName}. They're a ${title}`
     ];
 
     const text = choice(options);
@@ -121,7 +133,9 @@ export const sayBestStreakFiller = (playerName, streak, title, onComplete) => {
 
 export const sayFinalJeopartyCategoryRevealIntroductionFiller = (onComplete) => {
     const options = [
-        `The final Je-party category is...`
+        `The final Je-party category is...`,
+        `Here's the final Je-party category...`,
+        `Get ready for final Je-party. The category is...`
     ];
 
     const text = choice(options);
@@ -139,7 +153,10 @@ export const sayFinalJeopartyWagerFiller = (onComplete) => {
 
 export const sayChampionIntroductionFiller = (onComplete) => {
     const options = [
-        `And today's Je-party champion is...`
+        `And today's Je-party champion is...`,
+        `Your Je-party champion is...`,
+        `Let's see who today's Je-party champion is. Congratulations...`,
+        `Let's see who today's Je-party champion is. Put your hands together for...`
     ];
 
     const text = choice(options);
