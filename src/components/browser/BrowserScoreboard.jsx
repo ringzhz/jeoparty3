@@ -132,11 +132,12 @@ const BrowserScoreboard = () => {
             setPlayers(sortByOldScore(players));
         });
 
-        socket.on('show_update', () => {
+        socket.on('show_update', (players) => {
             setShowUpdate(true);
 
             const bestStreakPlayer = sortByStreak(players)[0];
-            if (_.get(bestStreakPlayer, 'streak') && _.get(bestStreakPlayer, 'streak') >= 2) {
+
+            if (_.get(bestStreakPlayer, 'streak', 0) >= 2) {
                 sayBestStreakFiller(bestStreakPlayer.name, bestStreakPlayer.streak, bestStreakPlayer.title, () => setTimeout(() => {
                     socket.emit('show_board');
                 }, 500));

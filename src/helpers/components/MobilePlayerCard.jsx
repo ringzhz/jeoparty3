@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import _ from 'lodash';
 
 import styled from 'styled-components';
@@ -6,6 +6,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import FitText from '@kennethormandy/react-fittext';
 
+import { SocketContext } from '../../context/socket';
 import mixins from '../mixins';
 import DollarValueText from './DollarValueText';
 
@@ -102,11 +103,23 @@ const PlayerScoreText = styled.span`
 `;
 
 const MobilePlayerCard = (props) => {
-    const name = _.get(props, 'player.name');
+    const socket = useContext(SocketContext);
+
+    const [showNewScore, setShowNewScore] = useState(true);
+
+    useEffect(() => {
+        socket.on('show_new_score', (showNewScore) => {
+            setShowNewScore(showNewScore);
+        });
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    const name = _.get(props, 'player.name', '');
     const nameLength = _.size(name) || 0;
     const nameCompressor = getNameCompressor(nameLength);
 
-    const score = _.get(props, 'player.score', 0);
+    const score = showNewScore ? _.get(props, 'player.score', 0) : _.get(props, 'player.oldScore', 0);
     const scoreCompressor = getScoreCompressor(score);
 
     return (
@@ -119,14 +132,14 @@ const MobilePlayerCard = (props) => {
 
                     <PlayerNameCol lg={'5'}>
                         <FitText compressor={nameCompressor}>
-                            <PlayerNameText>{_.invoke(_.get(props, 'player.name'), 'toUpperCase')}</PlayerNameText>
+                            <PlayerNameText>{_.invoke(name, 'toUpperCase')}</PlayerNameText>
                         </FitText>
                     </PlayerNameCol>
 
                     <PlayerScoreCol lg={'5'}>
                         <FitText compressor={scoreCompressor}>
                             <PlayerScoreText>
-                                <DollarValueText dollarValue={_.get(props, 'player.score')} />
+                                <DollarValueText dollarValue={score} />
                             </PlayerScoreText>
                         </FitText>
                     </PlayerScoreCol>

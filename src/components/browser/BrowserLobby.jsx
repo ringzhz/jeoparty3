@@ -63,8 +63,8 @@ const EmailPanelCancelButton = styled.div`
     cursor: pointer;
     position: absolute;
     top: 0;
-    left: 0;
-    margin-left: 0.25em;
+    right: 0;
+    margin-right: 0.25em;
 `;
 
 const LogoRow = styled(Row)`

@@ -116,8 +116,10 @@ const setOldScores = (sessionName) => {
 
     const gameSession = sessionCache.get(sessionName);
 
-    gameSession.players.map((player) => {
-        updatePlayer(sessionName, player.socketId, 'oldScore', player.score);
+    _.keys(gameSession.players).map((socketId) => {
+        const score = _.get(gameSession, `players[${socketId}].score`, 0);
+
+        updatePlayer(sessionName, socketId, 'oldScore', score);
     });
 };
 
@@ -407,7 +409,7 @@ const showWager = (sessionName) => {
 };
 
 const submitWager = (socket, wager) => {
-    if (!sessionCache.get(socket.sessionName)) {
+    if (!sessionCache.get(socket.sessionName) || sessionCache.get(socket.sessionName).currentGameState !== GameState.WAGER) {
         return;
     }
 
@@ -545,7 +547,7 @@ const startTimer = (sessionName) => {
 };
 
 const submitAnswer = (socket, answer, timeout) => {
-    if (!sessionCache.get(socket.sessionName)) {
+    if (!sessionCache.get(socket.sessionName) || sessionCache.get(socket.sessionName).currentGameState !== GameState.ANSWER) {
         return;
     }
 
@@ -601,6 +603,7 @@ const submitAnswer = (socket, answer, timeout) => {
         client.emit('set_game_state', GameState.DECISION, () => {
             client.emit('show_answer', answer, _.get(gameSession, `players[${socket.id}].name`, ''));
             client.emit('player', _.get(gameSession, `players[${client.id}]`));
+            client.emit('show_new_score', client.id !== socket.id);
         });
     });
 
@@ -613,7 +616,7 @@ const submitAnswer = (socket, answer, timeout) => {
 
         gameSession.browserClient.emit('show_decision', isCorrect, dollarValue);
         gameSession.clients.map((client) => {
-            client.emit('player', _.get(gameSession, `players[${client.id}]`));
+            client.emit('show_new_score', true);
         });
     }, timers.SHOW_PRE_DECISION_TIME * 1000);
 };
@@ -643,6 +646,7 @@ const showFinalJeopartyDecision = (sessionName) => {
                 client.emit('set_game_state', GameState.DECISION, () => {
                     client.emit('show_answer', player.answer, player.name);
                     client.emit('player', _.get(gameSession, `players[${client.id}]`));
+                    client.emit('show_new_score', client.id !== player.socketId);
                 });
             });
         } else {
@@ -659,6 +663,7 @@ const showFinalJeopartyDecision = (sessionName) => {
             const isCorrect = checkAnswer(gameSession.finalJeopartyClue.categoryName, gameSession.finalJeopartyClue.question, gameSession.finalJeopartyClue.answer, player.answer);
 
             gameSession.browserClient.emit('show_decision', isCorrect, player.wager);
+            getClient(sessionName, player.socketId).emit('show_new_score', true);
         }, timers.SHOW_PRE_DECISION_TIME * 1000);
     } else {
         showCorrectAnswer(sessionName, gameSession.finalJeopartyClue.answer, false, true);
@@ -672,15 +677,17 @@ const showCorrectAnswer = (sessionName, correctAnswer, timeout, sayCorrectAnswer
 
     const gameSession = sessionCache.get(sessionName);
 
-    if (timeout && gameSession.buzzInTimeout) {
-        gameSession.clients.map((client) => {
-            client.emit('set_game_state', GameState.DECISION, () => {
-                client.emit('show_correct_answer', correctAnswer, sayCorrectAnswer, true);
-                client.emit('player', _.get(gameSession, `players[${client.id}]`));
+    if (timeout) {
+        if (gameSession.buzzInTimeout) {
+            gameSession.clients.map((client) => {
+                client.emit('set_game_state', GameState.DECISION, () => {
+                    client.emit('show_correct_answer', correctAnswer, sayCorrectAnswer, true);
+                    client.emit('player', _.get(gameSession, `players[${client.id}]`));
+                });
             });
-        });
 
-        updateGameSession(sessionName, 'currentGameState', GameState.DECISION);
+            updateGameSession(sessionName, 'currentGameState', GameState.DECISION);
+        }
     } else {
         gameSession.browserClient.emit('show_correct_answer', correctAnswer, sayCorrectAnswer, false);
 
@@ -709,21 +716,20 @@ const showScoreboard = (sessionName) => {
         client.emit('set_game_state', GameState.SCOREBOARD, () => {
             client.emit('players', gameSession.players);
             client.emit('player', _.get(gameSession, `players[${client.id}]`));
-
-            if (!_.isEmpty(gameSession.playersAnswered)) {
-                setTimeout(() => {
-                    if (!sessionCache.get(sessionName)) {
-                        return;
-                    }
-
-                    client.emit('show_update');
-                    client.emit('player', _.get(gameSession, `players[${client.id}]`));
-                }, timers.SHOW_SCOREBOARD_PRE_UPDATE_TIME * 1000);
-            }
         });
     });
 
     updateGameSession(sessionName, 'currentGameState', GameState.SCOREBOARD);
+
+    if (!_.isEmpty(gameSession.playersAnswered)) {
+        setTimeout(() => {
+            if (!sessionCache.get(sessionName)) {
+                return;
+            }
+
+            gameSession.browserClient.emit('show_update', gameSession.players);
+        }, timers.SHOW_SCOREBOARD_PRE_UPDATE_TIME * 1000);
+    }
 };
 
 const showPodium = (sessionName, championOverride) => {

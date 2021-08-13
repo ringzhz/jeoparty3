@@ -257,6 +257,7 @@ const BrowserBoard = () => {
 
                 // DEBUG
                 // Use this to simulate the full reveal animation finishing and being sent back to the server
+                // Make sure to also force this branch of the if condition
                 // setTimeout(() => {
                 //     socket.emit('board_revealed');
                 // }, 1000);
