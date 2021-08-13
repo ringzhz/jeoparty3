@@ -14,6 +14,7 @@ Display the board on your computer and use your mobile device as your controller
     * Fixed an issue where number answers were marked incorrect depending on their form (i.e. ‘Twelve Angry Men’ will be marked correct when the answer is ‘12 Angry Men’ and the same for similar questions)
     * Fixed an issue where answers were marked incorrect if they were part of the category but that category enumerated the possible answers (i.e. if the category was ‘NBA, NFL, or NHL’ and you correctly answered ‘NBA’ it will now be marked correct and won’t be flagged for being part of the category)
     * Added more acronyms to check answers against although it isn’t exhaustive (i.e. ‘Kennedy’ and ‘John F. Kennedy’ will be marked correct when the answer is ‘JFK’ and the same for similar answers that feature acronyms)
+    * Made it so that the correct answer to a question is always shown whether a player answered correctly or not. This works both so that the player can be fact-checked by other players and so that answer checker errors can be identified more easily
 * Complete UI overhaul
     * Rebuilt UI code from scratch, adding lots of new features and fixing many known issues along the way including:
         * Added board and category reveal animations
