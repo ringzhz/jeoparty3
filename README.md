@@ -4,8 +4,7 @@
 Display the board on your computer and use your mobile device as your controller to select clues, buzz in, and answer questions. Play alone, or with friends!
 
 # What's New?
-* Rebuilt network code from the ground up
-    * Rebuilt server code from scratch eliminating lots of infamous bugs along the way including:
+* Rebuilt network code from the ground up eliminating lots of infamous bugs along the way including:
         * Players not being able to rejoin and/or losing their progress upon rejoining if their phone dies or falls asleep, or they navigate away from their browser to use a different app
         * Game timers (like the ones dictating how long you have to buzz in or answer) randomly stopping or restarting and crashing the game
         * Browser reading aloud clues that were beyond a certain number of words crashing the game
@@ -26,6 +25,8 @@ Display the board on your computer and use your mobile device as your controller
         * New and improved champion announcement screen including a drumroll and firework animations once the champion is announced
         * Made the visual style more consistent across the entire game to reflect the classic Jeopardy! aesthetic
         * Fixed an issue where the animation showing the clue expanding out of the board screen was shaky and/or blurry
+* Added answer streaks
+    * Added new voice lines and player titles visible on the scoreboard screen to celebrate players when they get multiple answers correct in a row
 * Daily double and final jeoparty wagering makeover
     * Added new voice lines whenever a player is wagering to inform them of their minimum and maximum wagers, allowing the player to do less math in their head while they’re considering their wager
     * Added new visuals for final jeoparty wagering and answering so players and audience members can see how many players have locked in their wagers/answers
