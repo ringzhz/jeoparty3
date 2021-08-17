@@ -5,10 +5,10 @@ Display the board on your computer and use your mobile device as your controller
 
 # What's New?
 * Rebuilt network code from the ground up eliminating lots of infamous bugs along the way including:
-        * Players not being able to rejoin and/or losing their progress upon rejoining if their phone dies or falls asleep, or they navigate away from their browser to use a different app
-        * Game timers (like the ones dictating how long you have to buzz in or answer) randomly stopping or restarting and crashing the game
-        * Browser reading aloud clues that were beyond a certain number of words crashing the game
-        * Game getting stuck while the scoreboard is being displayed showing one or more players continually losing money
+    * Players not being able to rejoin and/or losing their progress upon rejoining if their phone dies or falls asleep, or they navigate away from their browser to use a different app
+    * Game timers (like the ones dictating how long you have to buzz in or answer) randomly stopping or restarting and crashing the game
+    * Browser reading aloud clues that were beyond a certain number of words crashing the game
+    * Game getting stuck while the scoreboard is being displayed showing one or more players continually losing money
 * Answer checker improvements
     * Fixed an issue where number answers were marked incorrect depending on their form (i.e. ‘Twelve Angry Men’ will be marked correct when the answer is ‘12 Angry Men’ and the same for similar questions)
     * Fixed an issue where answers were marked incorrect if they were part of the category but that category enumerated the possible answers (i.e. if the category was ‘NBA, NFL, or NHL’ and you correctly answered ‘NBA’ it will now be marked correct and won’t be flagged for being part of the category)
