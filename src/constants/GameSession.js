@@ -21,7 +21,7 @@ function GameSession() {
     this.categoryIndex = null;
     this.clueIndex = null;
 
-    this.buzzInTimeout = true;
+    this.buzzInTimeout = false;
 }
 
 exports.GameSession = GameSession;

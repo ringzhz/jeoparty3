@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
+import { useCookies } from 'react-cookie';
 
 import styled, { createGlobalStyle } from 'styled-components';
 import Button from 'react-bootstrap/Button';
@@ -43,13 +44,21 @@ const DisconnectedScreenButton = styled(Button)`
 `;
 
 const MobileWrapper = (props) => {
+    // eslint-disable-next-line no-unused-vars
+    const [cookies, setCookie, removeCookie] = useCookies(['player-id']);
+    
     const debug = useContext(DebugContext);
     const socket = useContext(SocketContext);
 
     const [disconnected, setDisconnected] = useState(debug ? false : false);
 
     useEffect(() => {
+        socket.on('set_cookie', (player) => {
+            setCookie('player-id', `${player.sessionName}-${player.socketId}`, { path: '/' });
+        });
+
         socket.on('reload', () => {
+            removeCookie('player-id', { path: '/' });
             window.location.reload();
         });
 

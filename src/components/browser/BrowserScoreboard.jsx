@@ -137,7 +137,7 @@ const BrowserScoreboard = () => {
 
             const bestStreakPlayer = sortByStreak(players)[0];
 
-            if (_.get(bestStreakPlayer, 'streak', 0) >= 2) {
+            if (_.get(bestStreakPlayer, 'streak', 0) >= 2 && bestStreakPlayer.isCorrect) {
                 sayBestStreakFiller(bestStreakPlayer.name, bestStreakPlayer.streak, bestStreakPlayer.title, () => setTimeout(() => {
                     socket.emit('show_board');
                 }, 500));

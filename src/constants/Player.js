@@ -10,6 +10,7 @@ function Player() {
     this.finalJeopartyWagerSubmitted = false;
     this.finalJeopartyAnswerSubmitted = false;
     this.answer = '';
+    this.isCorrect = false;
     this.streak = 0;
     this.heat = 0;
     this.title = 0;

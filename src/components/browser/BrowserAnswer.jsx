@@ -101,6 +101,13 @@ const CategoryText = styled.span`
     letter-spacing: 0.025em;
 `;
 
+const CategoryYearText = styled.span`
+    font-size: 6vh;
+    font-family: board, serif;
+    color: #d69f4c;
+    text-shadow: 0.08em 0.08em #000;
+`;
+
 const DollarValueTextPanel = styled.div`
     ${mixins.flexAlignCenter};
     position: absolute;
@@ -144,9 +151,10 @@ const BrowserAnswer = () => {
     const debug = useContext(DebugContext);
 
     const [categoryName, setCategoryName] = useState(debug ? sampleCategories[0].title : '');
+    const [categoryYear, setCategoryYear] = useState(debug ? '2000' : '');
     const [clueText, setClueText] = useState(debug ? sampleCategories[0].clues[0].question : '');
     const [dollarValue, setDollarValue] = useState(0);
-    const [finalJeoparty, setFinalJeoparty] = useState(debug ? true : false);
+    const [finalJeoparty, setFinalJeoparty] = useState(debug ? false : false);
     const [currentAnswersSubmitted, setCurrentAnswersSubmitted] = useState(0);
     const [totalAnswers, setTotalAnswers] = useState(debug ? 4 : 0);
     const [playerName, setPlayerName] = useState(debug ? 'luffy' : '');
@@ -156,8 +164,9 @@ const BrowserAnswer = () => {
     const socket = useContext(SocketContext);
 
     useEffect(() => {
-        socket.on('request_clue', (categoryName, clueText, dollarValue, finalJeoparty) => {
+        socket.on('request_clue', (categoryName, categoryYear, clueText, dollarValue, finalJeoparty) => {
             setCategoryName(categoryName);
+            setCategoryYear(categoryYear);
             setClueText(clueText);
             setDollarValue(dollarValue);
             setFinalJeoparty(finalJeoparty);
@@ -218,6 +227,10 @@ const BrowserAnswer = () => {
                                     </CategoryText>
                                 </FitText>
                             )}
+
+                            <CategoryYearText>
+                                {categoryYear}
+                            </CategoryYearText>
                         </CategoryTextPanel>
 
                         <DollarValueTextPanel>

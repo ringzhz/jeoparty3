@@ -80,6 +80,11 @@ export const sayBoardControllerNameFiller = (boardControllerName, onComplete) =>
     say(text, onComplete);
 };
 
+export const sayClueRequestFiller = (categoryName, dollarValue, onComplete) => {
+    const text = `${categoryName} for ${dollarValue}`;
+    say(text, onComplete);
+};
+
 export const sayDailyDoubleFiller = () => {
     const options = [
         `That's the daily double!`,

@@ -30,7 +30,7 @@ exports.checkAnswer = (categoryName, clue, expected, actual) => {
 
     const cheated = !rawCategoryName.includes(rawExpected) && rawCategoryName.includes(rawActual) || rawClue.includes(rawActual);
 
-    return validLength && containsAnswer && !cheated;
+    return rawActual === rawExpected || validLength && containsAnswer && !cheated;
 };
 
 exports.checkPlayerName = (playerName) => {

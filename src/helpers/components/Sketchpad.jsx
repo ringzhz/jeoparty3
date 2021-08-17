@@ -6,7 +6,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
-import { HuePicker } from 'react-color';
+import { GithubPicker } from 'react-color';
 
 import mixins from '../../helpers/mixins';
 
@@ -38,7 +38,7 @@ const ColorPickerWrapper = styled.div`
 `;
 
 const Sketchpad = (props) => {
-    const [color, setColor] = useState('#ff0000');
+    const [color, setColor] = useState('#000000');
     const [points, setPoints] = useState([]);
     const [undo, setUndo] = useState(false);
 
@@ -52,24 +52,23 @@ const Sketchpad = (props) => {
 
         context.clearRect(0,0, canvas.width, canvas.height);
 
-        if (points.length < 3) {
+        if (points.length === 0) {
             return;
         }
 
-        let lastPointIndex = 0;
+        let lastBeginIndex = 0;
 
-        for (let i = points.length - 2; i >= 0; i--) {
+        for (let i = 0; i < points.length; i++) {
             const pt = points[i];
 
-            if (pt.mode === 'draw' && points[i + 1].mode === 'end') {
-                lastPointIndex = i;
-                break;
+            if (pt.mode === 'begin') {
+                lastBeginIndex = i;
             }
         }
 
         let newPoints = [];
 
-        for (let i = 0; i < lastPointIndex + 1; i++) {
+        for (let i = 0; i < lastBeginIndex; i++) {
             const pt = points[i];
             newPoints.push(pt);
 
@@ -101,8 +100,12 @@ const Sketchpad = (props) => {
     };
 
     useEffect(() => {
-        const canvas = document.getElementById('signature-canvas');
+        let oldCanvas = document.getElementById('signature-canvas');
+        let canvas = oldCanvas.cloneNode(true);
+        oldCanvas.parentNode.replaceChild(canvas, oldCanvas);
+
         const context = canvas.getContext('2d');
+        context.drawImage(oldCanvas, 0, 0);
 
         context.strokeStyle = color;
         context.lineWidth = 5;
@@ -162,14 +165,12 @@ const Sketchpad = (props) => {
             let touchX = 0;
             let touchY = 0;
 
-            if (e && e.touches) {
-                if (e.touches.length === 1) {
-                    const touch = e.touches[0];
-                    const rect = canvas.getBoundingClientRect();
+            if (e && e.touches && e.touches.length === 1) {
+                const touch = e.touches[0];
+                const rect = canvas.getBoundingClientRect();
 
-                    touchX = touch.clientX - rect.left;
-                    touchY = touch.clientY - rect.top;
-                }
+                touchX = touch.clientX - rect.left;
+                touchY = touch.clientY - rect.top;
             }
 
             return {x: touchX, y: touchY};
@@ -177,7 +178,6 @@ const Sketchpad = (props) => {
 
         const touchStartEvent = e => {
             lastEvent = e;
-
             const touchPos = getTouchPos(e);
 
             newPoints.push({
@@ -246,9 +246,9 @@ const Sketchpad = (props) => {
                 <Col lg={'12'}>
                     <ButtonGroup>
                         <ColorPickerWrapper>
-                            <HuePicker
+                            <GithubPicker
+                                colors={['#000000', '#4A4A4A', '#9B9B9B', '#FFFFFF', '#D0021B', '#ff0800', '#F5A623', '#F8E71C', '#8B572A', '#417505', '#7ED321', '#B8E986', '#4A90E2', '#50E3C2', '#9013FE', '#BD10E0', '#FF77FF', '#FF6699']}
                                 width={250}
-                                height={20}
                                 color={color}
                                 onChange={handleChange}
                             />

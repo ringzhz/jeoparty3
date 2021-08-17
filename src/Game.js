@@ -23,6 +23,7 @@ import MobileDecision from './components/mobile/MobileDecision';
 import MobileScoreboard from './components/mobile/MobileScoreboard';
 
 import { GameState } from './constants/GameState';
+import { CookiesProvider } from 'react-cookie';
 import { SocketContext, socket } from './context/socket';
 import { DebugContext } from './context/debug';
 
@@ -184,22 +185,24 @@ const Game = () => {
     }
 
     return (
-        <DebugContext.Provider value={debug}>
-            <SocketContext.Provider value={socket}>
-                <GlobalStyle />
-                <BrowserView>
-                    <BrowserWrapper>
-                        {browserView}
-                    </BrowserWrapper>
-                </BrowserView>
+        <CookiesProvider>
+            <DebugContext.Provider value={debug}>
+                <SocketContext.Provider value={socket}>
+                    <GlobalStyle />
+                    <BrowserView>
+                        <BrowserWrapper>
+                            {browserView}
+                        </BrowserWrapper>
+                    </BrowserView>
 
-                <MobileView>
-                    <MobileWrapper>
-                        {mobileView}
-                    </MobileWrapper>
-                </MobileView>
-            </SocketContext.Provider>
-        </DebugContext.Provider>
+                    <MobileView>
+                        <MobileWrapper>
+                            {mobileView}
+                        </MobileWrapper>
+                    </MobileView>
+                </SocketContext.Provider>
+            </DebugContext.Provider>
+        </CookiesProvider>
     );
 };
 

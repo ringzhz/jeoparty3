@@ -20,7 +20,7 @@ import applauseSound from '../../assets/audio/correct.mp3';
 import BrowserClue from './BrowserClue';
 import { revealBoard, revealCategories } from '../../helpers/reveal';
 
-import { sayRoundFiller, sayBoardControllerNameFiller, sayDailyDoubleFiller } from '../../helpers/sayFiller';
+import { sayRoundFiller, sayBoardControllerNameFiller, sayClueRequestFiller, sayDailyDoubleFiller } from '../../helpers/sayFiller';
 
 // DEBUG
 import { sampleCategories } from '../../constants/sampleCategories';
@@ -224,22 +224,28 @@ const BrowserBoard = () => {
             setCategoryIndex(categoryIndex);
             setClueIndex(clueIndex);
             setDailyDouble(dailyDouble);
+        });
 
-            setTimeout(() => {
-                setAnimateClue(true);
+        socket.on('say_clue_request', (categoryName, dollarValue, dailyDouble) => {
+            sayClueRequestFiller(categoryName, dollarValue, () => {
+                socket.emit('say_clue_request');
 
-                if (dailyDouble) {
-                    const dailyDoubleAudio = new Audio(dailyDoubleSound);
-                    dailyDoubleAudio.volume = 0.25;
+                setTimeout(() => {
+                    setAnimateClue(true);
 
-                    const applauseAudio = new Audio(applauseSound);
-                    applauseAudio.volume = 0.5;
+                    if (dailyDouble) {
+                        const dailyDoubleAudio = new Audio(dailyDoubleSound);
+                        dailyDoubleAudio.volume = 0.25;
 
-                    dailyDoubleAudio.play();
-                    applauseAudio.play();
-                    sayDailyDoubleFiller();
-                }
-            }, 100);
+                        const applauseAudio = new Audio(applauseSound);
+                        applauseAudio.volume = 0.5;
+
+                        dailyDoubleAudio.play();
+                        applauseAudio.play();
+                        sayDailyDoubleFiller();
+                    }
+                }, 100);
+            });
         });
 
         socket.on('say_board_introduction', (boardControllerName, boardRevealed, categories, doubleJeoparty) => {
@@ -268,6 +274,7 @@ const BrowserBoard = () => {
 
         return () => {
             socket.off('request_clue');
+            socket.off('say_clue_request');
             socket.off('say_board_introduction');
         }
 

@@ -2,6 +2,8 @@ import React, { useContext, useEffect } from 'react';
 
 import { SocketContext } from '../../context/socket';
 
+import backgroundMusicSound from '../../assets/audio/backgroundMusic.mp3';
+
 const BrowserWrapper = (props) => {
     const socket = useContext(SocketContext);
 
@@ -9,6 +11,19 @@ const BrowserWrapper = (props) => {
         socket.on('disconnect', () => {
             window.location.reload();
         });
+
+        socket.on('board_revealed', () => {
+            const backgroundMusicAudio = new Audio(backgroundMusicSound);
+
+            backgroundMusicAudio.loop = true;
+            backgroundMusicAudio.volume = 0.05;
+
+            backgroundMusicAudio.play();
+        });
+
+        return () => {
+            socket.off('board_revealed');
+        }
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);

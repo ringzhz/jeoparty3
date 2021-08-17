@@ -1,4 +1,5 @@
 import React, { useContext, useCallback, useState, useEffect } from 'react';
+import { useCookies } from 'react-cookie';
 
 import styled from 'styled-components';
 import Container from 'react-bootstrap/Container';
@@ -6,7 +7,7 @@ import Col from 'react-bootstrap/Col';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Button from 'react-bootstrap/Button';
 import FormControl from 'react-bootstrap/FormControl';
-import {AiOutlineInfoCircle} from 'react-icons/ai';
+import { AiOutlineInfoCircle } from 'react-icons/ai';
 
 import { DebugContext } from '../../context/debug';
 import { SocketContext } from '../../context/socket';
@@ -49,11 +50,14 @@ const MobileLobby = () => {
         WAITING: 'waiting'
     };
 
+    // eslint-disable-next-line no-unused-vars
+    const [cookies, setCookie, removeCookie] = useCookies(['player-id']);
+
     const debug = useContext(DebugContext);
 
     const [sessionName, setSessionName] = useState('');
     const [playerName, setPlayerName] = useState('');
-    const [mobileLobbyState, setMobileLobbyState] = useState(debug ? MobileLobbyState.SESSION_NAME : MobileLobbyState.SESSION_NAME);
+    const [mobileLobbyState, setMobileLobbyState] = useState(debug ? MobileLobbyState.SIGNATURE : MobileLobbyState.SESSION_NAME);
     const [player, setPlayer] = useState(debug ? samplePlayers['zsS3DKSSIUOegOQuAAAA'] : {});
 
     const socket = useContext(SocketContext);
@@ -73,6 +77,8 @@ const MobileLobby = () => {
         socket.on('submit_signature_success', (player) => {
             setMobileLobbyState(MobileLobbyState.WAITING);
             setPlayer(player);
+
+            setCookie('player-id', `${player.sessionName}-${player.socketId}`, { path: '/' });
         });
 
         socket.on('submit_signature_failure', (message) => {
@@ -120,16 +126,22 @@ const MobileLobby = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
+    const InfoButton = () => {
+        return (
+            <ButtonWrapper>
+                <InfoButtonWrapper onClick={() => handleInfo()}>
+                    <AiOutlineInfoCircle size={'30px'} />
+                </InfoButtonWrapper>
+            </ButtonWrapper>
+        );
+    };
+
     return (
         <Container fluid>
             {
                 mobileLobbyState === MobileLobbyState.SESSION_NAME &&
                 <div>
-                    <ButtonWrapper>
-                        <InfoButtonWrapper onClick={() => handleInfo()}>
-                            <AiOutlineInfoCircle size={'30px'} />
-                        </InfoButtonWrapper>
-                    </ButtonWrapper>
+                    <InfoButton />
 
                     <MobileLobbyRow>
                         <Col lg={'12'}>
@@ -149,17 +161,21 @@ const MobileLobby = () => {
 
             {
                 mobileLobbyState === MobileLobbyState.SIGNATURE &&
-                <MobileLobbyRow>
-                    <Col lg={'12'}>
-                        <LogoText>JEOPARTY!</LogoText>
+                <div>
+                    <InfoButton />
 
-                        <InputGroup className={'mb-3'}>
-                            <FormControl placeholder={'Enter your name...'} value={playerName.toUpperCase()} onChange={e => setPlayerName(e.target.value)} />
-                        </InputGroup>
+                    <MobileLobbyRow>
+                        <Col lg={'12'}>
+                            <LogoText>JEOPARTY!</LogoText>
 
-                        <Sketchpad onSubmit={() => handleSubmitSignature(playerName)} />
-                    </Col>
-                </MobileLobbyRow>
+                            <InputGroup className={'mb-3'}>
+                                <FormControl placeholder={'Enter your name...'} value={playerName.toUpperCase()} onChange={e => setPlayerName(e.target.value)} />
+                            </InputGroup>
+
+                            <Sketchpad onSubmit={() => handleSubmitSignature(playerName)} />
+                        </Col>
+                    </MobileLobbyRow>
+                </div>
             }
 
             {
