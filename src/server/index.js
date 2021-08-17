@@ -240,11 +240,12 @@ const handlePlayerDisconnection = (sessionName, socket) => {
     if (player && !_.isEmpty(player.name)) {
         const playerId = `${sessionName}-${socket.id}`;
 
-        console.log('handlePlayerDisconnection');
-        console.log('success!');
-        console.log(`player id: ${playerId}`);
-        console.log(`player name: ${player.name}`);
-        console.log('------------------------');
+        // DEBUG
+        // console.log('handlePlayerDisconnection');
+        // console.log('success!');
+        // console.log(`player id: ${playerId}`);
+        // console.log(`player name: ${player.name}`);
+        // console.log('------------------------');
 
         const RECONNECT_WINDOW = 15 * 60 * 1000;
         disconnectionCache.put(playerId, sessionCache.get(sessionName).players[socket.id], RECONNECT_WINDOW);
@@ -279,11 +280,12 @@ const handlePlayerReconnection = (socket) => {
     const player = disconnectionCache.get(playerId);
 
     if (player && sessionCache.get(player.sessionName)) {
-        console.log('handlePlayerReconnection');
-        console.log('success!');
-        console.log(`player id: ${playerId}`);
-        console.log(`player name: ${player.name}`);
-        console.log('------------------------');
+        // DEBUG
+        // console.log('handlePlayerReconnection');
+        // console.log('success!');
+        // console.log(`player id: ${playerId}`);
+        // console.log(`player name: ${player.name}`);
+        // console.log('------------------------');
 
         const sessionName = player.sessionName;
         let gameSession = sessionCache.get(sessionName);
