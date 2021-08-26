@@ -12,13 +12,15 @@ const BrowserWrapper = (props) => {
             window.location.reload();
         });
 
-        socket.on('board_revealed', () => {
-            const backgroundMusicAudio = new Audio(backgroundMusicSound);
+        socket.on('board_revealed', (doubleJeoparty) => {
+            if (!doubleJeoparty) {
+                const backgroundMusicAudio = new Audio(backgroundMusicSound);
 
-            backgroundMusicAudio.loop = true;
-            backgroundMusicAudio.volume = 0.05;
+                backgroundMusicAudio.loop = true;
+                backgroundMusicAudio.volume = 0.04;
 
-            backgroundMusicAudio.play();
+                backgroundMusicAudio.play();
+            }
         });
 
         return () => {

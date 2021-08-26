@@ -379,9 +379,9 @@ const BrowserLobby = () => {
                     </InfoButtonWrapper>
                 </ButtonWrapper>
 
-                <ActivePlayersText>
-                    {activePlayers} active players
-                </ActivePlayersText>
+                {/*<ActivePlayersText>*/}
+                {/*    {activePlayers} active players*/}
+                {/*</ActivePlayersText>*/}
             </Container>
         </div>
     );

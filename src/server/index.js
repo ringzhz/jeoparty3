@@ -652,7 +652,6 @@ const submitAnswer = (socket, answer, timeout) => {
 
         if (currentAnswersSubmitted === totalAnswers && timeout && gameSession.currentGameState !== GameState.DECISION) {
             showFinalJeopartyDecision(socket.sessionName);
-            updateLeaderboard(gameSession.players);
         } else {
             gameSession.browserClient.emit('answers_submitted', currentAnswersSubmitted, totalAnswers);
         }
@@ -812,6 +811,8 @@ const showPodium = (sessionName, championOverride) => {
             client.emit('player', _.get(gameSession, `players[${client.id}]`));
         });
     });
+
+    updateLeaderboard(gameSession.players);
 };
 
 io.on('connection', (socket) => {
@@ -909,8 +910,14 @@ io.on('connection', (socket) => {
     });
 
     socket.on('board_revealed', () => {
+        if (!sessionCache.get(socket.sessionName)) {
+            return;
+        }
+
+        const gameSession = sessionCache.get(socket.sessionName);
+
         updateGameSession(socket.sessionName, 'boardRevealed', true);
-        io.to(socket.sessionName).emit('board_revealed');
+        io.to(socket.sessionName).emit('board_revealed', gameSession.doubleJeoparty);
     });
 
     socket.on('request_clue', (categoryIndex, clueIndex) => {

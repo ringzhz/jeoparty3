@@ -40,7 +40,12 @@ const ButtonWrapper = styled.div`
     margin: 0.5em;
 `;
 
-const InfoButtonWrapper = styled.span`
+const JoinText = styled.h5`
+    font-family: clue, serif;
+    font-size: 2vh;
+    text-shadow: 0.1em 0.1em #000;
+    
+    margin-bottom: 1em;
 `;
 
 const MobileLobby = () => {
@@ -57,7 +62,7 @@ const MobileLobby = () => {
 
     const [sessionName, setSessionName] = useState('');
     const [playerName, setPlayerName] = useState('');
-    const [mobileLobbyState, setMobileLobbyState] = useState(debug ? MobileLobbyState.SIGNATURE : MobileLobbyState.SESSION_NAME);
+    const [mobileLobbyState, setMobileLobbyState] = useState(debug ? MobileLobbyState.SESSION_NAME : MobileLobbyState.SESSION_NAME);
     const [player, setPlayer] = useState(debug ? samplePlayers['zsS3DKSSIUOegOQuAAAA'] : {});
 
     const socket = useContext(SocketContext);
@@ -120,7 +125,7 @@ const MobileLobby = () => {
         if (!isCanvasBlank(signatureCanvas)) {
             socket.emit('submit_signature', playerName, signatureCanvas.toDataURL());
         } else {
-            alert('Try being a little more creative, please try again!');
+            alert('Be a little more creative, please try again!');
         }
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -129,9 +134,9 @@ const MobileLobby = () => {
     const InfoButton = () => {
         return (
             <ButtonWrapper>
-                <InfoButtonWrapper onClick={() => handleInfo()}>
+                <span onClick={() => handleInfo()}>
                     <AiOutlineInfoCircle size={'30px'} />
-                </InfoButtonWrapper>
+                </span>
             </ButtonWrapper>
         );
     };
@@ -146,6 +151,7 @@ const MobileLobby = () => {
                     <MobileLobbyRow>
                         <Col lg={'12'}>
                             <LogoText>JEOPARTY!</LogoText>
+                            <JoinText>FIND A SESSION NAME ON YOUR COMPUTER AT JEOPARTY.IO</JoinText>
 
                             <InputGroup className={'mb-3'}>
                                 <FormControl placeholder={'Enter session name...'} value={sessionName.toUpperCase()} onChange={e => setSessionName(e.target.value)} />
