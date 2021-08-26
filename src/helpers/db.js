@@ -1,10 +1,13 @@
+const _ = require('lodash');
 const { MongoClient } = require('mongodb');
+
+// const samplePlayers = require('../constants/samplePlayers').samplePlayers;
 
 const url = 'mongodb+srv://admin:lEs45HnBK0EUwy2h@jeoparty.xssla.mongodb.net/leaderboard?retryWrites=true&w=majority';
 const client = new MongoClient(url);
 const connection = client.connect();
 
-const resetLeaderboard = async (colName) => {
+exports.resetLeaderboard = async (colName) => {
     try {
         await connection;
 
@@ -36,7 +39,7 @@ exports.getLeaderboard = async () => {
     }
 }
 
-exports.updateLeaderboard = async (player) => {
+const addLeader = async (player) => {
     try {
         await connection;
 
@@ -48,25 +51,25 @@ exports.updateLeaderboard = async (player) => {
 
             let i = 0;
 
-            const checkNewLeader = () => {
+            const checkNewLeader = async () => {
                 const leader = leaderboard[i];
 
                 if (player.score > leader.score) {
                     let j = i + 1;
 
-                    const pushLeaders = () => {
-                        leaderboardCol.findOneAndUpdate({ 'position': j }, {
+                    const pushLeaders = async () => {
+                        await leaderboardCol.findOneAndUpdate({ 'position': j }, {
                             '$set': {
                                 'name': leaderboard[j - 1].name,
                                 'score': leaderboard[j - 1].score
                             }
-                        }).then(() => {
+                        }).then(async () => {
                             j++;
 
                             if (j <= 9) {
-                                pushLeaders();
+                                await pushLeaders();
                             } else {
-                                leaderboardCol.findOneAndUpdate({ 'position': i }, {
+                                await leaderboardCol.findOneAndUpdate({ 'position': i }, {
                                     '$set': {
                                         'name': player.name, 'score': player.score
                                     }
@@ -75,19 +78,34 @@ exports.updateLeaderboard = async (player) => {
                         });
                     };
 
-                    pushLeaders();
+                    await pushLeaders();
                 } else {
                     i++;
 
                     if (i < 10) {
-                        checkNewLeader();
+                        await checkNewLeader();
                     }
                 }
             };
 
-            checkNewLeader();
+            await checkNewLeader();
         }
     } catch (err) {
         console.log(err.stack);
     }
+}
+
+exports.updateLeaderboard = async (players) => {
+    const playerObjects = _.values(players);
+
+    const addNextLeader = (i) => {
+        if (i < _.size(playerObjects)) {
+            const player = playerObjects[i];
+            addLeader(player).then(() => {
+                addNextLeader(i + 1);
+            });
+        }
+    };
+
+    addNextLeader(0);
 }

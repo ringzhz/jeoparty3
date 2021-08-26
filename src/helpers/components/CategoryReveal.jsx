@@ -97,7 +97,7 @@ const CategoryReveal = (props) => {
                 </FitText>
 
                 <CategoryYearText>
-                    {_.get(props, 'categoryYear')}
+                    {props.finalJeoparty ? '' : _.get(props, 'categoryYear')}
                 </CategoryYearText>
             </CategoryRevealPanel>
         </div>

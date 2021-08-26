@@ -4,9 +4,13 @@ const _ = require('lodash');
 const formatRaw = require('./format').formatRaw;
 const formatCategory = require('./format').formatCategory;
 
+const finalJeopartyClues = require('../constants/finalJeopartyClues.js').finalJeopartyClues;
+
 const MAX_CATEGORY_ID = 18418;
 const NUM_CATEGORIES = 6;
 const NUM_CLUES = 5;
+
+const choice = (arr) => arr[Math.floor(Math.random() * arr.length)];
 
 const weightedRandomClueIndex = () => {
     let sum = 0;
@@ -105,8 +109,8 @@ exports.getRandomCategories = (cb) => {
                 } else if (doubleJeopartyCategories.length < NUM_CATEGORIES) {
                     doubleJeopartyCategories.push(category);
                 } else {
-                    finalJeopartyClue = category.clues[weightedRandomClueIndex()];
-                    finalJeopartyClue.categoryName = category.title;
+                    finalJeopartyClue = choice(finalJeopartyClues);
+                    finalJeopartyClue.airdate = '2002-10-08T12:00:00.000Z';
                 }
 
                 usedCategoryIds.push(category.id);

@@ -7,7 +7,7 @@ exports.samplePlayers = {
         name: 'Luffy',
         signature: signature,
         oldScore: 0,
-        score: 1000,
+        score: 1600,
 
         heat: 2,
         streak: 2,
@@ -20,7 +20,7 @@ exports.samplePlayers = {
         name: 'Zoro',
         signature: signature,
         oldScore: 200,
-        score: 0,
+        score: 1400,
 
         heat: 0,
         streak: 0,
@@ -33,7 +33,7 @@ exports.samplePlayers = {
         name: 'Nami',
         signature: signature,
         oldScore: 400,
-        score: 800,
+        score: 1200,
 
         heat: 0,
         streak: 0,
@@ -46,7 +46,7 @@ exports.samplePlayers = {
         name: 'Usopp',
         signature: signature,
         oldScore: 600,
-        score: 600,
+        score: 1000,
 
         heat: 0,
         streak: 0,

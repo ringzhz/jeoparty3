@@ -181,8 +181,6 @@ const sortByJoinIndex = (players) => Object.values(players).sort((a, b) => a.joi
 const BrowserLobby = () => {
     const debug = useContext(DebugContext);
 
-    const [radioValue, setRadioValue] = useState('1');
-
     const [players, setPlayers] = useState(debug ? sortByJoinIndex(samplePlayers) : []);
     const [sessionName, setSessionName] = useState(debug ? 'TEST' : '');
     const [leaderboard, setLeaderboard] = useState(debug ? sampleLeaderboard : []);
@@ -279,12 +277,6 @@ const BrowserLobby = () => {
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
-
-    const radios = [
-        { name: 'Active', value: '1' },
-        { name: 'Radio', value: '2' },
-        { name: 'Radio', value: '3' },
-    ];
 
     return (
         <div>

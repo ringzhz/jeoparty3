@@ -24,6 +24,7 @@ const checkAnswer = require('../helpers/check').checkAnswer;
 const formatRaw = require('../helpers/format').formatRaw;
 const formatWager = require('../helpers/format').formatWager;
 const getLeaderboard = require('../helpers/db').getLeaderboard;
+// const resetLeaderboard = require('../helpers/db').resetLeaderboard;
 const updateLeaderboard = require('../helpers/db').updateLeaderboard;
 
 const NUM_CATEGORIES = 6;
@@ -651,6 +652,7 @@ const submitAnswer = (socket, answer, timeout) => {
 
         if (currentAnswersSubmitted === totalAnswers && timeout && gameSession.currentGameState !== GameState.DECISION) {
             showFinalJeopartyDecision(socket.sessionName);
+            updateLeaderboard(gameSession.players);
         } else {
             gameSession.browserClient.emit('answers_submitted', currentAnswersSubmitted, totalAnswers);
         }
@@ -809,10 +811,6 @@ const showPodium = (sessionName, championOverride) => {
             client.emit('champion', championOverride || champion);
             client.emit('player', _.get(gameSession, `players[${client.id}]`));
         });
-    });
-
-    _.values(gameSession.players).forEach(async (player) => {
-        await updateLeaderboard(player);
     });
 };
 
@@ -1098,7 +1096,13 @@ io.on('connection', (socket) => {
             return;
         }
 
-        showBoard(socket.sessionName);
+        const gameSession = sessionCache.get(socket.sessionName);
+
+        if (gameSession.finalJeoparty) {
+            showPodium(socket.sessionName);
+        } else {
+            showBoard(socket.sessionName);
+        }
     });
 
     socket.on('show_scoreboard', () => {
@@ -1106,13 +1110,7 @@ io.on('connection', (socket) => {
             return;
         }
 
-        const gameSession = sessionCache.get(socket.sessionName);
-
-        if (gameSession.finalJeoparty) {
-            showPodium(socket.sessionName);
-        } else {
-            showScoreboard(socket.sessionName);
-        }
+        showScoreboard(socket.sessionName);
     });
 
     socket.on('disconnect', () => {
@@ -1125,15 +1123,6 @@ io.on('connection', (socket) => {
         } else {
             handleBrowserDisconnection(socket.sessionName);
         }
-    });
-
-    socket.on('debug_disconnect', () => {
-        if (!sessionCache.get(socket.sessionName)) {
-            return;
-        }
-
-        const gameSession = sessionCache.get(socket.sessionName);
-        gameSession.boardController.disconnect(true);
     });
 });
 
