@@ -229,7 +229,7 @@ const BrowserAnswer = () => {
                             )}
 
                             <CategoryYearText>
-                                {categoryYear}
+                                {!finalJeoparty && categoryYear}
                             </CategoryYearText>
                         </CategoryTextPanel>
 

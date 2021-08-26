@@ -160,8 +160,8 @@ export const sayChampionIntroductionFiller = (onComplete) => {
     const options = [
         `And today's Je-party champion is...`,
         `Your Je-party champion is...`,
-        `Let's see who today's Je-party champion is. Congratulations...`,
-        `Let's see who today's Je-party champion is. Put your hands together for...`
+        `Let's see who today's Je-party champion is... congratulations...`,
+        `Let's see who today's Je-party champion is... put your hands together for...`
     ];
 
     const text = choice(options);
