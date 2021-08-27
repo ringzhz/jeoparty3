@@ -159,6 +159,7 @@ const InfoList = styled.ul`
 
 const LeaderboardPlayerNames = styled(Col)`
     text-align: right;
+    white-space: nowrap;
 `;
 
 const LeaderboardScores = styled(Col)`
