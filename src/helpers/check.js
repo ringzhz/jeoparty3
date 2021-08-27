@@ -40,8 +40,14 @@ exports.checkPlayerName = (playerName) => {
         return 'Your name is too short, please try again!';
     } else if (playerName.length > 20) {
         return 'Your name is too long, please try again!';
-    } else if (filter.clean(playerName) !== playerName) {
-        return 'Do you kiss your mother with that mouth? Please try again!';
+    }
+
+    try {
+        if (filter.clean(playerName) !== playerName) {
+            return 'Do you kiss your mother with that mouth? Please try again!';
+        }
+    } catch (e) {
+        return `That name caused an unknown error. Please try again!`;
     }
 
     return '';
