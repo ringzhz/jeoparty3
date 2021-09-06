@@ -14,12 +14,12 @@ const BrowserWrapper = (props) => {
 
         socket.on('board_revealed', (doubleJeoparty) => {
             if (!doubleJeoparty) {
-                const backgroundMusicAudio = new Audio(backgroundMusicSound);
-
-                backgroundMusicAudio.loop = true;
-                backgroundMusicAudio.volume = 0.04;
-
-                backgroundMusicAudio.play();
+                // const backgroundMusicAudio = new Audio(backgroundMusicSound);
+                //
+                // backgroundMusicAudio.loop = true;
+                // backgroundMusicAudio.volume = 0.04;
+                //
+                // backgroundMusicAudio.play();
             }
         });
 
