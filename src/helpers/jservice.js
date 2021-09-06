@@ -110,7 +110,7 @@ exports.getRandomCategories = (cb) => {
                     doubleJeopartyCategories.push(category);
                 } else {
                     finalJeopartyClue = choice(finalJeopartyClues);
-                    finalJeopartyClue.airdate = '2002-10-08T12:00:00.000Z';
+                    finalJeopartyClue.airdate = `${finalJeopartyClue.year}-10-08T12:00:00.000Z`;
                 }
 
                 usedCategoryIds.push(category.id);
