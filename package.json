@@ -36,7 +36,7 @@
   },
   "scripts": {
     "build": "react-scripts build",
-    "dev": "npm run build && node ./src/server/index.js",
+    "dev": "node ./src/server/index.js",
     "debug": "react-scripts start",
     "test": "mocha",
     "eject": "react-scripts eject"

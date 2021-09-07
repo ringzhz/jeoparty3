@@ -32,13 +32,13 @@ const NUM_CLUES = 5;
 
 let activePlayers = 0;
 
-app.use((req, res, next) => {
-    if (req.header('x-forwarded-proto') !== 'https') {
-        res.redirect(`https://${req.header('host')}${req.url}`);
-    } else {
-        next();
-    }
-});
+// app.use((req, res, next) => {
+//     if (req.header('x-forwarded-proto') !== 'https') {
+//         res.redirect(`https://${req.header('host')}${req.url}`);
+//     } else {
+//         next();
+//     }
+// });
 
 app.use(express.static(path.join(__dirname, '../../build')));
 app.get('/', (req, res, next) => res.sendFile(__dirname + './index.html'));
@@ -553,7 +553,7 @@ const buzzIn = (socket) => {
 
         const clue = gameSession.finalJeoparty ? gameSession.finalJeopartyClue : gameSession.categories[gameSession.categoryIndex].clues[gameSession.clueIndex];
         const categoryName = gameSession.finalJeoparty ? gameSession.finalJeopartyClue.categoryName : gameSession.categories[gameSession.categoryIndex].title;
-        const categoryYear = gameSession.finalJeoparty ? gameSession.finalJeopartyClue.airdate.slice(0, 4) : gameSession.categories[gameSession.categoryIndex].clues[0].airdate.slice(0, 4);
+        const categoryYear = gameSession.finalJeoparty ? gameSession.finalJeopartyClue.year.toString() : gameSession.categories[gameSession.categoryIndex].clues[0].airdate.slice(0, 4);
         const dollarValue = gameSession.dailyDouble ? _.get(gameSession, `players[${socket.id}].wager`, 0) : (gameSession.doubleJeoparty ? 400 : 200) * (gameSession.clueIndex + 1);
 
         const currentAnswersSubmitted = _.keys(_.values(gameSession.players).filter((player) => {
