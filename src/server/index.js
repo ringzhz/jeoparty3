@@ -424,8 +424,10 @@ const showBoard = (sessionName) => {
             return player.oldScore > 0;
         })).length;
 
-        if (numFinalJeopartyPlayers > 0) {
+        if (numFinalJeopartyPlayers > 1) {
             showWager(sessionName);
+        } else if (numFinalJeopartyPlayers === 1) {
+            showPodium(sessionName);
         } else {
             showPodium(sessionName, { name: 'the friends we made along the way' });
         }
@@ -552,7 +554,7 @@ const buzzIn = (socket) => {
         const clue = gameSession.finalJeoparty ? gameSession.finalJeopartyClue : gameSession.categories[gameSession.categoryIndex].clues[gameSession.clueIndex];
         const categoryName = gameSession.finalJeoparty ? gameSession.finalJeopartyClue.categoryName : gameSession.categories[gameSession.categoryIndex].title;
         const categoryYear = gameSession.finalJeoparty ? gameSession.finalJeopartyClue.year.toString() : gameSession.categories[gameSession.categoryIndex].clues[0].airdate.slice(0, 4);
-        const dollarValue = clue.dailyDouble ? _.get(gameSession, `players[${socket.id}].wager`, 0) : (gameSession.doubleJeoparty ? 400 : 200) * (gameSession.clueIndex + 1);
+        const dollarValue = gameSession.dailyDouble ? _.get(gameSession, `players[${socket.id}].wager`, 0) : (gameSession.doubleJeoparty ? 400 : 200) * (gameSession.clueIndex + 1);
 
         const currentAnswersSubmitted = _.keys(_.values(gameSession.players).filter((player) => {
             return player.oldScore > 0 && player.finalJeopartyAnswerSubmitted;
@@ -570,7 +572,7 @@ const buzzIn = (socket) => {
                 client.emit('play_buzz_in_sound', clue.dailyDouble, gameSession.finalJeoparty);
                 client.emit('player_name', _.get(gameSession, `players[${socket.id}].name`, ''));
                 client.emit('answers_submitted', currentAnswersSubmitted, totalAnswers);
-                client.emit('is_answering', gameSession.finalJeoparty ? oldScore > 0 : client.id === socket.id, gameSession.finalJeoparty);
+                client.emit('is_answering', gameSession.finalJeoparty ? oldScore > 0 : client.id === socket.id);
                 client.emit('player', _.get(gameSession, `players[${client.id}]`));
             });
         });

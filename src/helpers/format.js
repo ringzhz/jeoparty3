@@ -19,9 +19,11 @@ exports.formatRaw = (original) => {
     // Red words
     rawOriginal = rawOriginal.replace(/and /g, "");
     rawOriginal = rawOriginal.replace(/the /g, "");
+    rawOriginal = rawOriginal.replace(/a /g, "");
+    rawOriginal = rawOriginal.replace(/an /g, "");
 
     // Spacing
-    // rawOriginal = rawOriginal.replace(/ /g, "");
+    rawOriginal = rawOriginal.replace(/ /g, "");
 
     // Edge cases
     rawOriginal = rawOriginal.replace(/v /g, "");

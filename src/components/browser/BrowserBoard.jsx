@@ -174,7 +174,7 @@ const BrowserBoard = () => {
     const [clueIndex, setClueIndex] = useState(debug ? 1 : null);
     const [dailyDouble, setDailyDouble] = useState(debug ? true : false);
     const [animateClue, setAnimateClue] = useState(false);
-    const [boardRevealed, setBoardRevealed] = useState(debug ? false : true);
+    const [boardRevealed, setBoardRevealed] = useState(debug ? false : false);
     const [boardRevealMatrix, setBoardRevealMatrix] = useState(debug ?
         [[true, true, true, true, true],
         [true, true, true, true, true],
@@ -250,6 +250,7 @@ const BrowserBoard = () => {
 
         socket.on('say_board_introduction', (boardControllerName, boardRevealed, categories, doubleJeoparty) => {
             if (boardRevealed) {
+                setBoardRevealed(true);
                 setBoardRevealMatrix([
                     [true, true, true, true, true],
                     [true, true, true, true, true],
@@ -267,7 +268,6 @@ const BrowserBoard = () => {
                 //     socket.emit('board_revealed');
                 // }, 1000);
             } else {
-                setBoardRevealed(false);
                 reveal(categories, doubleJeoparty, boardControllerName);
             }
         });

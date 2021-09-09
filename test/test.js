@@ -100,10 +100,4 @@ describe('checkAnswer', () => {
             assert.strictEqual(checkAnswer('mexico, canada, or the usa', 'which country is north', 'canada', 'canada'), true);
         });
     });
-
-    describe('debug', () => {
-        it('should return true', () => {
-            assert.strictEqual(checkAnswer('WORLD CAPITALS', 'Among Communist countries, the 2 national capitals that begin with \"H\"', ' Hanoi (Vietnam) & Havana (Cuba)', 'havana'), true);
-        });
-    });
 });

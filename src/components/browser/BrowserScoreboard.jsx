@@ -19,20 +19,6 @@ import { sayBestStreakFiller } from '../../helpers/sayFiller';
 // DEBUG
 import { samplePlayers } from '../../constants/samplePlayers';
 
-const getPlayerNameCompressor = (textLength) => {
-    let compressor = null;
-
-    if (textLength > 15) {
-        compressor = 0.75;
-    } else if (textLength > 10) {
-        compressor = 0.6;
-    } else {
-        compressor = 0.5;
-    }
-
-    return compressor;
-};
-
 const PlayerCardRow = styled(Row)`
     height: ${props => `calc(100vh / ${props.numPlayers})`};
     padding: 0.5em;
@@ -73,7 +59,6 @@ const Signature = styled.img`
 
 const PlayerNameCol = styled(Col)`
     ${mixins.flexAlignCenter}
-    line-height: 1;
 `;
 
 const PlayerNameText = styled.span`
@@ -101,10 +86,6 @@ const sortByOldScore = (players) => Object.values(players).sort((a, b) => b.oldS
 const sortByStreak = (players) => Object.values(players).sort((a, b) => b.streak - a.streak);
 
 const PlayerCard = (props) => {
-    const playerName = _.invoke(_.get(props, 'player.name'), 'toUpperCase');
-    const playerNameLength = _.size(playerName) || 0;
-    const playerNameCompressor = getPlayerNameCompressor(playerNameLength);
-
     return (
         <PlayerCardRow numPlayers={_.get(props, 'numPlayers')} positionChange={_.get(props, 'positionChange')}>
             <PlayerCardCol lg={'12'}>
@@ -114,8 +95,8 @@ const PlayerCard = (props) => {
                     </SignatureCol>
 
                     <PlayerNameCol lg={'3'}>
-                        <FitText compressor={playerNameCompressor}>
-                            <PlayerNameText>{playerName}</PlayerNameText>
+                        <FitText compressor={0.5}>
+                            <PlayerNameText>{_.invoke(_.get(props, 'player.name'), 'toUpperCase')}</PlayerNameText>
                         </FitText>
                     </PlayerNameCol>
 

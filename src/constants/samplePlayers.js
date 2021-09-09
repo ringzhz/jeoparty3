@@ -30,7 +30,7 @@ exports.samplePlayers = {
     zsS3DKSSIUOegOQuAAAC: {
         socketId: 'zsS3DKSSIUOegOQuAAAC',
         sessionName: 'think',
-        name: 'What Moment Dinner',
+        name: 'Nami',
         signature: signature,
         oldScore: 400,
         score: 1200,

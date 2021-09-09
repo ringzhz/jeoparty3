@@ -12,8 +12,6 @@ import { SocketContext } from '../../context/socket';
 import mixins from '../../helpers/mixins';
 import MobilePlayerCard from '../../helpers/components/MobilePlayerCard';
 import MobileWait from '../../helpers/components/MobileWait';
-import { timers } from '../../constants/timers';
-import Timer from '../../helpers/components/Timer';
 
 // DEBUG
 import {samplePlayers} from '../../constants/samplePlayers';
@@ -42,17 +40,12 @@ const MobileWager = () => {
     const [wager, setWager] = useState('');
     const [isWagering, setIsWagering] = useState(debug ? true : false);
     const [player, setPlayer] = useState(debug ? samplePlayers['zsS3DKSSIUOegOQuAAAA'] : {});
-    const [startTimer, setStartTimer] = useState(false);
 
     const socket = useContext(SocketContext);
 
     useEffect(() => {
         socket.on('is_wagering', (isWagering) => {
             setIsWagering(isWagering);
-
-            setTimeout(() => {
-                setStartTimer(true);
-            }, 100);
         });
 
         socket.on('player', (player) => {
@@ -93,8 +86,6 @@ const MobileWager = () => {
                                         <Button onClick={() => handleSubmitWager(wager)} variant={'outline-light'}>SUBMIT</Button>
                                     </InputGroup.Prepend>
                                 </InputGroup>
-
-                                <Timer height={'3vh'} width={'100%'} start={startTimer} time={timers.WAGER_TIMEOUT} />
                             </Col>
                         </MobileWagerRow>
 

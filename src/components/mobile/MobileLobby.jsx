@@ -42,8 +42,7 @@ const ButtonWrapper = styled.div`
 
 const JoinText = styled.h5`
     font-family: clue, serif;
-    font-size: 3vh;
-    font-size: calc(var(--vh, 1vh) * 3);
+    font-size: 2vh;
     text-shadow: 0.1em 0.1em #000;
     
     margin-bottom: 1em;
