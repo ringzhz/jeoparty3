@@ -12,6 +12,8 @@ import { SocketContext } from '../../context/socket';
 import mixins from '../../helpers/mixins';
 import MobilePlayerCard from '../../helpers/components/MobilePlayerCard';
 import MobileWait from '../../helpers/components/MobileWait';
+import { timers } from '../../constants/timers';
+import Timer from '../../helpers/components/Timer';
 
 // DEBUG
 import {samplePlayers} from '../../constants/samplePlayers';
@@ -40,17 +42,24 @@ const MobileAnswer = () => {
     const [answer, setAnswer] = useState('');
     const [isAnswering, setIsAnswering] = useState(debug ? true : false);
     const [player, setPlayer] = useState(debug ? samplePlayers['zsS3DKSSIUOegOQuAAAA'] : {});
+    const [startTimer, setStartTimer] = useState(false);
+    const [finalJeoparty, setFinalJeoparty] = useState(debug ? false : false);
 
     const socket = useContext(SocketContext);
 
     useEffect(() => {
-        socket.on('is_answering', (isAnswering) => {
+        socket.on('is_answering', (isAnswering, finalJeoparty) => {
             setIsAnswering(isAnswering);
+            setFinalJeoparty(finalJeoparty);
         });
 
         socket.on('player', (player) => {
             setPlayer(player);
         });
+
+        setTimeout(() => {
+            setStartTimer(true);
+        }, 100);
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
@@ -86,6 +95,8 @@ const MobileAnswer = () => {
                                         <Button onClick={() => handleSubmitAnswer(answer)} variant={'outline-light'}>SUBMIT</Button>
                                     </InputGroup.Prepend>
                                 </InputGroup>
+
+                                <Timer height={'3vh'} width={'100%'} start={startTimer} time={finalJeoparty ? timers.FINAL_JEOPARTY_ANSWER_TIMEOUT : timers.ANSWER_TIMEOUT} />
                             </Col>
                         </MobileAnswerRow>
 
