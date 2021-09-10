@@ -29,14 +29,26 @@ const getNameCompressor = (nameLength) => {
 const getScoreCompressor = (score) => {
     let compressor = null;
 
-    if (Math.abs(score) >= 100000) {
-        compressor = 0.4;
-    } else if (Math.abs(score) >= 10000) {
-        compressor = 0.35;
-    } else if (Math.abs(score) >= 1000) {
-        compressor = 0.3;
+    if (score >= 0) {
+        if (score >= 100000) {
+            compressor = 0.4;
+        } else if (score >= 10000) {
+            compressor = 0.35;
+        } else if (score >= 1000) {
+            compressor = 0.3;
+        } else {
+            compressor = 0.25;
+        }
     } else {
-        compressor = 0.25;
+        if (score <= -100000) {
+            compressor = 0.45;
+        } else if (score <= -10000) {
+            compressor = 0.4;
+        } else if (score <= -1000) {
+            compressor = 0.35;
+        } else {
+            compressor = 0.25;
+        }
     }
 
     return compressor;
