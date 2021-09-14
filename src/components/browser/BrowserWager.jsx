@@ -249,7 +249,7 @@ const BrowserWager = () => {
         return (
             <div>
                 <FinalJeopartyCategoryRevealWrapper showFinalJeopartyCategoryReveal={showFinalJeopartyCategoryReveal}>
-                    <CategoryReveal categoryName={finalJeopartyClue.categoryName} categoryYear={finalJeopartyClue.year} reveal={revealFinalJeopartyCategory} finalJeoparty={true} />
+                    <CategoryReveal categoryName={_.get(finalJeopartyClue, 'categoryName', '')} categoryYear={_.get(finalJeopartyClue, 'year', '')} reveal={revealFinalJeopartyCategory} finalJeoparty={true} />
                 </FinalJeopartyCategoryRevealWrapper>
 
                 <FinalJeopartyBanner>
