@@ -1,0 +1,107 @@
+version: '3.8'
+services:
+  jeoparty:
+    build: .
+    volumes:
+      - ./src:/app/src
+    ports:
+      - 8080:8080
+    depends_on:
+      mongo:
+        condition: service_healthy
+      j-service:
+        condition: service_healthy
+  mongo:
+    image: mongo
+    volumes:
+      - mongodata:/data/db
+    restart: always
+    ports:
+      - 27017:27017
+    command:
+      - '--logpath'
+      - '/var/log/mongodb/mongod.log'
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 2s
+      timeout: 5s
+      retries: 10
+    # environment:
+    #   MONGO_INITDB_ROOT_USERNAME: admin
+    #   MONGO_INITDB_ROOT_PASSWORD: test
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      # ME_CONFIG_MONGODB_ADMINUSERNAME: admin
+      # ME_CONFIG_MONGODB_ADMINPASSWORD: test
+      ME_CONFIG_MONGODB_URL: mongodb://mongo:27017/
+      ME_CONFIG_BASICAUTH: false
+    depends_on:
+      mongo:
+        condition: service_healthy
+  j-service:
+    build: ../jService
+    # command: ./script/start
+    command:
+      # - rm -f tmp/pids/server.pid
+      - ./script/start
+    init: true
+    volumes:
+      - ../jService:/app
+    volumes_from:
+      - box
+    ports:
+      - 3000:3000
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: "wget --spider http://j-service:3000/ || exit 1"
+      interval: 2s
+      timeout: 5s
+      retries: 30
+  box:
+    image: busybox
+    volumes:
+      - /box
+  db:
+    image: postgres
+    restart: always
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - 5432:5432
+    healthcheck:
+      test: "pg_isready -U postgres"
+      interval: 2s
+      timeout: 5s
+      retries: 10
+  dozzle:
+    container_name: dozzle
+    image: amir20/dozzle:latest
+    volumes:
+      - /run/user/1001/docker.sock:/var/run/docker.sock
+    environment:
+      DOZZLE_LEVEL: debug
+    ports:
+      - 8083:8080
+    # deploy:
+    #   mode: global
+volumes:
+  pgdata:
+  mongodata:
+
+    # networks:
+    #   dozzle:
+    #     driver: overlay
+
+    # networks:
+    #   default:
+    #     # Use a custom driver
+    #     driver: overlay
