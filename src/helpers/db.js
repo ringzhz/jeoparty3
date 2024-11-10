@@ -1,9 +1,8 @@
 const _ = require("lodash");
 const { MongoClient } = require("mongodb");
 
-const samplePlayers = require("../constants/samplePlayers").samplePlayers;
+// const samplePlayers = require("../constants/samplePlayers").samplePlayers;
 
-// const url = 'mongodb+srv://admin:lEs45HnBK0EUwy2h@jeoparty.xssla.mongodb.net/leaderboard?retryWrites=true&w=majority';
 const url = "mongodb://mongo:27017/leaderboard?directConnection=true&retryWrites=true&w=majority";
 // const url = "mongodb://localhost:27017/leaderboard?directConnection=true&retryWrites=true&w=majority"; //FIXME NOCOMMIT
 

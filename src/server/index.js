@@ -909,6 +909,7 @@ io.on("connection", (socket) => {
         updateGameSession(socket.sessionName, "doubleJeopartyCategories", doubleJeopartyCategories);
         updateGameSession(socket.sessionName, "finalJeopartyClue", finalJeopartyClue);
       });
+      socket.emit("categories_loaded", true);
     }
   });
 

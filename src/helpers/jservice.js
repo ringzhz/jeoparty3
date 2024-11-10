@@ -48,12 +48,12 @@ const getRandomCategory = async (cb) => {
       const categoryId = Math.floor(Math.random() * MAX_CATEGORY_ID) + 1;
 
       try {
-        //const res = await axios.get(`http://jeoparty.local:3000/api/category?id=${categoryId}`); // FIXME no commit
-        const res = await axios.get(`http://jservice:3000/api/category?id=${categoryId}`);
+        // const res = await axios.get(`http://jeoparty.local:3000/api/category?id=${categoryId}`); // FIXME no commit
+        const res = await axios.get(`http://j-service:3000/api/category?id=${categoryId}`);
         return res.data;
       } catch (error) {
         console.log(`failed to load category ${categoryId}. ${retriesRemaining} retries remaining`);
-        console.log(`http://jservice:3000/api/category?${categoryId}`);
+        console.log(`http://j-service:3000/api/category?${categoryId}`);
       }
     }
   })();
