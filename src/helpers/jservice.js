@@ -1,12 +1,11 @@
-const js = require("jservice-node");
 const _ = require("lodash");
 
 const formatRaw = require("./format").formatRaw;
 const formatCategory = require("./format").formatCategory;
 
 const finalJeopartyClues = require("../constants/finalJeopartyClues.js").finalJeopartyClues;
-
-const MAX_CATEGORY_ID = 800; //FIXME: 18418;
+const axios = require("axios");
+const MAX_CATEGORY_ID = 18418;
 const NUM_CATEGORIES = 6;
 const NUM_CLUES = 5;
 
@@ -43,25 +42,34 @@ const getDailyDoubleIndices = () => {
   return [categoryIndex, clueIndex, djCategoryIndex1, djClueIndex1, djCategoryIndex2, djClueIndex2];
 };
 
-const getRandomCategory = (cb) => {
-  const categoryId = Math.floor(Math.random() * MAX_CATEGORY_ID) + 1;
+const getRandomCategory = async (cb) => {
+  const category = await (async function () {
+    for (let retriesRemaining = 10; retriesRemaining > 0; retriesRemaining--) {
+      const categoryId = Math.floor(Math.random() * MAX_CATEGORY_ID) + 1;
 
-  js.category(categoryId, (error, response, category) => {
-    if (!error && response.statusCode === 200) {
-      const cluesCount = category.clues_count;
-      const startingIndex = Math.round((Math.random() * (cluesCount - 5)) / 5) * 5;
-      category.clues = category.clues.slice(startingIndex, startingIndex + 5);
-
-      if (approveCategory(category)) {
-        cb(error, formatCategory(category));
-      } else {
-        cb(true, category);
+      try {
+        //const res = await axios.get(`http://jeoparty.local:3000/api/category?id=${categoryId}`); // FIXME no commit
+        const res = await axios.get(`http://jservice:3000/api/category?id=${categoryId}`);
+        return res.data;
+      } catch (error) {
+        console.log(`failed to load category ${categoryId}. ${retriesRemaining} retries remaining`);
+        console.log(`http://jservice:3000/api/category?${categoryId}`);
       }
-    } else {
-      console.log(`Error: ${response.statusCode}`);
-      cb(true, category);
     }
-  });
+  })();
+  if (!category) {
+    throw new Error("Poor luck, old chap!");
+  }
+  const cluesCount = category.clues_count;
+  const startingIndex = Math.round((Math.random() * (cluesCount - 5)) / 5) * 5;
+  category.clues = category.clues.slice(startingIndex, startingIndex + 5);
+
+  if (approveCategory(category)) {
+    // cb(error, formatCategory(category));
+    cb(null, formatCategory(category));
+  } else {
+    cb(true, category);
+  }
 };
 
 const approveCategory = (category) => {
@@ -71,7 +79,7 @@ const approveCategory = (category) => {
   for (let i = 0; i < NUM_CLUES; i++) {
     const clue = category.clues[i];
     if (!clue.question) {
-      console.log("what the hey", category);
+      console.log("what the hey", clue);
     }
     const rawQuestion = formatRaw(clue.question);
 
@@ -104,7 +112,8 @@ exports.getRandomCategories = (cb) => {
 
   const recursiveGetRandomCategory = () => {
     getRandomCategory((error, category) => {
-      if (error || usedCategoryIds.includes(category.id)) {
+      if (error || !category || usedCategoryIds.includes(category.id)) {
+        console.log(`failed to load category retrying.`);
         recursiveGetRandomCategory();
       } else {
         if (categories.length < NUM_CATEGORIES) {

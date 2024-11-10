@@ -6,6 +6,7 @@ services:
       - ./src:/app/src
     ports:
       - 8080:8080
+    restart: always
     depends_on:
       mongo:
         condition: service_healthy
@@ -16,6 +17,8 @@ services:
     volumes:
       - mongodata:/data/db
     restart: always
+    environment:
+      MONGO_INITDB_DATABASE: leaderboard
     ports:
       - 27017:27017
     command:
@@ -26,17 +29,12 @@ services:
       interval: 2s
       timeout: 5s
       retries: 10
-    # environment:
-    #   MONGO_INITDB_ROOT_USERNAME: admin
-    #   MONGO_INITDB_ROOT_PASSWORD: test
   mongo-express:
     image: mongo-express
     restart: always
     ports:
       - 8081:8081
     environment:
-      # ME_CONFIG_MONGODB_ADMINUSERNAME: admin
-      # ME_CONFIG_MONGODB_ADMINPASSWORD: test
       ME_CONFIG_MONGODB_URL: mongodb://mongo:27017/
       ME_CONFIG_BASICAUTH: false
     depends_on:
@@ -44,23 +42,26 @@ services:
         condition: service_healthy
   j-service:
     build: ../jService
-    # command: ./script/start
     command:
-      # - rm -f tmp/pids/server.pid
       - ./script/start
     init: true
+    restart: always
+    tmpfs:
+      - /tmp/pids/
     volumes:
       - ../jService:/app
     volumes_from:
       - box
+    environment:
+      PIDFILE: /tmp/pids/server.pid
     ports:
       - 3000:3000
     depends_on:
       db:
         condition: service_healthy
     healthcheck:
-      test: "wget --spider http://j-service:3000/ || exit 1"
-      interval: 2s
+      test: "wget --spider http://j-service:3000/health_check || exit 1"
+      interval: 5s
       timeout: 5s
       retries: 30
   box:
@@ -86,22 +87,12 @@ services:
     container_name: dozzle
     image: amir20/dozzle:latest
     volumes:
-      - /run/user/1001/docker.sock:/var/run/docker.sock
+      # - /run/user/1001/docker.sock:/var/run/docker.sock # FIXME no commit
+      - /var/run/docker.sock:/var/run/docker.sock
     environment:
       DOZZLE_LEVEL: debug
     ports:
       - 8083:8080
-    # deploy:
-    #   mode: global
 volumes:
   pgdata:
   mongodata:
-
-    # networks:
-    #   dozzle:
-    #     driver: overlay
-
-    # networks:
-    #   default:
-    #     # Use a custom driver
-    #     driver: overlay

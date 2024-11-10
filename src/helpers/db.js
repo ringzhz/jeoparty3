@@ -5,6 +5,7 @@ const samplePlayers = require("../constants/samplePlayers").samplePlayers;
 
 // const url = 'mongodb+srv://admin:lEs45HnBK0EUwy2h@jeoparty.xssla.mongodb.net/leaderboard?retryWrites=true&w=majority';
 const url = "mongodb://mongo:27017/leaderboard?directConnection=true&retryWrites=true&w=majority";
+// const url = "mongodb://localhost:27017/leaderboard?directConnection=true&retryWrites=true&w=majority"; //FIXME NOCOMMIT
 
 const client = new MongoClient(url, {
   serverSelectionTimeoutMS: 10000,
@@ -35,7 +36,7 @@ exports.getLeaderboard = async () => {
     await connection;
 
     const db = client.db("leaderboard");
-    const leaderboardCol = db.collection("allTime");
+    const leaderboardCol = db.collection("allTime") || [];
 
     return await leaderboardCol.find({}).toArray();
   } catch (err) {
