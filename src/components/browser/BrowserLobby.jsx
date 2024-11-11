@@ -247,8 +247,6 @@ const BrowserLobby = () => {
     }, []);
 
     const handleUnmute = useCallback(() => {
-        console.log('enabling speech synth');
-        speechSynthesis.speak(new SpeechSynthesisUtterance("YA BOI"));
         setMute(false);
         socket.emit('unmute');
 
@@ -290,7 +288,11 @@ const BrowserLobby = () => {
         <div>
             {mute &&
                 <MuteScreen>
-                    <MuteScreenText onClick={() => handleUnmute()}>
+                    <MuteScreenText onClick={() => {
+                        console.log('enabling speech synth2');
+                        speechSynthesis.speak(new SpeechSynthesisUtterance("YA BOI"));
+                        handleUnmute();
+                    }}>
                         <MuteScreenButton variant={'outline-light'}>CLICK TO UNMUTE</MuteScreenButton>
                     </MuteScreenText>
                 </MuteScreen>
