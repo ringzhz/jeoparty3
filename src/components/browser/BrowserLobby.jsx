@@ -290,7 +290,7 @@ const BrowserLobby = () => {
                 <MuteScreen>
                     <MuteScreenText onClick={() => {
                         console.log('enabling speech synth2');
-                        speechSynthesis.speak(new SpeechSynthesisUtterance("YA BOI"));
+                        say("jeboo");
                         handleUnmute();
                     }}>
                         <MuteScreenButton variant={'outline-light'}>CLICK TO UNMUTE</MuteScreenButton>
@@ -298,7 +298,8 @@ const BrowserLobby = () => {
                 </MuteScreen>
             }
 
-            {showEmailPanel &&
+            {
+                showEmailPanel &&
                 <MuteScreen>
                     <EmailPanel>
                         <EmailPanelCancelButton onClick={() => setShowEmailPanel(false)}>
@@ -400,7 +401,7 @@ const BrowserLobby = () => {
                 {/*    {activePlayers} active players*/}
                 {/*</ActivePlayersText>*/}
             </Container>
-        </div>
+        </div >
     );
 };
 
